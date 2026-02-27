@@ -107,7 +107,7 @@ if %errorlevel% neq 0 goto wait_loop
 
 echo        [#############.........] 65%%   Base de donnees connectee
 timeout /t 1 /nobreak >nul
-echo        [##############........] 70%%   Moteur d'analyse moleculaire (315 molecules)
+echo        [##############........] 70%%   Moteur d'analyse moleculaire (Opérationnel)
 timeout /t 1 /nobreak >nul
 echo        [###############.......] 75%%   Base de connaissances (Hildebrand/Hansen)
 timeout /t 1 /nobreak >nul
