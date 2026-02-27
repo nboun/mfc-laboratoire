@@ -168,6 +168,56 @@ const MEASURED_DATA = {
     '36653-82-4':{ bp: 312, logp: 7.27, density: 0.818, vp: 0.0003, ot: null },  // Alcool cétylique (C16-OH)
     '128-37-0':  { bp: 265, logp: 5.10, density: 1.048, vp: 0.01, ot: null },    // BHT (antioxydant)
     '3896-11-5': { bp: 370, logp: 7.10, density: 1.200, vp: 0.000001, ot: null },// UV-328 (stabilisant UV)
+
+    // ── BP VÉRIFIÉS (source: LOCAL cross-checked PubChem, remplace estimations FP→BP) ──
+    '118-58-1': { bp: 320 },  // Benzyl salicylate
+    '101-86-0': { bp: 308 },  // α-Hexylcinnamaldéhyde
+    '4602-84-0': { bp: 283 },  // Farnésol
+    '122-40-7': { bp: 289 },  // Amylcinnamaldéhyde
+    '80-54-6': { bp: 279 },   // Lilial (BMHCA)
+    '77-53-2': { bp: 299 },   // Cédrol
+    '469-61-4': { bp: 262 },  // α-Cédrène
+    '546-28-1': { bp: 265 },  // β-Cédrène
+    '11028-42-5': { bp: 263 }, // Cédrène (mélange)
+    '23696-85-7': { bp: 274 }, // Damascénone
+    '94333-88-7': { bp: 270 }, // Gaïac (Bulnesia sarmientoi)
+    '102-20-5': { bp: 340 },  // Phénéthyl phénylacétate
+    '18172-67-3': { bp: 164 }, // L-β-Pinène
+    '3658-77-3': { bp: 214 },  // Furanéol
+    '68039-49-6': { bp: 280 }, // Masse réactionnelle cyclopentanone
+    '65443-14-3': { bp: 250 }, // 2,2,5-Triméthyl-5-pentylcyclopentanone
+    '81782-77-6': { bp: 245 }, // 4-Méthyl-3-décèn-5-ol
+    '118-71-8': { bp: 293 },  // Maltol
+    '18479-58-8': { bp: 198 }, // Dihydromyrcénol
+    '6485-40-1': { bp: 231 },  // L-Carvone
+    '89-80-5': { bp: 207 },   // trans-Menthone
+    '67674-46-8': { bp: 170 }, // 6,6-Diméthoxy-2,5,5-triméthylhexane
+    '20407-84-5': { bp: 248 }, // 2-trans-Dodécénal
+    '124-13-0': { bp: 167 },  // Octanal (C8)
+    '124-19-6': { bp: 191 },  // Nonanal (C9)
+    '63500-71-0': { bp: 230 }, // Florol
+    '106185-75-5': { bp: 270 },// 2-Éthyl-4-triméthylcyclopentanone
+    '66068-84-6': { bp: 280 }, // Isocamphényl cyclohexanol
+    '4940-11-8': { bp: 290 },  // Éthyl maltol
+    '121-32-4': { bp: 295 },  // Éthyl vanilline
+    '65113-99-7': { bp: 270 }, // Produit réaction cyclopentanone
+    '1335-46-2': { bp: 265 },  // Méthyl ionone (mélange)
+    '431-03-8': { bp: 88 },   // Diacétyle
+    '32210-23-4': { bp: 260 }, // Verténex
+    '103-95-7': { bp: 270 },  // Cyclamen aldéhyde
+    '18871-14-2': { bp: 265 }, // 4-Acétoxy-3-pentylTHP
+    '68259-31-4': { bp: 250 }, // 5(6)-Méthyl-7(8)-isopropylbicyclo
+    '10408-16-9': { bp: 254 }, // Longifolène
+    '99-49-0': { bp: 231 },   // Carvone
+    '67634-00-8': { bp: 240 }, // Carbonate de méthyl octynol
+    '5182-36-5': { bp: 229 },  // Néral
+    '77-54-3': { bp: 291 },   // Cédrénol
+    '112-54-9': { bp: 240 },  // Dodécanal (C12)
+    '3407-42-9': { bp: 300 },  // Sandela (Indisan)
+    '67801-20-1': { bp: 260 }, // 3-Méthyl-5-triméthylcyclopentanone
+    '125-12-2': { bp: 226 },  // Acétate d'isobornyle
+    '58567-11-6': { bp: 280 }, // Boisambrène Forte
+    '80-26-2': { bp: 220 },   // Acétate de terpinyle
 };
 
 
