@@ -1341,6 +1341,18 @@ def parse_composition_universal(s3):
                         continue
                 except: pass
             
+            # Concentration — valeur seule sur la ligne '16,6089%' ou '8.5 %'
+            conc_m4 = re.search(r'^(\d+[.,]\d+)\s*%\s*$', L)
+            if conc_m4 and not pct_min:
+                try:
+                    v = float(conc_m4.group(1).replace(',', '.'))
+                    if 0 < v <= 100:
+                        pct_min, pct_max = v, v
+                        concentration = str(v)
+                        used_lines.add(j)
+                        continue
+                except: pass
+            
             # Classification H-codes
             h_codes = re.findall(r'H\d{3}', L)
             if h_codes:
@@ -1418,10 +1430,10 @@ def parse_composition_universal(s3):
 
 # Compiled regexes for XY parser
 _XY_RE_CAS = re.compile(r'^(\d{2,7}-\d{2}-\d)$')
-_XY_RE_PCT_BRACKET = re.compile(r'^\[\s*([\d.,]+)\s*[;-]\s*([\d.,]+)\s*\]$')
-_XY_RE_PCT_GIVAUDAN = re.compile(r'^(>=?\s*)?([\d.,]+)\s*-\s*(<?\s*)?([\d.,]+)$')
-_XY_RE_PCT_LT = re.compile(r'^<\s*([\d.,]+)$')
-_XY_RE_PCT_PLAIN = re.compile(r'^(\d+[.,]\d{2,})$')
+_XY_RE_PCT_BRACKET = re.compile(r'^\[\s*([\d.,]+)\s*[;-]\s*([\d.,]+)\s*\]\s*%?\s*$')
+_XY_RE_PCT_GIVAUDAN = re.compile(r'^(>=?\s*)?([\d.,]+)\s*-\s*(<?\s*)?([\d.,]+)\s*%?\s*$')
+_XY_RE_PCT_LT = re.compile(r'^<\s*([\d.,]+)\s*%?\s*$')
+_XY_RE_PCT_PLAIN = re.compile(r'^(\d+[.,]\d{2,})\s*%?\s*$')
 _XY_RE_EINECS = re.compile(r'^\d{3}-\d{3}-\d')
 _XY_RE_REACH = re.compile(r'^01-\d{7}')
 
@@ -1612,6 +1624,15 @@ def extract_composition_xy(pdf_path):
                 prev['nom_chimique'] += cont
             else:
                 prev['nom_chimique'] += ' ' + cont
+        elif molecules and not cas:
+            # No CAS, no name — check if this row has a percentage for the previous molecule
+            for x, y, text in row:
+                p = _xy_parse_pct(text)
+                if p and molecules[-1]['pourcentage_min'] is None:
+                    molecules[-1]['pourcentage_min'] = p[0]
+                    molecules[-1]['pourcentage_max'] = p[1]
+                    molecules[-1]['concentration'] = f'{p[0]}-{p[1]}'
+                    break
     
     doc.close()
     return molecules
