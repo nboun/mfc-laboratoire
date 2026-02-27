@@ -179,6 +179,48 @@ def get_section(text, start, end):
 
 # ── Section 1 : Identification (FR + EN) ─────────────
 
+def is_fds_label(text):
+    """Détecte si le texte est un label/titre de section FDS et non une vraie valeur."""
+    t = text.strip().upper()
+    # Labels exacts connus
+    labels = [
+        'NOM COMMERCIAL', 'NOM DE LA SUBSTANCE', 'NOM DE LA SUBSTANCE/MÉLANGE',
+        'NOM DE LA SUBSTANCE/MELANGE', 'NOM DU PRODUIT', 'NOM DU MÉLANGE',
+        'NOM DU MELANGE', 'PRODUCT NAME', 'TRADE NAME', 'SUBSTANCE NAME',
+        'IDENTIFICATION DU PRODUIT', 'IDENTIFICATION DE LA SUBSTANCE',
+        'IDENTIFICATION DE LA SOCIÉTÉ', 'IDENTIFICATION DE LA SOCIETE',
+        'IDENTIFICATION DE LA SOCIÉTÉ/ENTREPRISE', 'IDENTIFICATION DE LA SOCIETE/ENTREPRISE',
+        'IDENTIFICATEUR DE PRODUIT', 'DÉNOMINATION COMMERCIALE',
+        'DENOMINATION COMMERCIALE', 'RÉFÉRENCE COMMERCIALE', 'REFERENCE COMMERCIALE',
+        'COMPANY', 'FOURNISSEUR', 'PRODUCTEUR', 'FABRICANT', 'MANUFACTURER',
+        'SUPPLIER', 'RAISON SOCIALE', 'SOCIÉTÉ', 'SOCIETE',
+        'SECTION 1', 'SECTION 2', 'SECTION 3',
+        'FICHE DE DONNÉES DE SÉCURITÉ', 'FICHE DE DONNEES DE SECURITE',
+        'SAFETY DATA SHEET', 'MATERIAL SAFETY DATA SHEET',
+        'DÉTAILS DU FOURNISSEUR', 'DETAILS DU FOURNISSEUR',
+        'RENSEIGNEMENTS CONCERNANT', 'COORDONNÉES DU FOURNISSEUR',
+        'COORDONNEES DU FOURNISSEUR',
+    ]
+    if t in labels:
+        return True
+    # Patterns de labels (contiennent des mots-clés de structure FDS)
+    label_patterns = [
+        r'^SECTION\s+\d',
+        r'^IDENTIFICATION\s+DE\s+(LA|LE|L)',
+        r'^RUBRIQUE\s+\d',
+        r'^NOM\s+(DE\s+LA|DU|COMMERCIAL)',
+        r'^DÉNOMINATION',
+        r'^DENOMINATION',
+        r'^FICHE\s+DE\s+DONN',
+        r'^SAFETY\s+DATA',
+        r'^DETAILS?\s+(OF|DU|DE)',
+    ]
+    for pat in label_patterns:
+        if re.match(pat, t):
+            return True
+    return False
+
+
 def parse_identification(text):
     s1 = get_section(text, 1, 2)
     info = {}
@@ -203,7 +245,7 @@ def parse_identification(text):
         m = re.search(pat, s1)
         if m:
             nom = m.group(1).strip().split('\n')[0].strip()
-            if nom and len(nom) > 1: info['nom'] = nom; break
+            if nom and len(nom) > 1 and not is_fds_label(nom): info['nom'] = nom; break
     
     # Fallback: extract product name from page header (appears on every page)
     # Many FDS put the product name prominently in the header
@@ -212,14 +254,14 @@ def parse_identification(text):
         m = re.search(r'[ÉE]dit[ée]e?\s+le\s*:.*?\n\s*(.+?)\s*\n', text[:500])
         if m:
             candidate = m.group(1).strip()
-            if candidate and len(candidate) > 2 and not candidate.startswith(('Fiche', 'Revision', '*')) and not re.match(r'^\d{2}/\d{2}/\d{4}', candidate):
+            if candidate and len(candidate) > 2 and not candidate.startswith(('Fiche', 'Revision', '*')) and not re.match(r'^\d{2}/\d{2}/\d{4}', candidate) and not is_fds_label(candidate):
                 info['nom'] = candidate
         # Also try: line after "Fiche de données de securité" 
         if 'nom' not in info:
             m = re.search(r'[Ff]iche\s+de\s+donn[ée]es\s+de\s+s[ée]curit[ée]\s*\n\s*(.+)', text[:500])
             if m:
                 candidate = m.group(1).strip()
-                if candidate and len(candidate) > 2 and not re.match(r'^\d', candidate):
+                if candidate and len(candidate) > 2 and not re.match(r'^\d', candidate) and not is_fds_label(candidate):
                     info['nom'] = candidate
 
     # Product code (EN: "Product code :", "Trade code :", FR: "Code du produit" or "Code commercial")
@@ -258,8 +300,10 @@ def parse_identification(text):
         m = re.search(pat, s1, re.IGNORECASE)
         if m: 
             supplier = m.group(1).strip().rstrip('.')
-            # Skip false positives: pagination (1/10), phone numbers, blank
+            # Skip false positives: pagination (1/10), phone numbers, blank, FDS labels
             if re.match(r'^\d+/\d+$', supplier) or re.match(r'^\+?\d[\d\s()-]+$', supplier) or len(supplier) < 3:
+                continue
+            if is_fds_label(supplier):
                 continue
             # Clean: keep only company name (cut at comma, number, BP, Tel)
             supplier = re.split(r',\s*\d|,\s*BP|,\s*Tel|\s+\d{1,3}\s+(avenue|rue|boulevard)', supplier, flags=re.IGNORECASE)[0].strip()
