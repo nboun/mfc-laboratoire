@@ -629,8 +629,8 @@
             try {
                 const panel = document.getElementById('detail-panel');
                 panel.style.display = 'block';
-                document.getElementById('detail-name').textContent = '\u{1F9EC} ' + p.name + (p.reference ? ' [' + p.reference + ']' : '');
-                document.getElementById('detail-content').innerHTML = '<p style="text-align:center;">\u23F3 Chargement...</p>';
+                document.getElementById('detail-name').textContent = '🧬 ' + p.name + (p.reference ? ' [' + p.reference + ']' : '');
+                document.getElementById('detail-content').innerHTML = '<p style="text-align:center;">⏳ Chargement...</p>';
                 panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 
                 // Charger le profil complet via API individuelle
@@ -656,12 +656,12 @@
                     const w = Math.min(100, (v/max)*100);
                     return '<div style="font-size:0.72rem;"><span>' + label + ': <strong>' + v.toFixed(1) + '%</strong></span><div class="bar-bg"><div class="bar-fill" style="width:' + w + '%;background:' + color + ';"></div></div></div>';
                 };
-                html += gauge('Tr\u00e8s volatil', pr.pct_tres_volatil, 60, '#e53935');
+                html += gauge('Très volatil', pr.pct_tres_volatil, 60, '#e53935');
                 html += gauge('Volatil', pr.pct_volatil, 60, '#ff9800');
                 html += gauge('Moyen', pr.pct_moyen, 60, '#4caf50');
                 html += gauge('Lourd', pr.pct_lourd, 60, '#5c6bc0');
-                html += gauge('Terp\u00e8nes', pr.pct_terpenes, 60, '#26a69a');
-                html += gauge('Sesquiterp\u00e8nes', pr.pct_sesquiterpenes, 30, '#009688');
+                html += gauge('Terpènes', pr.pct_terpenes, 60, '#26a69a');
+                html += gauge('Sesquiterpènes', pr.pct_sesquiterpenes, 30, '#009688');
                 html += gauge('Alcools', pr.pct_alcools, 40, '#42a5f5');
                 html += gauge('Muscs/fixateurs', (pr.pct_muscs||0) + (pr.pct_fixateur||0), 30, '#ab47bc');
                 html += '</div>';
@@ -669,15 +669,15 @@
                 const cC = (pr.idx_combustion||0) < -20 ? '#c62828' : (pr.idx_combustion||0) < -5 ? '#e65100' : '#2e7d32';
                 const dC = (pr.idx_diffusion||0) > 30 ? '#2e7d32' : (pr.idx_diffusion||0) > 15 ? '#e65100' : '#c62828';
                 html += '<div style="display:flex;flex-wrap:wrap;gap:1rem;margin:0.5rem 0;font-size:0.8rem;">';
-                html += '<span>\u{1F525} Combustion: <strong style="color:' + cC + ';">' + (pr.idx_combustion||0) + '</strong></span>';
-                html += '<span>\u{1F32C}\uFE0F Diffusion: <strong style="color:' + dC + ';">' + (pr.idx_diffusion||0) + '</strong></span>';
-                html += '<span>\u2696\uFE0F PM: <strong>' + Math.round(pr.mw_weighted||0) + '</strong> g/mol</span>';
-                html += '<span>\u{1F4CA} ' + (pr.nb_known||0) + '/' + (pr.nb_total||0) + ' connues</span>';
+                html += '<span>🔥 Combustion: <strong style="color:' + cC + ';">' + (pr.idx_combustion||0) + '</strong></span>';
+                html += '<span>🌬️ Diffusion: <strong style="color:' + dC + ';">' + (pr.idx_diffusion||0) + '</strong></span>';
+                html += '<span>⚖️ PM: <strong>' + Math.round(pr.mw_weighted||0) + '</strong> g/mol</span>';
+                html += '<span>📊 ' + (pr.nb_known||0) + '/' + (pr.nb_total||0) + ' connues</span>';
                 html += '</div>';
                 
                 if (pr.components_detail && pr.components_detail.length) {
-                    html += '<details open style="margin-top:0.6rem;"><summary style="cursor:pointer;font-weight:600;font-size:0.82rem;">\u{1F4CB} Composants (' + pr.components_detail.length + ')</summary>';
-                    html += '<div style="overflow-x:auto;"><table class="frag-table" style="margin-top:0.3rem;"><thead><tr><th>CAS</th><th>Nom</th><th>Famille</th><th>%</th><th>Odeur</th><th>Note</th><th>P.\\u00e9clair</th><th>\\u00c9bullition</th><th>LogP</th><th>Combustion</th><th>Diffusion</th></tr></thead><tbody>';
+                    html += '<details open style="margin-top:0.6rem;"><summary style="cursor:pointer;font-weight:600;font-size:0.82rem;">📋 Composants (' + pr.components_detail.length + ')</summary>';
+                    html += '<div style="overflow-x:auto;"><table class="frag-table" style="margin-top:0.3rem;"><thead><tr><th>CAS</th><th>Nom</th><th>Famille</th><th>%</th><th>Odeur</th><th>Note</th><th>P.éclair</th><th>Ébullition</th><th>LogP</th><th>Combustion</th><th>Diffusion</th></tr></thead><tbody>';
                     for (const c of pr.components_detail.sort((a,b) => (b.pct_avg||0) - (a.pct_avg||0))) {
                         const rc = !c.known ? 'color:#999;' : (c.impact_combustion === 'danger' || c.impact_combustion === 'bloquant') ? 'background:#ffebee;' : '';
                         const icb = {'danger':'🔴','bloquant':'⛔','risque':'🟠','frein':'🟡','neutre':'⚪','boost':'🟢'};
@@ -685,26 +685,26 @@
                         const ic = c.impact_combustion||''; const id = c.impact_diffusion||'';
                         const bpSrc = c.bp_source === 'mesuré' ? '' : ' *';
                         const lpColor = c.logp != null ? (c.logp > 4 ? '#2e7d32' : c.logp > 2 ? '#e65100' : '#c62828') : '#999';
-                        const vpStr = c.vapor_pressure != null ? (c.vapor_pressure >= 1 ? Math.round(c.vapor_pressure) : c.vapor_pressure.toFixed(2)) : '\u2014';
-                        const otStr = c.odor_threshold != null ? (c.odor_threshold >= 1 ? Math.round(c.odor_threshold) : c.odor_threshold.toFixed(2)) : '\u2014';
-                        const odorStr = c.odor ? '<span title="' + (c.odor_hot||'') + '" style="font-size:0.65rem;cursor:help;">' + c.odor.split(',').slice(0,2).join(', ') + '</span>' : '\u2014';
-                        const noteColor = {'t\u00eate':'#e53935','c\u0153ur':'#ff9800','fond':'#5c6bc0','t\u00eate/c\u0153ur':'#ff5722','c\u0153ur/fond':'#7b1fa2'};
+                        const vpStr = c.vapor_pressure != null ? (c.vapor_pressure >= 1 ? Math.round(c.vapor_pressure) : c.vapor_pressure.toFixed(2)) : '—';
+                        const otStr = c.odor_threshold != null ? (c.odor_threshold >= 1 ? Math.round(c.odor_threshold) : c.odor_threshold.toFixed(2)) : '—';
+                        const odorStr = c.odor ? '<span title="' + (c.odor_hot||'') + '" style="font-size:0.65rem;cursor:help;">' + c.odor.split(',').slice(0,2).join(', ') + '</span>' : '—';
+                        const noteColor = {'tête':'#e53935','cœur':'#ff9800','fond':'#5c6bc0','tête/cœur':'#ff5722','cœur/fond':'#7b1fa2'};
                         const nC = noteColor[c.odor_note] || '#999';
-                        html += '<tr style="' + rc + '"><td style="font-family:monospace;font-size:0.7rem;">' + (c.cas||'?') + '</td><td>' + (c.molecule_name||c.name||'?') + '</td><td style="font-size:0.7rem;">' + (c.family||'<em>?</em>') + '</td><td>' + (c.pct_min||0) + '\u2013' + (c.pct_max||0) + '</td><td>' + odorStr + '</td><td style="color:' + nC + ';font-size:0.68rem;font-weight:600;">' + (c.odor_note||'\u2014') + '</td><td>' + (c.fp ? c.fp+'\u00b0C' : '\u2014') + '</td><td>' + (c.bp ? c.bp+'\u00b0C'+bpSrc : '\u2014') + '</td><td style="color:' + lpColor + ';font-weight:600;">' + (c.logp != null ? c.logp : '\u2014') + '</td><td>' + (icb[ic]||'') + ' <span style="font-size:0.68rem;">' + ic + '</span></td><td>' + (idb[id]||'') + ' <span style="font-size:0.68rem;">' + id + '</span></td></tr>';
+                        html += '<tr style="' + rc + '"><td style="font-family:monospace;font-size:0.7rem;">' + (c.cas||'?') + '</td><td>' + (c.molecule_name||c.name||'?') + '</td><td style="font-size:0.7rem;">' + (c.family||'<em>?</em>') + '</td><td>' + (c.pct_min||0) + '–' + (c.pct_max||0) + '</td><td>' + odorStr + '</td><td style="color:' + nC + ';font-size:0.68rem;font-weight:600;">' + (c.odor_note||'—') + '</td><td>' + (c.fp ? c.fp+'°C' : '—') + '</td><td>' + (c.bp ? c.bp+'°C'+bpSrc : '—') + '</td><td style="color:' + lpColor + ';font-weight:600;">' + (c.logp != null ? c.logp : '—') + '</td><td>' + (icb[ic]||'') + ' <span style="font-size:0.68rem;">' + ic + '</span></td><td>' + (idb[id]||'') + ' <span style="font-size:0.68rem;">' + id + '</span></td></tr>';
                     }
                     html += '</tbody></table></details>';
                 }
                 
                 if (pred.reasoning && pred.reasoning.length) {
-                    html += '<div style="margin-top:0.6rem;background:rgba(255,152,0,0.08);border-radius:6px;padding:0.5rem;"><strong>\u{1F4CF} R\u00e8gles :</strong> ' + pred.reasoning.join(' | ') + '</div>';
+                    html += '<div style="margin-top:0.6rem;background:rgba(255,152,0,0.08);border-radius:6px;padding:0.5rem;"><strong>📏 Règles :</strong> ' + pred.reasoning.join(' | ') + '</div>';
                 }
                 if (p.validated_with && p.validated_with.length) {
-                    html += '<div style="margin-top:0.6rem;background:#e8f5e9;border-radius:6px;padding:0.5rem;"><strong>\u2705 Valid\u00e9 :</strong>';
-                    for (const v of p.validated_with) html += '<div style="font-size:0.78rem;">\u2022 ' + v.recette + ' @ ' + v.pct + '% \u2014 ' + v.client + ' (' + v.meche + ') ' + (v.notes||'') + '</div>';
+                    html += '<div style="margin-top:0.6rem;background:#e8f5e9;border-radius:6px;padding:0.5rem;"><strong>✅ Validé :</strong>';
+                    for (const v of p.validated_with) html += '<div style="font-size:0.78rem;">• ' + v.recette + ' @ ' + v.pct + '% — ' + v.client + ' (' + v.meche + ') ' + (v.notes||'') + '</div>';
                     html += '</div>';
                 }
                 if (pred.recipe) {
-                    html += '<div style="margin-top:0.6rem;background:rgba(124,77,255,0.08);border-radius:6px;padding:0.6rem;"><strong style="color:#7c4dff;">Pr\u00e9diction : ' + pred.recipe + '</strong> (' + (pred.confidence||'') + ')</div>';
+                    html += '<div style="margin-top:0.6rem;background:rgba(124,77,255,0.08);border-radius:6px;padding:0.6rem;"><strong style="color:#7c4dff;">Prédiction : ' + pred.recipe + '</strong> (' + (pred.confidence||'') + ')</div>';
                 }
                 
                 // ═══ PROFIL OLFACTIF ═══
@@ -713,7 +713,7 @@
                     if (olR.ok) {
                         const ol = await olR.json();
                         if (ol.coverage > 0) {
-                            html += '<details style="margin-top:0.8rem;"><summary style="cursor:pointer;font-weight:600;font-size:0.82rem;">\u{1F443} Profil olfactif (' + ol.coverage + '/' + ol.total + ' mol\u00e9cules couvertes)</summary>';
+                            html += '<details style="margin-top:0.8rem;"><summary style="cursor:pointer;font-weight:600;font-size:0.82rem;">👃 Profil olfactif (' + ol.coverage + '/' + ol.total + ' molécules couvertes)</summary>';
                             
                             // Familles olfactives
                             html += '<div style="margin:0.5rem 0;"><strong style="font-size:0.78rem;">Familles olfactives :</strong>';
@@ -727,7 +727,7 @@
                             
                             // Pyramide olfactive
                             html += '<div style="margin:0.5rem 0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;">';
-                            const notesLabel = {t\u00eate:'\u{1F4A8} T\u00eate',c\u0153ur:'\u2764\uFE0F C\u0153ur',fond:'\u{1F9F1} Fond'};
+                            const notesLabel = {tête:'💨 Tête',cœur:'❤️ Cœur',fond:'🧱 Fond'};
                             for (const [key, label] of Object.entries(notesLabel)) {
                                 const items = ol.pyramide[key] || [];
                                 html += '<div style="background:var(--fond-surface);padding:0.4rem;border-radius:6px;font-size:0.72rem;">';
@@ -742,27 +742,27 @@
                             // Alertes à chaud
                             if (ol.hotAlerts && ol.hotAlerts.length) {
                                 html += '<div style="background:#fff3e0;border:1px solid #e65100;border-radius:6px;padding:0.5rem;margin-top:0.4rem;">';
-                                html += '<strong style="color:#e65100;font-size:0.78rem;">\u{1F525} Mol\u00e9cules \u00e0 surveiller \u00e0 chaud :</strong>';
+                                html += '<strong style="color:#e65100;font-size:0.78rem;">🔥 Molécules à surveiller à chaud :</strong>';
                                 for (const a of ol.hotAlerts.slice(0,5)) {
-                                    html += '<div style="font-size:0.72rem;margin-top:0.2rem;">\u2022 <strong>' + a.name + '</strong> (' + a.pct + '%) : <span style="color:#999;">' + a.odor + '</span> \u2192 <span style="color:#e65100;font-weight:600;">' + a.odor_hot + '</span>' + (a.threshold ? ' <em>(seuil: ' + a.threshold + ' ppm)</em>' : '') + '</div>';
+                                    html += '<div style="font-size:0.72rem;margin-top:0.2rem;">• <strong>' + a.name + '</strong> (' + a.pct + '%) : <span style="color:#999;">' + a.odor + '</span> → <span style="color:#e65100;font-weight:600;">' + a.odor_hot + '</span>' + (a.threshold ? ' <em>(seuil: ' + a.threshold + ' ppm)</em>' : '') + '</div>';
                                 }
                                 html += '</div>';
                             }
                             
                             // Sucré + Vert
                             if (ol.sweetMolecules && ol.sweetMolecules.length) {
-                                html += '<div style="font-size:0.72rem;margin-top:0.3rem;">\u{1F36C} <strong>Notes sucr\u00e9es :</strong> ' + ol.sweetMolecules.map(m => m.name + ' ' + m.pct + '%').join(', ') + '</div>';
+                                html += '<div style="font-size:0.72rem;margin-top:0.3rem;">🍬 <strong>Notes sucrées :</strong> ' + ol.sweetMolecules.map(m => m.name + ' ' + m.pct + '%').join(', ') + '</div>';
                             }
                             if (ol.greenMolecules && ol.greenMolecules.length) {
-                                html += '<div style="font-size:0.72rem;margin-top:0.2rem;">\u{1F33F} <strong>Notes vertes :</strong> ' + ol.greenMolecules.map(m => m.name + ' ' + m.pct + '%').join(', ') + '</div>';
+                                html += '<div style="font-size:0.72rem;margin-top:0.2rem;">🌿 <strong>Notes vertes :</strong> ' + ol.greenMolecules.map(m => m.name + ' ' + m.pct + '%').join(', ') + '</div>';
                             }
                             
                             // Bouton diagnostic
                             html += '<div style="margin-top:0.5rem;display:flex;flex-wrap:wrap;gap:0.3rem;">';
-                            html += '<button class="btn btn-sm" style="background:#e65100;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;sucr\u00e9_\u00e0_chaud&quot;)">\u{1F36C} Diagnostic sucr\u00e9 \u00e0 chaud</button>';
-                            html += '<button class="btn btn-sm" style="background:#2e7d32;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;vert_trop_fort&quot;)">\u{1F33F} Diagnostic vert trop fort</button>';
-                            html += '<button class="btn btn-sm" style="background:#1565c0;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;diffusion_faible&quot;)">\u{1F32C}\uFE0F Diagnostic diffusion faible</button>';
-                            html += '<button class="btn btn-sm" style="background:#6a1b9a;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;odeur_parasite&quot;)">\u26A0\uFE0F Odeur parasite</button>';
+                            html += '<button class="btn btn-sm" style="background:#e65100;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;sucré_à_chaud&quot;)">🍬 Diagnostic sucré à chaud</button>';
+                            html += '<button class="btn btn-sm" style="background:#2e7d32;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;vert_trop_fort&quot;)">🌿 Diagnostic vert trop fort</button>';
+                            html += '<button class="btn btn-sm" style="background:#1565c0;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;diffusion_faible&quot;)">🌬️ Diagnostic diffusion faible</button>';
+                            html += '<button class="btn btn-sm" style="background:#6a1b9a;color:#fff;font-size:0.7rem;padding:0.2rem 0.5rem;" onclick="runDiagnostic(' + p.id + ',&quot;odeur_parasite&quot;)">⚠️ Odeur parasite</button>';
                             html += '</div>';
                             
                             // Zone résultat diagnostic
@@ -786,7 +786,7 @@
             const div = document.getElementById('diagnostic-result-' + fragranceId);
             if (!div) return;
             div.style.display = 'block';
-            div.innerHTML = '<p style="text-align:center;font-size:0.78rem;">\u23F3 Analyse en cours...</p>';
+            div.innerHTML = '<p style="text-align:center;font-size:0.78rem;">⏳ Analyse en cours...</p>';
             try {
                 const r = await fetch('/api/fragrances/' + fragranceId + '/olfactory-diagnostic', {
                     method: 'POST', headers: {'Content-Type':'application/json'},
@@ -794,20 +794,20 @@
                 });
                 const d = await r.json();
                 let html = '<div style="background:#fafafa;border:2px solid #7c4dff;border-radius:8px;padding:0.6rem;">';
-                const issueLabels = {'sucr\u00e9_\u00e0_chaud':'\u{1F36C} Sucr\u00e9 \u00e0 chaud','vert_trop_fort':'\u{1F33F} Vert trop fort','diffusion_faible':'\u{1F32C}\uFE0F Diffusion faible','odeur_parasite':'\u26A0\uFE0F Odeur parasite'};
+                const issueLabels = {'sucré_à_chaud':'🍬 Sucré à chaud','vert_trop_fort':'🌿 Vert trop fort','diffusion_faible':'🌬️ Diffusion faible','odeur_parasite':'⚠️ Odeur parasite'};
                 html += '<h4 style="color:#7c4dff;margin:0 0 0.4rem;font-size:0.85rem;">Diagnostic : ' + (issueLabels[issue]||issue) + '</h4>';
                 if (d.analysis_summary) html += '<p style="font-size:0.78rem;margin-bottom:0.4rem;">' + d.analysis_summary + '</p>';
                 if (d.suspects && d.suspects.length) {
-                    html += '<div style="margin-bottom:0.4rem;"><strong style="font-size:0.78rem;">\u{1F50D} Mol\u00e9cules suspectes :</strong>';
+                    html += '<div style="margin-bottom:0.4rem;"><strong style="font-size:0.78rem;">🔍 Molécules suspectes :</strong>';
                     for (const s of d.suspects) {
-                        html += '<div style="font-size:0.72rem;padding:0.2rem 0;border-bottom:1px solid #eee;">\u2022 ' + (s.explanation || (s.name + ' ' + s.pct + '%')) + '</div>';
+                        html += '<div style="font-size:0.72rem;padding:0.2rem 0;border-bottom:1px solid #eee;">• ' + (s.explanation || (s.name + ' ' + s.pct + '%')) + '</div>';
                     }
                     html += '</div>';
-                } else { html += '<p style="font-size:0.78rem;color:#999;">Aucun suspect identifi\u00e9 pour ce type de probl\u00e8me.</p>'; }
+                } else { html += '<p style="font-size:0.78rem;color:#999;">Aucun suspect identifié pour ce type de problème.</p>'; }
                 if (d.solutions && d.solutions.length) {
-                    html += '<div><strong style="font-size:0.78rem;color:#2e7d32;">\u{1F4A1} Solutions propos\u00e9es :</strong>';
+                    html += '<div><strong style="font-size:0.78rem;color:#2e7d32;">💡 Solutions proposées :</strong>';
                     for (const s of d.solutions) {
-                        html += '<div style="font-size:0.72rem;padding:0.15rem 0;color:#2e7d32;">\u2714 ' + s + '</div>';
+                        html += '<div style="font-size:0.72rem;padding:0.15rem 0;color:#2e7d32;">✔ ' + s + '</div>';
                     }
                     html += '</div>';
                 }
