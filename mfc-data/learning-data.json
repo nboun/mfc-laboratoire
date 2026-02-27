@@ -1,0 +1,21 @@
+{
+  "exported_at": "2026-02-27T11:55:02.158Z",
+  "changes": [],
+  "patterns": [
+    {
+      "id": 1,
+      "pattern_type": "pattern_echec_vs_succes",
+      "trigger_condition": "pattern_echec_vs_succes",
+      "action_taken": "{\"type\":\"pattern_echec_vs_succes\",\"detail\":\"Sur 1 échec(s) vs 4 succès : Échecs: combustion moy -6, volatil 0.0%, lourd 29.1% | Succès: combustion moy 1, volatil 0.1%, lourd 12.6%\"}",
+      "outcome": "Sur 1 échec(s) vs 4 succès : Échecs: combustion moy -6, volatil 0.0%, lourd 29.1% | Succès: combustion moy 1, volatil 0.1%, lourd 12.6%",
+      "confidence": 0.7,
+      "usage_count": 0,
+      "last_used_at": null,
+      "source_changes": null,
+      "validated_by_test": 0,
+      "created_at": "2026-02-18 08:02:59",
+      "updated_at": "2026-02-18 08:02:59"
+    }
+  ],
+  "learned_kb": []
+}
