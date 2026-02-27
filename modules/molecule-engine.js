@@ -1181,7 +1181,6 @@ function computeMoleculeProfile(components) {
         if (known) {
             profile.nb_known++;
             detail.family = known.family;
-            detail.fp = known.fp;
             detail.mw = known.mw;
             detail.volatility = known.volatility;
             detail.impact_combustion = known.impact_combustion;
@@ -1206,15 +1205,27 @@ function computeMoleculeProfile(components) {
             detail.odor_note = known.odor_note || null;
             detail.threshold = known.threshold ?? null;
             
-            // Flash point pondéré
-            fpWeightedSum += known.fp * avg;
+            // Flash point : FDS composant > MOLECULE_DB > rien
+            const effectiveFp = (c.flash_point != null && c.flash_point !== '') 
+                ? parseFloat(c.flash_point) 
+                : known.fp;
+            detail.fp = effectiveFp;
+            detail.fp_source = (c.flash_point != null && c.flash_point !== '') ? 'FDS' : 'MOLECULE_DB';
+            
+            // FP pondéré et min (seulement composants > 3% pour le min)
+            if (effectiveFp != null && !isNaN(effectiveFp)) {
+                fpWeightedSum += effectiveFp * avg;
+                if (avg >= 3 && effectiveFp < profile.flash_point_min) {
+                    profile.flash_point_min = effectiveFp;
+                }
+            }
             mwWeightedSum += known.mw * avg;
-            if (known.fp < profile.flash_point_min) profile.flash_point_min = known.fp;
             
             // Volatilité
-            if (known.fp < 55 || known.volatility === 'très_haute') profile.pct_tres_volatil += avg;
-            else if (known.fp < 85 || known.volatility === 'haute') profile.pct_volatil += avg;
-            else if (known.fp < 110 || known.volatility === 'moyenne') profile.pct_moyen += avg;
+            const fpRef = effectiveFp ?? known.fp;
+            if ((fpRef != null && fpRef < 55) || known.volatility === 'très_haute') profile.pct_tres_volatil += avg;
+            else if ((fpRef != null && fpRef < 85) || known.volatility === 'haute') profile.pct_volatil += avg;
+            else if ((fpRef != null && fpRef < 110) || known.volatility === 'moyenne') profile.pct_moyen += avg;
             else profile.pct_lourd += avg;
             
             // Fixateurs
@@ -1244,7 +1255,7 @@ function computeMoleculeProfile(components) {
             if (cas === '34590-94-8') profile.has_dpg = true;
             
             // Flash danger
-            if (known.fp < 55 && avg > 1) profile.has_danger_flash = true;
+            if (fpRef != null && fpRef < 55 && avg > 1) profile.has_danger_flash = true;
             
             // Dominante
             if (avg > 20 && (!profile.dominant_molecule || avg > profile.dominant_molecule.pct)) {
