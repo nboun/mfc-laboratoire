@@ -1898,18 +1898,18 @@ def parse_properties(text):
             
         # IFF-specific: extract °C from "X °F (Y °C)" format FIRST
         for pat in [
-            r'[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*[\d.]+\s*°?\s*F\s*\(\s*(\d+\.?\d*)\s*°?\s*C\s*\)',   # IFF: "Flash point : 273 °F (134 °C)"
-            r'[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*[<>]=?\s*[\d.]+\s*°?\s*F\s*\(\s*[<>]=?\s*(\d+\.?\d*)\s*°?\s*C\s*\)',   # IFF: ">= 200 °F (>= 93 °C)"
-            r'[Pp]oint.*?[ée]clair\s*[:\s]*\n?\s*:?\s*[\d.]+\s*°?\s*F\s*\(\s*(\d+\.?\d*)\s*°?\s*C\s*\)',   # FR+IFF: "Point éclair : 174 °F (79 °C)"
-            r'(\d+\.?\d*)\s*°\s*F\s*\(\s*(\d+\.?\d*)\s*°\s*C\s*\)',  # Generic: any "XX °F (YY °C)" near flash context
+            r'[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*[\d.,]+\s*°?\s*F\s*\(\s*(\d+[,.]?\d*)\s*°?\s*C\s*\)',   # IFF: "Flash point : 273 °F (134 °C)"
+            r'[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*[<>]=?\s*[\d.,]+\s*°?\s*F\s*\(\s*[<>]=?\s*(\d+[,.]?\d*)\s*°?\s*C\s*\)',   # IFF: ">= 200 °F (>= 93 °C)"
+            r'[Pp]oint.*?[ée]clair\s*[:\s]*\n?\s*:?\s*[\d.,]+\s*°?\s*F\s*\(\s*(\d+[,.]?\d*)\s*°?\s*C\s*\)',   # FR+IFF: "Point éclair : 174 °F (79 °C)"
+            r'(\d+[,.]?\d*)\s*°\s*F\s*\(\s*(\d+[,.]?\d*)\s*°\s*C\s*\)',  # Generic: any "XX °F (YY °C)" near flash context
         ]:
             m = re.search(pat, zone)
             if m:
                 # Last pattern has 2 groups (F and C)
                 if m.lastindex and m.lastindex >= 2:
-                    p['flash_point_c'] = m.group(2).strip()
+                    p['flash_point_c'] = m.group(2).strip().replace(',', '.')
                 else:
-                    p['flash_point_c'] = m.group(1).strip()
+                    p['flash_point_c'] = m.group(1).strip().replace(',', '.')
                 p['flash_point_source'] = 'IFF_F_C'
                 break
         
@@ -1918,17 +1918,19 @@ def parse_properties(text):
         
         # Standard FR/EN patterns
         for pat in [
-            r"clair\s*:?\s*\n\s*(?:[<>]=?\s*)?(\d+\.?\d*)\s*°",          # FR next line (Robertet)
-            r"[Ee]clair\s*[^:]*\n\s*:\s*(?:[<>]=?\s*)?(\d+\.?\d*)\s*°",  # Jean Niel: "Point Eclair (...)\n: >60 °C"
-            r"clair\s*[:\s]+(?:[<>]=?\s*)?(\d+\.?\d*)\s*°",               # FR same line
-            r"[Pp]oint\s+[ée]clair\s*(?:\(°C\))?\s*[:\s]*(?:[<>]=?\s*)?(\d+\.?\d*)",
-            r"[Ff]lash\s*[Pp]oint\s*\(?°?\s*C\)?\s*[:\s]*(?:[<>]=?\s*)?(\d+\.?\d*)",  # CPL EN: "Flash Point (°C) >70"
-            r"[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*(?:FP\s*)?(?:[<>]=?\s*)?(\d+\.?\d*)\s*°?\s*C",  # EN: "Flash point : 79 °C"
-            r"[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*(?:[<>]=?\s*)?(\d+\.?\d*)\s*°?\s*F",            # EN Fahrenheit only (convert)
+            r"[Ff]lash\s*[Pp]oint\s*\n\s*:\s*\n\s*(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°?\s*C",  # IFF multi-line: "Flash point\n:\n129,00 °C"
+            r"[Pp]oint\s*[dD]'?\s*[ée]clair\s*\n\s*:\s*\n\s*(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°",  # FR multi-line: "Point d'éclair\n:\n82 °C"
+            r"clair\s*:?\s*\n\s*(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°",          # FR next line (Robertet)
+            r"[Ee]clair\s*[^:]*\n\s*:\s*(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°",  # Jean Niel: "Point Eclair (...)\n: >60 °C"
+            r"clair\s*[:\s]+(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°",               # FR same line
+            r"[Pp]oint\s+[ée]clair\s*(?:\(°C\))?\s*[:\s]*(?:[<>]=?\s*)?(\d+[,.]?\d*)",
+            r"[Ff]lash\s*[Pp]oint\s*\(?°?\s*C\)?\s*[:\s]*(?:[<>]=?\s*)?(\d+[,.]?\d*)",  # CPL EN: "Flash Point (°C) >70"
+            r"[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*(?:FP\s*)?(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°?\s*C",  # EN: "Flash point : 79 °C"
+            r"[Ff]lash\s*[Pp]oint\s*[:\s·]*\n?\s*:?\s*(?:[<>]=?\s*)?(\d+[,.]?\d*)\s*°?\s*F",            # EN Fahrenheit only (convert)
         ]:
             m = re.search(pat, zone)
             if m: 
-                val = m.group(1).strip()
+                val = m.group(1).strip().replace(',', '.')
                 # Check if this is Fahrenheit (last pattern)
                 if '°F' in m.group(0) or '° F' in m.group(0) or pat.endswith("F"):
                     try:
