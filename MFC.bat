@@ -13,63 +13,65 @@ title MFC Laboratoire v%APP_VERSION%
 
 cls
 echo.
-echo       ╔═══════════════════════════════════════════╗
-echo       :                                           :
-echo       :   ╔╦╗╔═╗╔═╗  ╦  ╔═╗╔╗ ╔═╗╦═╗╔═╗╔╦╗╔═╗  :
-echo       :   ║║║╠╣ ║    ║  ╠═╣╠╩╗║ ║╠╦╝╠═╣ ║ ║ ║  :
-echo       :   ╩ ╩╚  ╚═╝  ╩═╝╚ ╝╚═╝╚═╝╩╚═╚ ╝ ╩ ╚═╝  :
-echo       :                   v%APP_VERSION%                           :
-echo       :     Maitre Cirier depuis 1904              :
-echo       ╚═══════════════════════════════════════════╝
+echo       ========================================
+echo       =                                      =
+echo       =   MFC LABORATOIRE                    =
+echo       =   v%APP_VERSION%                              =
+echo       =   Maitre Cirier depuis 1904           =
+echo       =                                      =
+echo       ========================================
 echo.
 
-:: ═══════ OUVRIR CLAUDE ═══════
+:: Ouvrir Claude
 start https://claude.ai
-echo  ✓ Claude ouvert dans le navigateur
+echo  [OK] Claude ouvert dans le navigateur
 
-:: ═══════ GIT PULL ═══════
-git pull origin main 2>nul && echo  ✓ Code à jour || echo  ⚠ Pull échoué — version locale
+:: Git pull
+git pull origin main 2>nul
+if errorlevel 1 (
+    echo  [!!] Pull echoue - version locale
+) else (
+    echo  [OK] Code a jour
+)
 
-:: ═══════ NPM INSTALL ═══════
+:: npm install
 if not exist "node_modules" (
-    echo  ✓ Installation des dépendances...
+    echo  [..] Installation des dependances...
     call npm install >nul 2>&1
 )
-echo  ✓ Dépendances OK
+echo  [OK] Dependances OK
 
-:: ═══════ BASE DE DONNÉES ═══════
+:: Base de donnees
 if not exist "mfc-data" mkdir "mfc-data"
 if exist "..\mfc-data\database.sqlite" (
     copy /Y "..\mfc-data\database.sqlite" "mfc-data\database.sqlite" >nul
-    echo  ✓ Base copiée depuis mfc-data externe
+    echo  [OK] Base copiee depuis mfc-data externe
 ) else if exist "C:\MFC\mfc-data\database.sqlite" (
     copy /Y "C:\MFC\mfc-data\database.sqlite" "mfc-data\database.sqlite" >nul
-    echo  ✓ Base copiée depuis C:\MFC\mfc-data\
+    echo  [OK] Base copiee depuis C:\MFC\mfc-data\
 ) else if exist "mfc-data\database.sqlite" (
-    echo  ✓ Base présente
+    echo  [OK] Base presente
 ) else (
-    echo  ⚠ Aucune base — création automatique au démarrage
+    echo  [!!] Aucune base - creation automatique au demarrage
 )
 
-:: ═══════ INFO CHEMIN POUR CLAUDE ═══════
+:: Info chemin
 echo.
-echo  ─────────────────────────────────────────
-echo  Chemin de l'application : %~dp0
-echo  Base de données         : %~dp0mfc-data\database.sqlite
-echo  Repo GitHub             : https://github.com/nboun/mfc-laboratoire.git
-echo  ─────────────────────────────────────────
-echo.
-echo  Donne ces infos à Claude si besoin.
+echo  -----------------------------------------
+echo  Chemin application : %~dp0
+echo  Base de donnees    : %~dp0mfc-data\database.sqlite
+echo  Repo GitHub        : https://github.com/nboun/mfc-laboratoire.git
+echo  -----------------------------------------
 echo.
 
-:: ═══════ OUVRIR L'APP DANS LE NAVIGATEUR ═══════
+:: Ouvrir app dans le navigateur apres 3s
 timeout /t 3 /nobreak >nul
 start http://localhost:3000
 
-:: ═══════ LANCEMENT ═══════
+:: Lancement
 node server.js
 
-:: ═══════ SYNCHRO AUTO APRÈS ARRÊT ═══════
+:: Synchro auto apres arret
 echo.
 echo  Synchronisation GitHub...
 
@@ -84,7 +86,12 @@ git add -A 2>nul
 for /f "tokens=1-3 delims=/ " %%a in ('date /t') do set "TODAY=%%c-%%b-%%a"
 for /f "tokens=1-2 delims=: " %%a in ('time /t') do set "NOW=%%a:%%b"
 git commit -m "sync %TODAY% %NOW%" 2>nul
-git push origin main 2>nul && echo  ✓ Synchronisé sur GitHub || echo  ⚠ Push échoué
+git push origin main 2>nul
+if errorlevel 1 (
+    echo  [!!] Push echoue
+) else (
+    echo  [OK] Synchronise sur GitHub
+)
 
 echo.
 pause
