@@ -261,7 +261,7 @@
         <div id="tab-rankings" class="pred-panel active">
             <div class="pred-header">
                 <h2>Classement prédictif</h2>
-                <span class="subtitle">Analyse moléculaire de tous les parfums — tri par critère</span>
+                <span class="subtitle">Analyse moléculaire pondérée par concentration — tri par critère</span>
             </div>
             <div id="rankings-stats" class="pred-stats"></div>
             <div class="rankings-controls">
@@ -286,7 +286,7 @@
         <div id="tab-profile" class="pred-panel">
             <div class="pred-header">
                 <h2>Profil moléculaire</h2>
-                <span class="subtitle">Analyse complète d'un parfum — prédictions et alertes</span>
+                <span class="subtitle">Analyse complète d'un parfum — scores pondérés par concentration</span>
             </div>
             <div class="profile-select">
                 <select id="profile-fragrance"><option value="">— Choisir un parfum —</option></select>
@@ -554,15 +554,17 @@ function renderProfile(data) {
     
     // Molecules table
     let molHtml = `<table class="mol-table">
-        <thead><tr><th>Molécule</th><th>CAS</th><th>LogP</th><th>Volatilité</th><th>PE °C</th><th>% max</th></tr></thead><tbody>`;
+        <thead><tr><th>Molécule</th><th>CAS</th><th>LogP</th><th>Volatilité</th><th>PE °C</th><th>Conc. %</th><th>% max</th></tr></thead><tbody>`;
     for (const m of data.molecules) {
         const fpStyle = m.fp !== null && m.fp < 40 ? 'color:var(--rouge);font-weight:600' : '';
+        const concDisplay = m.conc ? m.conc.toFixed(1) : (m.pct_max ? ((m.pct_min + m.pct_max) / 2).toFixed(1) : '—');
         molHtml += `<tr>
             <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.name}">${m.name}</td>
             <td style="font-size:0.72rem;color:var(--texte-muted)">${m.cas || '—'}</td>
             <td style="color:${logpColor(m.logp)};font-weight:600">${m.logp !== null ? m.logp.toFixed(2) : '—'}</td>
             <td>${volLabel(m.volatility)}</td>
             <td style="${fpStyle}">${m.fp !== null ? m.fp + '°C' : '—'}</td>
+            <td style="font-weight:500">${concDisplay}</td>
             <td>${m.pct_max !== null ? m.pct_max + '%' : '—'}</td>
         </tr>`;
     }
@@ -580,11 +582,13 @@ function renderProfile(data) {
                 <span class="label">Composants</span>
                 <span class="value">${s.n_components}</span>
                 <span class="detail">${d.tete} tête · ${d.coeur} cœur · ${d.fond} fond</span>
+                ${s.concentration ? `<span class="detail" style="margin-top:0.15rem;font-style:italic">Conc. : T ${s.concentration.tete}% · C ${s.concentration.coeur}% · F ${s.concentration.fond}%</span>` : ''}
             </div>
             <div class="pred-stat">
-                <span class="label">LogP moyen</span>
+                <span class="label">LogP moyen pondéré</span>
                 <span class="value" style="color:${logpColor(s.avg_logp)}">${s.avg_logp !== null ? s.avg_logp.toFixed(2) : '—'}</span>
                 <span class="detail">${s.wax_compatibility ? 'Compatibilité cire : ' + s.wax_compatibility : ''}</span>
+                <span class="detail" style="font-style:italic">Pondéré par concentration</span>
             </div>
             <div class="pred-stat">
                 <span class="label">Diffusion à froid</span>
@@ -611,12 +615,12 @@ function renderProfile(data) {
                 <div class="throw-meter">
                     <div class="meter-label"><span>Diffusion à froid</span><span style="font-weight:600">${s.cold_throw_score}%</span></div>
                     <div class="meter-bar"><div class="meter-fill cold" style="width:${s.cold_throw_score}%"></div></div>
-                    <div style="font-size:0.72rem;color:var(--texte-muted);margin-top:0.2rem">Molécules volatiles (LogP &lt; 3) → diffusion sans flamme</div>
+                    <div style="font-size:0.72rem;color:var(--texte-muted);margin-top:0.2rem">Score pondéré par concentration × volatilité (LogP &lt; 3)</div>
                 </div>
                 <div class="throw-meter">
                     <div class="meter-label"><span>Diffusion à chaud</span><span style="font-weight:600">${s.hot_throw_score}%</span></div>
                     <div class="meter-bar"><div class="meter-fill hot" style="width:${s.hot_throw_score}%"></div></div>
-                    <div style="font-size:0.72rem;color:var(--texte-muted);margin-top:0.2rem">Notes cœur + fond libérées dans la cire fondue</div>
+                    <div style="font-size:0.72rem;color:var(--texte-muted);margin-top:0.2rem">Score pondéré : cœur + fond libérés par la chaleur × concentration</div>
                 </div>
                 <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid var(--bordure-legere)">
                     <h3 style="border:none;padding:0;margin-bottom:0.5rem">Dosage recommandé</h3>

@@ -8697,3 +8697,388 @@ app.get('/api/research/pubchem', async (req, res) => {
 });
 
 // API : Recherche PubMed (NCBI E-utilities — gratuit)
+
+// ═══════════════════════════════════════════════════════════════════════
+// MODULE PRÉDICTIF — Pondération par concentration (v5.44.14)
+// ═══════════════════════════════════════════════════════════════════════
+
+/**
+ * Classifie une molécule en note olfactive (tête/cœur/fond) à partir du LogP et de la volatilité.
+ * Ordre de priorité : LogP mesuré > volatilité connue > estimation par flash point.
+ */
+function classifyNote(mol, logp) {
+    if (logp !== null && logp !== undefined) {
+        if (logp < 2.0) return 'tete_haute';
+        if (logp < 3.0) return 'tete';
+        if (logp < 4.0) return 'coeur';
+        if (logp < 5.5) return 'fond';
+        return 'fond_fixateur';
+    }
+    if (mol && mol.volatility) {
+        const v = mol.volatility;
+        if (v === 'très_haute') return 'tete_haute';
+        if (v === 'haute') return 'tete';
+        if (v === 'moyenne') return 'coeur';
+        if (v === 'basse') return 'fond';
+        if (v === 'très_basse') return 'fond_fixateur';
+    }
+    if (mol && mol.fp) {
+        if (mol.fp < 55) return 'tete';
+        if (mol.fp < 85) return 'coeur';
+        return 'fond';
+    }
+    return null;
+}
+
+/**
+ * Calcul du profil prédictif d'un parfum PONDÉRÉ PAR CONCENTRATION.
+ *
+ * cold_score : aptitude à diffuser sans flamme
+ *   → molécules volatiles (LogP < 3) × concentration × facteur de volatilité
+ *
+ * hot_score : aptitude à diffuser en combustion
+ *   → spectre plus large (cœur + fond libérés par la chaleur)
+ *   → pondéré par concentration et affinité cire (LogP 3-5 = zone idéale)
+ *
+ * avg_logp : lipophilicité moyenne pondérée par concentration
+ */
+function computePredictifProfile(components, fragrance) {
+    let totalConc = 0;
+    let logpWeightedSum = 0;
+    let logpWeightedCount = 0;
+    let coldRawScore = 0;
+    let hotRawScore = 0;
+    let countTete = 0, countCoeur = 0, countFond = 0, countInconnu = 0;
+    let concTete = 0, concCoeur = 0, concFond = 0;
+    let fpMin = null;
+    let risksCount = { solid: 0, decoloration: 0, dpg: false, allergens: 0 };
+    const moleculeDetails = [];
+
+    for (const c of components) {
+        const cas = c.cas_number || '';
+        const pctMin = parseFloat(c.percentage_min) || 0;
+        const pctMax = parseFloat(c.percentage_max) || pctMin;
+        const conc = (pctMin + pctMax) / 2;
+        if (conc <= 0) continue;
+
+        totalConc += conc;
+        const mol = MOLECULE_DB_FULL[cas] || null;
+        const logp = mol?.logp ?? null;
+        const fp = mol?.fp || (c.flash_point ? parseFloat(c.flash_point) : null);
+        const note = classifyNote(mol, logp);
+
+        // Distribution pyramidale pondérée par concentration
+        if (note === 'tete_haute' || note === 'tete') { countTete++; concTete += conc; }
+        else if (note === 'coeur') { countCoeur++; concCoeur += conc; }
+        else if (note === 'fond' || note === 'fond_fixateur') { countFond++; concFond += conc; }
+        else { countInconnu++; }
+
+        // LogP pondéré
+        if (logp !== null) {
+            logpWeightedSum += logp * conc;
+            logpWeightedCount += conc;
+        }
+
+        // Cold score : seules les molécules volatiles diffusent à T ambiante
+        if (logp !== null) {
+            if (logp < 2.0) coldRawScore += conc * 1.5;
+            else if (logp < 3.0) coldRawScore += conc * 1.0;
+            else if (logp < 3.5) coldRawScore += conc * 0.3;
+        } else if (mol?.volatility === 'très_haute' || mol?.volatility === 'haute') {
+            coldRawScore += conc * 0.8;
+        }
+
+        // Hot score : la chaleur (~60°C) libère un spectre plus large
+        if (logp !== null) {
+            if (logp < 2.0) hotRawScore += conc * 0.4;
+            else if (logp < 3.0) hotRawScore += conc * 0.7;
+            else if (logp < 4.0) hotRawScore += conc * 1.2;
+            else if (logp < 5.5) hotRawScore += conc * 1.0;
+            else hotRawScore += conc * 0.5;
+        } else if (mol) {
+            const v = mol.volatility;
+            if (v === 'très_haute') hotRawScore += conc * 0.4;
+            else if (v === 'haute') hotRawScore += conc * 0.7;
+            else if (v === 'moyenne') hotRawScore += conc * 1.0;
+            else if (v === 'basse') hotRawScore += conc * 0.8;
+            else hotRawScore += conc * 0.5;
+        }
+
+        if (fp !== null && (fpMin === null || fp < fpMin)) fpMin = fp;
+
+        // Risques
+        if (cas === '34590-94-8') risksCount.dpg = true;
+        if (mol?.solubility_wax === 'limitée' || (mol?.notes && mol.notes.includes('cristalliser'))) risksCount.solid++;
+        if (mol?.notes && (mol.notes.includes('jaun') || mol.notes.includes('color'))) risksCount.decoloration++;
+        const allergenCas = ['78-70-6','5989-27-5','5392-40-5','97-53-0','104-55-2','106-22-9','106-24-1','127-51-5'];
+        if (allergenCas.includes(cas) && conc > 0.1) risksCount.allergens++;
+
+        moleculeDetails.push({
+            name: mol?.name || c.name || '?',
+            cas: cas || null,
+            logp,
+            volatility: note,
+            fp: fp,
+            pct_max: pctMax,
+            pct_min: pctMin,
+            conc,
+            known: !!mol
+        });
+    }
+
+    // Normalisation 0-100
+    const coldScore = totalConc > 0 ? Math.min(100, Math.round((coldRawScore / totalConc) * 80)) : 0;
+    const hotScore = totalConc > 0 ? Math.min(100, Math.round((hotRawScore / totalConc) * 75)) : 0;
+    const avgLogP = logpWeightedCount > 0 ? logpWeightedSum / logpWeightedCount : null;
+
+    moleculeDetails.sort((a, b) => (b.logp ?? -99) - (a.logp ?? -99));
+
+    return {
+        n_components: components.filter(c => ((parseFloat(c.percentage_min)||0) + (parseFloat(c.percentage_max)||0)) > 0).length,
+        avg_logp: avgLogP,
+        cold_score: coldScore,
+        hot_score: hotScore,
+        distribution: { tete: countTete, coeur: countCoeur, fond: countFond, inconnu: countInconnu },
+        concentration: { tete: Math.round(concTete * 100) / 100, coeur: Math.round(concCoeur * 100) / 100, fond: Math.round(concFond * 100) / 100 },
+        fp: fpMin,
+        risks: risksCount,
+        molecules: moleculeDetails,
+        total_concentration: Math.round(totalConc * 100) / 100
+    };
+}
+
+function generatePredictifAlerts(pred, fragrance) {
+    const alerts = [];
+    
+    if (pred.risks.dpg) {
+        alerts.push({ level: 'securite', icon: '⛔', title: 'DPG détecté', detail: 'Dipropylène glycol présent — reformulation sans DPG obligatoire chez MFC. Base IPM ou ester uniquement.' });
+    }
+    if (pred.fp !== null && pred.fp < 55) {
+        alerts.push({ level: 'securite', icon: '🔥', title: 'Point éclair très bas (' + pred.fp + '°C)', detail: 'Flash < 55°C — terpènes très volatils présents. Risque inflammabilité accru, transport ADR. Dosage max 6%.' });
+    } else if (pred.fp !== null && pred.fp < 70) {
+        alerts.push({ level: 'important', icon: '⚠️', title: 'Point éclair bas (' + pred.fp + '°C)', detail: 'Flash 55-70°C — surveiller le dosage et la ventilation en production.' });
+    }
+    if (pred.risks.solid > 0) {
+        alerts.push({ level: 'warning', icon: '❄️', title: pred.risks.solid + ' molécule(s) à solubilité limitée', detail: 'Risque de cristallisation dans la cire froide. Tester en surface après 48h.' });
+    }
+    if (pred.risks.decoloration > 0) {
+        alerts.push({ level: 'warning', icon: '🎨', title: pred.risks.decoloration + ' risque(s) de décoloration', detail: 'Certaines molécules peuvent jaunir la cire. Utiliser un stabilisateur UV si cire blanche.' });
+    }
+    if (pred.risks.allergens > 0) {
+        alerts.push({ level: 'important', icon: '⚠️', title: pred.risks.allergens + ' allergène(s) IFRA', detail: 'Molécules à déclaration obligatoire. Vérifier les seuils IFRA pour bougies (cat. 12).' });
+    }
+    if (pred.avg_logp !== null && pred.avg_logp >= 3.5) {
+        alerts.push({ level: 'positif', icon: '✅', title: 'Excellente compatibilité cire', detail: 'LogP moyen ' + pred.avg_logp.toFixed(2) + ' ≥ 3.5 — dissolution optimale dans les cires paraffine et soja.' });
+    }
+    if (pred.cold_score >= 50) {
+        alerts.push({ level: 'positif', icon: '🌬️', title: 'Forte diffusion à froid', detail: 'Score ' + pred.cold_score + '% — bonne présence sans flamme (cold throw).' });
+    }
+    if (pred.hot_score >= 65) {
+        alerts.push({ level: 'positif', icon: '🔥', title: 'Excellente diffusion à chaud', detail: 'Score ' + pred.hot_score + '% — diffusion puissante en combustion (hot throw).' });
+    }
+    
+    let dosageMin = 6, dosageMax = 10, dosageNote = 'Profil standard — dosage classique.';
+    if (pred.avg_logp !== null) {
+        if (pred.avg_logp >= 4) { dosageMin = 8; dosageMax = 12; dosageNote = 'Parfum lipophile → dosage généreux sans risque d\'exsudation.'; }
+        else if (pred.avg_logp >= 3) { dosageMin = 7; dosageMax = 10; dosageNote = 'Bonne dissolution — dosage standard à légèrement élevé.'; }
+        else if (pred.avg_logp >= 2) { dosageMin = 6; dosageMax = 8; dosageNote = 'Polarité moyenne — respecter les dosages pour éviter le suintement.'; }
+        else { dosageMin = 5; dosageMax = 7; dosageNote = 'Parfum polaire — dosage prudent recommandé, surtout en paraffine pure.'; }
+    }
+    if (pred.fp !== null && pred.fp < 55) { dosageMax = Math.min(dosageMax, 6); dosageNote += ' Flash bas → limiter à 6%.'; }
+    
+    return { alerts, dosage: { min: dosageMin, max: dosageMax, note: dosageNote } };
+}
+
+// ── Route 1 : Classement de tous les parfums ──
+app.get('/api/predictif/rankings', async (req, res) => {
+    try {
+        const fragrances = await db.all(`
+            SELECT f.id, f.name, f.reference, f.flash_point,
+                   s.name as supplier_name,
+                   (SELECT COUNT(*) FROM fragrance_components WHERE fragrance_id = f.id 
+                    AND (percentage_min > 0 OR percentage_max > 0)) as n_comps
+            FROM fragrances f
+            LEFT JOIN suppliers s ON f.supplier_id = s.id
+            WHERE f.id IN (SELECT DISTINCT fragrance_id FROM fragrance_components WHERE percentage_min > 0 OR percentage_max > 0)
+            ORDER BY f.name
+        `);
+
+        const rankings = [];
+        for (const frag of fragrances) {
+            const components = await db.all(
+                'SELECT cas_number, name, percentage_min, percentage_max, flash_point FROM fragrance_components WHERE fragrance_id = ? AND (percentage_min > 0 OR percentage_max > 0)',
+                [frag.id]
+            );
+            if (!components.length) continue;
+
+            const pred = computePredictifProfile(components, frag);
+            rankings.push({
+                id: frag.id,
+                name: frag.name,
+                reference: frag.reference,
+                supplier: frag.supplier_name,
+                n_comps: pred.n_components,
+                avg_logp: pred.avg_logp,
+                cold_score: pred.cold_score,
+                hot_score: pred.hot_score,
+                tete: pred.distribution.tete,
+                coeur: pred.distribution.coeur,
+                fond: pred.distribution.fond,
+                fp: pred.fp || frag.flash_point || null,
+                total_concentration: pred.total_concentration
+            });
+        }
+
+        const logps = rankings.filter(r => r.avg_logp !== null).map(r => r.avg_logp);
+        res.json({
+            rankings,
+            stats: {
+                total_fragrances: rankings.length,
+                avg_logp_global: logps.length ? logps.reduce((a, b) => a + b, 0) / logps.length : null,
+                logp_coverage: logps.length + '/' + rankings.length
+            }
+        });
+    } catch (e) {
+        console.error('[Predictif/Rankings]', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// ── Route 2 : Profil moléculaire détaillé d'un parfum ──
+app.get('/api/predictif/profile/:id', async (req, res) => {
+    try {
+        const frag = await db.get(`
+            SELECT f.*, s.name as supplier_name
+            FROM fragrances f LEFT JOIN suppliers s ON f.supplier_id = s.id
+            WHERE f.id = ?
+        `, [req.params.id]);
+        if (!frag) return res.status(404).json({ error: 'Parfum non trouvé' });
+
+        const components = await db.all(
+            'SELECT cas_number, name, percentage_min, percentage_max, flash_point FROM fragrance_components WHERE fragrance_id = ?',
+            [frag.id]
+        );
+        if (!components.length) return res.json({ error: 'Aucun composant trouvé pour ce parfum' });
+
+        const pred = computePredictifProfile(components, frag);
+        const { alerts, dosage } = generatePredictifAlerts(pred, frag);
+
+        const coldLevel = pred.cold_score > 40 ? 'fort' : pred.cold_score > 20 ? 'moyen' : 'faible';
+        const hotLevel = pred.hot_score > 60 ? 'fort' : pred.hot_score > 35 ? 'moyen' : 'faible';
+
+        let waxCompat = null;
+        if (pred.avg_logp !== null) {
+            if (pred.avg_logp >= 4) waxCompat = 'excellente';
+            else if (pred.avg_logp >= 3) waxCompat = 'bonne';
+            else if (pred.avg_logp >= 2) waxCompat = 'moyenne';
+            else waxCompat = 'faible';
+        }
+
+        res.json({
+            fragrance: {
+                id: frag.id,
+                name: frag.name,
+                reference: frag.reference,
+                supplier: frag.supplier_name,
+                flash_point: frag.flash_point
+            },
+            summary: {
+                n_components: pred.n_components,
+                avg_logp: pred.avg_logp,
+                distribution: pred.distribution,
+                concentration: pred.concentration,
+                cold_throw: coldLevel,
+                cold_throw_score: pred.cold_score,
+                hot_throw: hotLevel,
+                hot_throw_score: pred.hot_score,
+                wax_compatibility: waxCompat,
+                dosage,
+                total_concentration: pred.total_concentration
+            },
+            molecules: pred.molecules,
+            alerts
+        });
+    } catch (e) {
+        console.error('[Predictif/Profile]', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// ── Route 3 : Comparaison de deux parfums ──
+app.get('/api/predictif/compare/:id1/:id2', async (req, res) => {
+    try {
+        const { id1, id2 } = req.params;
+        
+        const [frag1, frag2] = await Promise.all([
+            db.get('SELECT f.*, s.name as supplier_name FROM fragrances f LEFT JOIN suppliers s ON f.supplier_id = s.id WHERE f.id = ?', [id1]),
+            db.get('SELECT f.*, s.name as supplier_name FROM fragrances f LEFT JOIN suppliers s ON f.supplier_id = s.id WHERE f.id = ?', [id2])
+        ]);
+        if (!frag1 || !frag2) return res.status(404).json({ error: 'Parfum(s) non trouvé(s)' });
+
+        const [comp1, comp2] = await Promise.all([
+            db.all('SELECT cas_number, name, percentage_min, percentage_max, flash_point FROM fragrance_components WHERE fragrance_id = ?', [id1]),
+            db.all('SELECT cas_number, name, percentage_min, percentage_max, flash_point FROM fragrance_components WHERE fragrance_id = ?', [id2])
+        ]);
+
+        const pred1 = computePredictifProfile(comp1, frag1);
+        const pred2 = computePredictifProfile(comp2, frag2);
+
+        const cas1 = new Set(comp1.map(c => c.cas_number).filter(Boolean));
+        const cas2 = new Set(comp2.map(c => c.cas_number).filter(Boolean));
+        const shared = [...cas1].filter(c => cas2.has(c));
+        const unique1 = [...cas1].filter(c => !cas2.has(c));
+        const unique2 = [...cas2].filter(c => !cas1.has(c));
+
+        const explanations = [];
+        
+        const dCold = pred1.cold_score - pred2.cold_score;
+        if (Math.abs(dCold) > 10) {
+            explanations.push(dCold > 0
+                ? frag1.name + ' a plus de notes de tête à forte concentration → meilleure diffusion à froid'
+                : frag2.name + ' a plus de notes de tête à forte concentration → meilleure diffusion à froid');
+        }
+        
+        const dHot = pred1.hot_score - pred2.hot_score;
+        if (Math.abs(dHot) > 10) {
+            explanations.push(dHot > 0
+                ? frag1.name + ' a un meilleur équilibre cœur/fond pondéré → diffusion à chaud supérieure'
+                : frag2.name + ' a un meilleur équilibre cœur/fond pondéré → diffusion à chaud supérieure');
+        }
+        
+        if (pred1.avg_logp !== null && pred2.avg_logp !== null) {
+            const dLogP = pred1.avg_logp - pred2.avg_logp;
+            if (Math.abs(dLogP) > 0.5) {
+                const more = dLogP > 0 ? frag1.name : frag2.name;
+                explanations.push(more + ' est plus lipophile (LogP pondéré plus élevé) → meilleure dissolution dans la cire.');
+            }
+        }
+        
+        if (shared.length > 0 && unique1.length + unique2.length > shared.length * 2) {
+            explanations.push('Composition très différente : seulement ' + shared.length + ' molécule(s) commune(s) sur ' + (cas1.size + cas2.size - shared.length) + ' au total.');
+        } else if (shared.length > Math.max(cas1.size, cas2.size) * 0.5) {
+            explanations.push(shared.length + ' molécule(s) en commun — les différences viennent des concentrations respectives.');
+        }
+
+        res.json({
+            fragrance_1: {
+                id: frag1.id, name: frag1.name, n_comps: pred1.n_components,
+                avg_logp: pred1.avg_logp, cold_score: pred1.cold_score, hot_score: pred1.hot_score,
+                distribution: pred1.distribution, concentration: pred1.concentration,
+                fp: pred1.fp || frag1.flash_point, risks: pred1.risks
+            },
+            fragrance_2: {
+                id: frag2.id, name: frag2.name, n_comps: pred2.n_components,
+                avg_logp: pred2.avg_logp, cold_score: pred2.cold_score, hot_score: pred2.hot_score,
+                distribution: pred2.distribution, concentration: pred2.concentration,
+                fp: pred2.fp || frag2.flash_point, risks: pred2.risks
+            },
+            shared_molecules: shared.length,
+            unique_to_1: unique1.length,
+            unique_to_2: unique2.length,
+            explanations
+        });
+    } catch (e) {
+        console.error('[Predictif/Compare]', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
