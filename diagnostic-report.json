@@ -1,0 +1,168 @@
+{
+  "date": "2026-02-27T06:58:48.850Z",
+  "version": "diagnostic-mfc v1.0",
+  "checks": {
+    "total": 117,
+    "passed": 103,
+    "failed": 14
+  },
+  "bugs": [
+    {
+      "id": 1,
+      "severity": "HAUTE",
+      "title": "Colonne t.fragrance_name sur burn_tests (vérifier JOIN)",
+      "file": "server.js",
+      "line": 3536,
+      "problem": "\"fragrance_name: t.fragrance_name, fragrance_percentage: t.fragrance_percentage\"",
+      "impact": "Erreur SQL au runtime → endpoint cassé",
+      "fix": "Si pas de JOIN formulations dans la requête → ajouter LEFT JOIN formulations f ON t.formulation_id = f.id et utiliser f.fragrance_name"
+    },
+    {
+      "id": 2,
+      "severity": "CRITIQUE",
+      "title": "API DB incompatible : db.prepare() (sync better-sqlite3)",
+      "file": "database.js",
+      "line": 68,
+      "problem": "\"const stmt = db.prepare(sql);\"",
+      "impact": "Erreur SQL au runtime → endpoint cassé",
+      "fix": "Remplacer par await db.get/run/all() (async wrapper)"
+    },
+    {
+      "id": 3,
+      "severity": "CRITIQUE",
+      "title": "API DB incompatible : db.prepare() (sync better-sqlite3)",
+      "file": "database.js",
+      "line": 89,
+      "problem": "\"const stmt = db.prepare(sql);\"",
+      "impact": "Erreur SQL au runtime → endpoint cassé",
+      "fix": "Remplacer par await db.get/run/all() (async wrapper)"
+    },
+    {
+      "id": 4,
+      "severity": "HAUTE",
+      "title": "Route DB sans async",
+      "file": "server.js",
+      "line": 197,
+      "problem": "Handler utilise db.get/run/all sans être async",
+      "impact": "Les requêtes DB retournent des promesses non résolues → réponse vide ou [object Promise]",
+      "fix": "Ajouter async devant le handler"
+    },
+    {
+      "id": 5,
+      "severity": "HAUTE",
+      "title": "Route DB sans async",
+      "file": "server.js",
+      "line": 3609,
+      "problem": "Handler utilise db.get/run/all sans être async",
+      "impact": "Les requêtes DB retournent des promesses non résolues → réponse vide ou [object Promise]",
+      "fix": "Ajouter async devant le handler"
+    },
+    {
+      "id": 6,
+      "severity": "HAUTE",
+      "title": "Route DB sans async",
+      "file": "server.js",
+      "line": 7607,
+      "problem": "Handler utilise db.get/run/all sans être async",
+      "impact": "Les requêtes DB retournent des promesses non résolues → réponse vide ou [object Promise]",
+      "fix": "Ajouter async devant le handler"
+    },
+    {
+      "id": 7,
+      "severity": "HAUTE",
+      "title": "Route DB sans async",
+      "file": "server.js",
+      "line": 7872,
+      "problem": "Handler utilise db.get/run/all sans être async",
+      "impact": "Les requêtes DB retournent des promesses non résolues → réponse vide ou [object Promise]",
+      "fix": "Ajouter async devant le handler"
+    },
+    {
+      "id": 8,
+      "severity": "HAUTE",
+      "title": "Route DB sans async",
+      "file": "server.js",
+      "line": 7877,
+      "problem": "Handler utilise db.get/run/all sans être async",
+      "impact": "Les requêtes DB retournent des promesses non résolues → réponse vide ou [object Promise]",
+      "fix": "Ajouter async devant le handler"
+    },
+    {
+      "id": 9,
+      "severity": "HAUTE",
+      "title": "Routes async sans try/catch",
+      "file": "server.js",
+      "line": 0,
+      "problem": "6 routes async n'ont pas de try/catch",
+      "impact": "Erreurs non attrapées → crash du serveur ou réponse 500 silencieuse",
+      "fix": "Ajouter try { ... } catch(e) { res.status(500).json({error: e.message}) }"
+    },
+    {
+      "id": 10,
+      "severity": "HAUTE",
+      "title": "Route dupliquée : POST /api/assistant/recommend",
+      "file": "server.js",
+      "line": 3580,
+      "problem": "Route déclarée 2 fois (lignes 823, 3580)",
+      "impact": "La dernière déclaration écrase les précédentes — comportement imprévisible",
+      "fix": "Fusionner les déclarations en une seule ou supprimer le doublon"
+    },
+    {
+      "id": 11,
+      "severity": "HAUTE",
+      "title": "Route dupliquée : GET /api/dashboard",
+      "file": "server.js",
+      "line": 6291,
+      "problem": "Route déclarée 2 fois (lignes 3666, 6291)",
+      "impact": "La dernière déclaration écrase les précédentes — comportement imprévisible",
+      "fix": "Fusionner les déclarations en une seule ou supprimer le doublon"
+    },
+    {
+      "id": 12,
+      "severity": "HAUTE",
+      "title": "Route dupliquée : GET /api/search",
+      "file": "server.js",
+      "line": 6418,
+      "problem": "Route déclarée 2 fois (lignes 4025, 6418)",
+      "impact": "La dernière déclaration écrase les précédentes — comportement imprévisible",
+      "fix": "Fusionner les déclarations en une seule ou supprimer le doublon"
+    },
+    {
+      "id": 13,
+      "severity": "HAUTE",
+      "title": "Flash Point incorrect",
+      "file": "server.js",
+      "line": 5027,
+      "problem": "FP parfum = minimum FP composants → alpha-pinène (33°C) fausse tous les résultats",
+      "impact": "22+ parfums affichent FP=33°C alors que FDS indique >100°C",
+      "fix": "Utiliser le FP extrait de la rubrique 9 de la FDS (proprietes_physiques.flash_point_c)"
+    },
+    {
+      "id": 14,
+      "severity": "BASSE",
+      "title": "Terme anglais non traduit : cold throw",
+      "file": "server.js",
+      "line": 6839,
+      "problem": "\"cold throw\" doit être en français avec tooltip anglais",
+      "impact": "Interface non conforme aux règles MFC",
+      "fix": "Remplacer par équivalent FR"
+    },
+    {
+      "id": 15,
+      "severity": "BASSE",
+      "title": "server.js trop volumineux",
+      "file": "server.js",
+      "line": 0,
+      "problem": "8796 lignes — maintenabilité dégradée",
+      "impact": "Difficile à débugger et à maintenir",
+      "fix": "Envisager de découper en modules par domaine (clients, formulations, tests, etc.)"
+    }
+  ],
+  "summary": {
+    "critique": 2,
+    "haute": 11,
+    "moyenne": 0,
+    "basse": 2,
+    "total": 15
+  }
+}

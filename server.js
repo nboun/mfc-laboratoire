@@ -3576,17 +3576,7 @@ app.post('/api/assistant/auto-learn', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Recommend route (kept for compatibility)
-app.post('/api/assistant/recommend', async (req, res) => {
-    try {
-        const { type, parameters } = req.body;
-        const rules = await db.all(
-            `SELECT * FROM learned_rules WHERE rule_type = ? AND confidence > 0.5 ORDER BY confidence DESC LIMIT 5`,
-            [type]
-        );
-        res.json({ type, parameters, recommendations: rules, source: 'learned_rules' });
-    } catch (e) { res.status(500).json({ error: e.message }); }
-});
+// [SUPPRIMÉ fix5] Route dupliquée /api/assistant/recommend — la version riche (L823) est active
 
 app.post('/api/assistant/learn', async (req, res) => {
     try {
@@ -6414,93 +6404,7 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
             }
         });
 
-        // GET /api/search?q=... — Recherche unifiée
-        app.get('/api/search', async (req, res) => {
-            const q = (req.query.q || '').trim();
-            if (!q) return res.json({ results: [] });
-            const like = '%' + q.toUpperCase() + '%';
-            
-            try {
-                const results = {};
-                
-                // Chercher dans les formulations
-                results.formulations = await db.all(`
-                    SELECT f.id, f.code, f.name, c.name as client, 
-                           f.fragrance_name, f.fragrance_ref, f.fragrance_percentage,
-                           f.wick_reference, f.total_mass as masse_verre, f.status
-                    FROM formulations f LEFT JOIN clients c ON f.client_id = c.id
-                    WHERE UPPER(f.name) LIKE ? OR UPPER(f.code) LIKE ? 
-                          OR UPPER(f.fragrance_name) LIKE ? OR UPPER(f.fragrance_ref) LIKE ?
-                          OR UPPER(c.name) LIKE ? OR UPPER(f.wick_reference) LIKE ?
-                    ORDER BY f.id DESC LIMIT 30
-                `, [like, like, like, like, like, like]);
-                
-                // Chercher dans les parfums (fragrances)
-                results.fragrances = await db.all(`
-                    SELECT fr.id, fr.name, fr.reference, fr.flash_point,
-                           s.name as supplier,
-                           (SELECT COUNT(*) FROM fragrance_components WHERE fragrance_id = fr.id) as nb_composants
-                    FROM fragrances fr LEFT JOIN suppliers s ON fr.supplier_id = s.id
-                    WHERE UPPER(fr.name) LIKE ? OR UPPER(fr.reference) LIKE ? OR UPPER(s.name) LIKE ?
-                    ORDER BY fr.name LIMIT 20
-                `, [like, like, like]);
-                
-                // Chercher dans les cires
-                results.waxes = await db.all(`
-                    SELECT w.id, w.reference, w.name, w.type, w.sub_type,
-                           w.congealing_point_min, w.congealing_point_max,
-                           s.name as supplier, w.recommended_use
-                    FROM waxes w LEFT JOIN suppliers s ON w.supplier_id = s.id
-                    WHERE UPPER(w.reference) LIKE ? OR UPPER(w.name) LIKE ? 
-                          OR UPPER(w.type) LIKE ? OR UPPER(w.comments) LIKE ?
-                    ORDER BY w.reference LIMIT 20
-                `, [like, like, like, like]);
-                
-                // Chercher dans les mèches
-                results.wicks = await db.all(`
-                    SELECT id, reference, series, type, diameter_min, diameter_max, wax_type
-                    FROM wicks WHERE UPPER(reference) LIKE ? OR UPPER(series) LIKE ?
-                    ORDER BY reference LIMIT 20
-                `, [like, like]);
-                
-                // Chercher dans les composants (molécules CAS)
-                results.molecules = await db.all(`
-                    SELECT fc.cas_number, fc.name, fc.percentage_min, fc.percentage_max,
-                           fr.name as fragrance_name, fr.reference as fragrance_ref
-                    FROM fragrance_components fc 
-                    JOIN fragrances fr ON fc.fragrance_id = fr.id
-                    WHERE UPPER(fc.cas_number) LIKE ? OR UPPER(fc.name) LIKE ?
-                    ORDER BY fc.name LIMIT 30
-                `, [like, like]);
-                
-                // Chercher dans les clients
-                results.clients = await db.all(`
-                    SELECT c.id, c.name, c.brand,
-                           (SELECT COUNT(*) FROM formulations WHERE client_id = c.id) as nb_formulations
-                    FROM clients c WHERE UPPER(c.name) LIKE ? OR UPPER(c.brand) LIKE ?
-                    ORDER BY c.name LIMIT 20
-                `, [like, like]);
-                
-                // Chercher dans la KB
-                results.knowledge = await db.all(`
-                    SELECT id, category, title, 
-                           SUBSTR(content, 1, 200) as excerpt
-                    FROM knowledge_base 
-                    WHERE UPPER(title) LIKE ? OR UPPER(tags) LIKE ? OR UPPER(content) LIKE ?
-                    ORDER BY priority DESC, id DESC LIMIT 15
-                `, [like, like, like]);
-                
-                // Total
-                results.total = (results.formulations?.length || 0) + (results.fragrances?.length || 0) +
-                    (results.waxes?.length || 0) + (results.wicks?.length || 0) +
-                    (results.molecules?.length || 0) + (results.clients?.length || 0) +
-                    (results.knowledge?.length || 0);
-                
-                res.json(results);
-            } catch (e) {
-                res.status(500).json({ error: e.message });
-            }
-        });
+        // [SUPPRIMÉ fix5] Route dupliquée /api/search — la version plate avec icônes (L4025) est active
 
         // GET /api/formulation/:id/full — Détail complet d'une formulation (pour export)
         app.get('/api/formulation/:id/full', async (req, res) => {
