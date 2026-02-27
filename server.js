@@ -6589,23 +6589,43 @@ app.listen(PORT, '0.0.0.0', async () => {
             console.log(`  → Réseau   : http://${localIP}:${PORT}`);
             console.log(`  → Android  : ouvrir http://${localIP}:${PORT} dans Chrome`);
             console.log('');
+
+            // Stats dynamiques depuis la DB
+            try {
+                const counts = {};
+                counts.clients = (await db.get('SELECT COUNT(*) as n FROM clients'))?.n || 0;
+                counts.suppliers = (await db.get('SELECT COUNT(*) as n FROM suppliers'))?.n || 0;
+                counts.samples = (await db.get('SELECT COUNT(*) as n FROM samples'))?.n || 0;
+                counts.formulations = (await db.get('SELECT COUNT(*) as n FROM formulations'))?.n || 0;
+                counts.burnTests = (await db.get('SELECT COUNT(*) as n FROM burn_tests'))?.n || 0;
+                counts.fragrances = (await db.get('SELECT COUNT(*) as n FROM fragrances'))?.n || 0;
+                counts.fragrancesWithComps = (await db.get('SELECT COUNT(DISTINCT fragrance_id) as n FROM fragrance_components WHERE percentage_min > 0 OR percentage_max > 0'))?.n || 0;
+                counts.components = (await db.get('SELECT COUNT(*) as n FROM fragrance_components'))?.n || 0;
+                counts.distinctCas = (await db.get('SELECT COUNT(DISTINCT cas_number) as n FROM fragrance_components WHERE cas_number IS NOT NULL'))?.n || 0;
+                counts.waxes = (await db.get('SELECT COUNT(*) as n FROM waxes'))?.n || 0;
+                counts.wicks = (await db.get('SELECT COUNT(*) as n FROM wicks'))?.n || 0;
+                counts.kb = (await db.get('SELECT COUNT(*) as n FROM knowledge_base'))?.n || 0;
+                counts.molecules = Object.keys(MOLECULE_DB_FULL).length;
+                counts.logpCount = Object.values(MOLECULE_DB_FULL).filter(m => m.logp !== null && m.logp !== undefined).length;
+                counts.recipes = (await db.get('SELECT COUNT(*) as n FROM recipes'))?.n || 0;
+
+                console.log('Base de données :');
+                console.log(`  ${counts.clients} clients · ${counts.suppliers} fournisseurs`);
+                console.log(`  ${counts.fragrances} parfums (${counts.fragrancesWithComps} avec FDS) · ${counts.components} composants · ${counts.distinctCas} CAS uniques`);
+                console.log(`  ${counts.formulations} formulations · ${counts.samples} échantillons · ${counts.burnTests} tests`);
+                console.log(`  ${counts.waxes} cires · ${counts.wicks} mèches · ${counts.recipes} recettes`);
+                console.log(`  ${counts.kb} fiches connaissances`);
+                console.log(`  ${counts.molecules} molécules enrichies (${counts.logpCount} LogP — ${counts.molecules > 0 ? Math.round(counts.logpCount/counts.molecules*100) : 0}%)`);
+            } catch(e) { console.error('Stats load error:', e.message); }
+
             console.log('');
-            console.log('Modules disponibles:');
-            console.log('  - Clients');
-            console.log('  - Échantillons');
-            console.log('  - Formulations');
-            console.log('  - Tests de combustion');
-            console.log('  - Matières premières (cires, mèches, colorants, parfums)');
-            console.log('  - Base de connaissances');
-            console.log('  - Assistant IA');
-            console.log('');
-            console.log('Routes API:');
-            console.log('  /api/clients, /api/suppliers');
-            console.log('  /api/samples, /api/formulations');
-            console.log('  /api/burn-tests, /api/burn-tests/:id/cycles');
+            const routeCount = app._router.stack.filter(r => r.route).length;
+            console.log(`Routes API : ${routeCount}`);
+            console.log('  /api/clients, /api/suppliers, /api/samples');
+            console.log('  /api/formulations, /api/burn-tests');
             console.log('  /api/waxes, /api/wicks, /api/colorants, /api/fragrances');
-            console.log('  /api/knowledge, /api/assistant');
-            console.log('  /api/stats');
+            console.log('  /api/knowledge, /api/assistant, /api/stats');
+            console.log('  /api/predictif/rankings, /api/predictif/profile/:id, /api/predictif/compare/:id1/:id2');
             console.log('');
         });
     } catch (error) {
