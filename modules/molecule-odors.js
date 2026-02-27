@@ -164,7 +164,6 @@ const ODOR_DB = {
 
     // ══════════ BENZALDÉHYDES ══════════
     '100-52-7':   { odor: 'amande amère, cerise, marzipan', odor_hot: 'amande intense, cerise forte', threshold: 0.003, odor_family: 'gourmand', odor_note: 'tête' },
-    '122-78-1bis':{ odor: 'miel, jacinthe, vert', odor_hot: 'miel intense', threshold: 0.004, odor_family: 'floral', odor_note: 'tête' },
 
     // ══════════ HUILES ESSENTIELLES ══════════
     '68917-10-2': { odor: 'mousse, terreux, boisé, vert', odor_hot: 'mousse terreuse intense', threshold: null, odor_family: 'boisé', odor_note: 'fond' },
@@ -175,7 +174,6 @@ const ODOR_DB = {
     '68956-56-9': { odor: 'boisé, herbacé, frais, terpénique', odor_hot: 'herbacé terpénique chaud', threshold: null, odor_family: 'herbacé', odor_note: 'tête/cœur' },
 
     // ══════════ MOLÉCULES SPÉCIFIQUES GREEN FIG ══════════
-    '103-95-7b':  { odor: 'muguet, cyclamen, floral doux', odor_hot: 'cyclamen chaud, muguet', threshold: null, odor_family: 'floral', odor_note: 'cœur' },
 
     // ══════════ VERTS & HERBE COUPÉE (pour diagnostic) ══════════
     '3913-81-3':  { odor: 'vert, concombre, gras, feuille', odor_hot: 'concombre vert intense', threshold: null, odor_family: 'vert', odor_note: 'tête' },
@@ -187,7 +185,6 @@ const ODOR_DB = {
     '4602-84-0':  { odor: 'boisé, floral, muguet', odor_hot: 'boisé floral chaud', threshold: null, odor_family: 'floral', odor_note: 'cœur/fond' },
     '105-87-3':   { odor: 'rose, lavande, frais, fruité', odor_hot: 'rose fraîche, lavande chaude', threshold: null, odor_family: 'floral', odor_note: 'cœur' },
     '115-95-7':   { odor: 'floral, lavande, bergamote, frais', odor_hot: 'lavande chaude, bergamote', threshold: null, odor_family: 'floral', odor_note: 'tête/cœur' },
-    '78-70-6b':   { odor: 'lavande, boisé, floral', odor_hot: 'lavande boisée chaude', threshold: null, odor_family: 'floral', odor_note: 'tête/cœur' },
 
     // ══════════ SANTAL & PATCHOULI ══════════
     '5986-55-0':  { odor: 'santal, boisé, doux, rose', odor_hot: 'santal rosé chaud', threshold: null, odor_family: 'boisé', odor_note: 'fond' },
@@ -513,136 +510,4 @@ function getOdorProfile(cas) {
     return ODOR_DB[cas] || null;
 }
 
-/**
- * Analyser le profil olfactif d'un parfum complet
- * @param {Array} components - [{cas_number, name, percentage_min, percentage_max}]
- * @returns {object} Analyse complète
- */
-function analyzeOlfactoryProfile(components) {
-    const families = {};
-    const notes = { tête: [], cœur: [], fond: [] };
-    const hotAlerts = [];
-    const sweetMolecules = [];
-    const greenMolecules = [];
-    
-    for (const comp of components) {
-        const odor = ODOR_DB[comp.cas_number];
-        if (!odor) continue;
-        
-        const pct = comp.percentage_max || comp.percentage_min || 0;
-        
-        // Classifier par famille olfactive
-        if (!families[odor.odor_family]) families[odor.odor_family] = { pct: 0, molecules: [] };
-        families[odor.odor_family].pct += pct;
-        families[odor.odor_family].molecules.push({ name: comp.name, cas: comp.cas_number, pct });
-        
-        // Classifier par note
-        const noteKey = odor.odor_note || 'cœur';
-        for (const n of noteKey.split('/')) {
-            const k = n.trim();
-            if (notes[k]) notes[k].push({ name: comp.name, odor: odor.odor, pct });
-        }
-        
-        // Détecter les alertes à chaud
-        if (odor.odor_hot && odor.odor_hot.toUpperCase() !== odor.odor_hot && 
-            (odor.odor_hot.includes('intense') || odor.odor_hot.includes('fort') || odor.odor_hot.includes('INTENSE'))) {
-            hotAlerts.push({
-                name: comp.name,
-                cas: comp.cas_number,
-                pct,
-                odor_cold: odor.odor,
-                odor_hot: odor.odor_hot,
-                threshold: odor.threshold
-            });
-        }
-        
-        // Détecter sucré
-        if (odor.odor.includes('sucré') || odor.odor.includes('caramel') || odor.odor.includes('vanille') || odor.odor.includes('miel')) {
-            sweetMolecules.push({ name: comp.name, cas: comp.cas_number, pct, odor: odor.odor, odor_hot: odor.odor_hot });
-        }
-        
-        // Détecter vert
-        if (odor.odor.includes('vert') || odor.odor.includes('herbe') || odor.odor.includes('feuille')) {
-            greenMolecules.push({ name: comp.name, cas: comp.cas_number, pct, odor: odor.odor, odor_hot: odor.odor_hot });
-        }
-    }
-    
-    // Trier familles par %
-    const sortedFamilies = Object.entries(families)
-        .sort((a, b) => b[1].pct - a[1].pct)
-        .map(([name, data]) => ({ name, ...data }));
-    
-    return {
-        families: sortedFamilies,
-        notes,
-        hotAlerts,
-        sweetMolecules,
-        greenMolecules,
-        coverage: components.filter(c => ODOR_DB[c.cas_number]).length,
-        total: components.length
-    };
-}
-
-/**
- * Diagnostic d'anomalie olfactive
- * Ex: "sent sucré à chaud alors que c'est herbe coupée"
- * @param {Array} components - Composants du parfum
- * @param {string} issue - Description du problème ('sucré_à_chaud', 'vert_trop_fort', etc.)
- * @returns {object} Diagnostic avec molécules responsables et solutions
- */
-function diagnoseOlfactoryIssue(components, issue) {
-    const analysis = analyzeOlfactoryProfile(components);
-    const result = { issue, suspects: [], solutions: [] };
-    
-    switch (issue) {
-        case 'sucré_à_chaud':
-            result.suspects = analysis.sweetMolecules
-                .sort((a, b) => b.pct - a.pct)
-                .map(m => ({
-                    ...m,
-                    explanation: `${m.name} (${m.pct}%) — odeur: "${m.odor}" → à chaud: "${m.odor_hot}"`
-                }));
-            if (result.suspects.length) {
-                result.solutions.push('Baisser la mèche d\'un cran → réduit la température du bain de cire de ~5°C, atténue la volatilisation des molécules sucrées');
-                result.solutions.push('Utiliser une cire plus dure (point de fusion élevé) → ralentit la diffusion des notes sucrées');
-                result.solutions.push('Réduire le % parfum de 0.5-1% → diminue la concentration des molécules sucrées');
-                if (result.suspects.some(s => s.pct > 5)) {
-                    result.solutions.push('⚠ Molécule sucrée >5% détectée — le sucré à chaud sera difficile à éliminer sans reformulation');
-                }
-            }
-            break;
-            
-        case 'vert_trop_fort':
-            result.suspects = analysis.greenMolecules
-                .sort((a, b) => b.pct - a.pct)
-                .map(m => ({
-                    ...m,
-                    explanation: `${m.name} (${m.pct}%) — odeur: "${m.odor}" → à chaud: "${m.odor_hot}"`
-                }));
-            if (result.suspects.length) {
-                result.solutions.push('Monter la mèche d\'un cran → augmente la température, les notes vertes de tête se dissipent plus vite');
-                result.solutions.push('Augmenter le % de muscs / fixateurs → atténue les notes vertes par masquage');
-            }
-            break;
-            
-        case 'diffusion_faible':
-            const heavyMolecules = components
-                .filter(c => {
-                    const o = ODOR_DB[c.cas_number];
-                    return o && (o.odor_note === 'fond' || o.odor_note === 'cœur/fond');
-                })
-                .sort((a, b) => (b.percentage_max || 0) - (a.percentage_max || 0));
-            result.suspects = heavyMolecules.map(m => {
-                const o = ODOR_DB[m.cas_number];
-                return { name: m.name, cas: m.cas_number, pct: m.percentage_max || m.percentage_min || 0, 
-                         odor: o.odor, explanation: `Note de fond lourde — diffuse peu à température ambiante` };
-            });
-            result.solutions.push('Augmenter la mèche → plus de chaleur, meilleure volatilisation des notes de fond');
-            result.solutions.push('Utiliser une cire avec point de fusion plus bas → bain plus chaud, meilleure diffusion');
-            break;
-    }
-    
-    return result;
-}
-
-module.exports = { ODOR_DB, getOdorProfile, analyzeOlfactoryProfile, diagnoseOlfactoryIssue };
+module.exports = { ODOR_DB, getOdorProfile };
