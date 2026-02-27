@@ -1,6 +1,6 @@
 {
   "name": "mfc-laboratoire",
-  "version": "5.44.12d",
+  "version": "5.44.14",
   "description": "Application de gestion de laboratoire pour bougies parfumées - MFC",
   "main": "server.js",
   "scripts": {

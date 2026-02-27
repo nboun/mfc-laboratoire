@@ -4,7 +4,7 @@
  * Version 5.28.0 — Clients · Graphiques · IA · Patrimoine · PubChem · Enrichissement Cires · Diagnostic Throw
  */
 
-const APP_VERSION = '5.44.13';
+const APP_VERSION = '5.44.14';
 const APP_BUILD = '2026-02-17T15:45';
 const APP_FEATURES = 'Clients · Graphiques · IA · Patrimoine · Photos · PDF · Backup · Recherche';
 
