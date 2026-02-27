@@ -200,6 +200,7 @@ def is_fds_label(text):
         'DÉTAILS DU FOURNISSEUR', 'DETAILS DU FOURNISSEUR',
         'RENSEIGNEMENTS CONCERNANT', 'COORDONNÉES DU FOURNISSEUR',
         'COORDONNEES DU FOURNISSEUR',
+        'COULEUR LIQUIDE POUR BOUGIES',
     ]
     if t in labels:
         return True
@@ -214,6 +215,13 @@ def is_fds_label(text):
         r'^FICHE\s+DE\s+DONN',
         r'^SAFETY\s+DATA',
         r'^DETAILS?\s+(OF|DU|DE)',
+        r'^[ÉE]DIT[ÉE]E?\s+LE',
+        r'^DATE\s+D',
+        r'^R[ÉE]VISION',
+        r'^VERSION\s+\d',
+        r'^PAGE\s+\d',
+        r'^\d{2}/\d{2}/\d{4}',
+        r'^COULEUR\s+LIQUIDE',
     ]
     for pat in label_patterns:
         if re.match(pat, t):

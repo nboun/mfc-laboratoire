@@ -5180,7 +5180,7 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                             // Filtrer les labels FDS capturés par erreur comme noms/fournisseurs
                             const FDS_LABELS = ['NOM COMMERCIAL','NOM DE LA SUBSTANCE','NOM DE LA SUBSTANCE/MÉLANGE','NOM DE LA SUBSTANCE/MELANGE','NOM DU PRODUIT','IDENTIFICATION DU PRODUIT','IDENTIFICATION DE LA SUBSTANCE','IDENTIFICATEUR DE PRODUIT','DÉNOMINATION COMMERCIALE','DENOMINATION COMMERCIALE','PRODUCT NAME','TRADE NAME','SUBSTANCE NAME','FICHE DE DONNÉES DE SÉCURITÉ','FICHE DE DONNEES DE SECURITE','SAFETY DATA SHEET','NOM DU MÉLANGE','NOM DU MELANGE','RÉFÉRENCE COMMERCIALE','REFERENCE COMMERCIALE'];
                             const FDS_SUPPLIER_LABELS = ['COMPANY','IDENTIFICATION DE LA SOCIÉTÉ/ENTREPRISE','IDENTIFICATION DE LA SOCIETE/ENTREPRISE','IDENTIFICATION DE LA SOCIÉTÉ','IDENTIFICATION DE LA SOCIETE','FOURNISSEUR','PRODUCTEUR','FABRICANT','MANUFACTURER','SUPPLIER','RAISON SOCIALE','SOCIÉTÉ','SOCIETE','DÉTAILS DU FOURNISSEUR','DETAILS DU FOURNISSEUR','COORDONNÉES DU FOURNISSEUR','COORDONNEES DU FOURNISSEUR'];
-                            if (FDS_LABELS.includes(nomUp)) { rescanNoName.push(pdf.name + ' (label FDS: '+nomUp+')'); pdfStatus = 'fds-label'; continue; }
+                            if (FDS_LABELS.includes(nomUp) || /^[ÉE]DIT[ÉE]E?\s+LE/i.test(nomUp) || /^SECTION\s+\d/i.test(nomUp) || /^PAGE\s+\d/i.test(nomUp) || /^COULEUR\s+LIQUIDE/i.test(nomUp)) { rescanNoName.push(pdf.name + ' (label FDS: '+nomUp+')'); pdfStatus = 'fds-label'; continue; }
                             const cleanFournisseur = FDS_SUPPLIER_LABELS.includes(fournisseur) ? '' : fournisseur;
                             
                     // Résoudre fournisseur
@@ -5408,7 +5408,7 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                     // Filtrer les labels FDS capturés par erreur
                     const FDS_LABELS = ['NOM COMMERCIAL','NOM DE LA SUBSTANCE','NOM DE LA SUBSTANCE/MÉLANGE','NOM DE LA SUBSTANCE/MELANGE','NOM DU PRODUIT','IDENTIFICATION DU PRODUIT','IDENTIFICATION DE LA SUBSTANCE','IDENTIFICATEUR DE PRODUIT','DÉNOMINATION COMMERCIALE','DENOMINATION COMMERCIALE','PRODUCT NAME','TRADE NAME','SUBSTANCE NAME','NOM DU MÉLANGE','NOM DU MELANGE'];
                     const FDS_SUPPLIER_LABELS = ['COMPANY','IDENTIFICATION DE LA SOCIÉTÉ/ENTREPRISE','IDENTIFICATION DE LA SOCIETE/ENTREPRISE','IDENTIFICATION DE LA SOCIÉTÉ','IDENTIFICATION DE LA SOCIETE','FOURNISSEUR','PRODUCTEUR','FABRICANT','MANUFACTURER','SUPPLIER','RAISON SOCIALE','SOCIÉTÉ','SOCIETE'];
-                    if (!nom || FDS_LABELS.includes(nom)) continue;
+                    if (!nom || FDS_LABELS.includes(nom) || /^[ÉE]DIT[ÉE]E?\s+LE/i.test(nom) || /^SECTION\s+\d/i.test(nom) || /^PAGE\s+\d/i.test(nom) || /^COULEUR\s+LIQUIDE/i.test(nom)) continue;
                     const cleanFournisseur = FDS_SUPPLIER_LABELS.includes(fournisseur) ? '' : fournisseur;
                     
                     // Résoudre fournisseur
