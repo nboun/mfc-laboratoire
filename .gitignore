@@ -1,9 +1,4 @@
 node_modules/
 __pycache__/
 *.pyc
-mfc-data/fds/
-mfc-data/backups/
-mfc-data/photos/
-mfc-data/uploads/
-mfc-data/documents/
-mfc-data/excel/
+mfc-data/
