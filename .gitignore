@@ -1,2 +1,5 @@
-mfc-data/ 
-*.sqlite 
+node_modules/
+mfc-data/fds/
+mfc-data/backups/
+mfc-data/photos/
+mfc-data/uploads/
