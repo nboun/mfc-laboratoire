@@ -8,7 +8,9 @@ const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_DIR = process.env.MFC_DATA_DIR || path.join(__dirname, '..', 'mfc-data');
+const _repo = path.join(__dirname, 'mfc-data');
+const _parent = path.join(__dirname, '..', 'mfc-data');
+const DATA_DIR = process.env.MFC_DATA_DIR || (fs.existsSync(path.join(_repo, 'database.sqlite')) ? _repo : (fs.existsSync(_parent) ? _parent : _repo));
 const DB_PATH = path.join(DATA_DIR, 'database.sqlite');
 
 async function main() {

@@ -546,7 +546,10 @@ app.delete('/api/projects/:id', async (req, res) => {
 // ============================================
 // DOCUMENTS (PDF sauvegardés)
 // ============================================
-const documentsDir = path.join(process.env.MFC_DATA_DIR || path.join(__dirname, '..', 'mfc-data'), 'documents');
+const _dataRepo = path.join(__dirname, 'mfc-data');
+const _dataParent = path.join(__dirname, '..', 'mfc-data');
+const _dataDir = process.env.MFC_DATA_DIR || (fs.existsSync(path.join(_dataRepo, 'database.sqlite')) ? _dataRepo : (fs.existsSync(_dataParent) ? _dataParent : _dataRepo));
+const documentsDir = path.join(_dataDir, 'documents');
 if (!fs.existsSync(documentsDir)) fs.mkdirSync(documentsDir, { recursive: true });
 
 app.get('/api/documents', async (req, res) => {
@@ -4077,7 +4080,9 @@ const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 // ── Archivage centralisé — configurable pour Docker (MFC_DATA_DIR=/data) ──
-const DATA_DIR = process.env.MFC_DATA_DIR || path.join(__dirname, '..', 'mfc-data');
+const DATA_DIR_REPO = path.join(__dirname, 'mfc-data');
+const DATA_DIR_PARENT = path.join(__dirname, '..', 'mfc-data');
+const DATA_DIR = process.env.MFC_DATA_DIR || (fs.existsSync(path.join(DATA_DIR_REPO, 'database.sqlite')) ? DATA_DIR_REPO : (fs.existsSync(DATA_DIR_PARENT) ? DATA_DIR_PARENT : DATA_DIR_REPO));
 function archiveFile(srcPath, category, originalName) {
     try {
         const archDir = path.join(DATA_DIR, category);

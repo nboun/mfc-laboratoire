@@ -8,7 +8,10 @@ const fs = require('fs');
 const path = require('path');
 
 // Base de données — chemin configurable (Docker: MFC_DATA_DIR=/data)
-const DATA_DIR = process.env.MFC_DATA_DIR || path.join(__dirname, '..', '..', 'mfc-data');
+// Cherche d'abord dans le repo (mfc-data/), sinon à côté du repo (../mfc-data/)
+const DATA_DIR_REPO = path.join(__dirname, '..', 'mfc-data');
+const DATA_DIR_PARENT = path.join(__dirname, '..', '..', 'mfc-data');
+const DATA_DIR = process.env.MFC_DATA_DIR || (fs.existsSync(path.join(DATA_DIR_REPO, 'database.sqlite')) ? DATA_DIR_REPO : (fs.existsSync(DATA_DIR_PARENT) ? DATA_DIR_PARENT : DATA_DIR_REPO));
 if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
 }
