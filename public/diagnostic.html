@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFC Lab — Diagnostic de diffusion à froid et à chaud</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        .diag-header{text-align:center;padding:2rem 1rem 1rem}
+        .diag-header h1{font-family:var(--font-display);font-size:1.8rem;color:var(--mfc-cire)}
+        .diag-header h1 span{color:var(--texte-secondary);font-weight:400}
+        .diag-header p{color:var(--texte-secondary);font-size:.85rem;margin-top:.3rem}
+        .selector-bar{display:flex;gap:1rem;align-items:flex-end;padding:0 1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+        .selector-bar .field{flex:1;min-width:200px}
+        .selector-bar label{display:block;font-size:.72rem;color:var(--texte-secondary);text-transform:uppercase;font-weight:600;margin-bottom:.3rem}
+        .selector-bar select{width:100%;padding:.6rem .8rem;border:1px solid var(--bordure);border-radius:var(--radius);background:var(--fond-input);font-size:.88rem}
+        .selector-bar select:focus{border-color:var(--mfc-cire);outline:none;box-shadow:0 0 0 3px var(--mfc-cire-glow)}
+        .btn-analyze{padding:.6rem 1.5rem;background:linear-gradient(135deg,var(--mfc-cire),var(--mfc-cire-clair));color:#fff;border:none;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:var(--transition);white-space:nowrap}
+        .btn-analyze:hover{transform:translateY(-1px);box-shadow:var(--shadow-cire)}
+        .btn-analyze:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .tabs{display:flex;gap:0;border-bottom:2px solid var(--bordure);margin:0 1rem 1.5rem}
+        .tab{padding:.6rem 1.2rem;cursor:pointer;font-size:.82rem;font-weight:600;color:var(--texte-secondary);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--transition)}
+        .tab:hover{color:var(--mfc-cire)}.tab.active{color:var(--mfc-cire);border-bottom-color:var(--mfc-cire)}
+        .tab-panel{display:none;padding:0 1rem}.tab-panel.active{display:block}
+        .profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
+        .profile-card{background:var(--fond-carte);border:1px solid var(--bordure);border-radius:var(--radius-lg);padding:1.2rem}
+        .profile-card h3{font-family:var(--font-display);font-size:.9rem;color:var(--mfc-cire);margin-bottom:.8rem}
+        .chart-box{position:relative;height:220px}
+        .gauge-row{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+        .gauge{flex:1;min-width:130px;text-align:center;padding:1rem;background:var(--fond-carte);border:1px solid var(--bordure);border-radius:var(--radius-lg)}
+        .gauge .score{font-size:2.2rem;font-weight:700;line-height:1}
+        .gauge .lbl{font-size:.7rem;color:var(--texte-secondary);margin-top:.3rem;text-transform:uppercase}
+        .gauge.cold .score{color:#1976d2}.gauge.hot .score{color:#e65100}.gauge.balance .score{color:#2e7d32}
+        .comp-table{width:100%;border-collapse:collapse;font-size:.8rem;margin:1rem 0}
+        .comp-table th{background:var(--fond-surface);padding:.6rem;text-align:left;font-weight:600;font-size:.72rem;text-transform:uppercase;color:var(--texte-secondary);border-bottom:2px solid var(--bordure)}
+        .comp-table td{padding:.5rem .6rem;border-bottom:1px solid var(--bordure-legere)}
+        .comp-table tr:hover{background:var(--mfc-cire-glow)}
+        .comp-table .best{background:#e8f5e9;font-weight:700}.comp-table .worst{background:#ffebee}
+        .mol-table{width:100%;border-collapse:collapse;font-size:.76rem;margin:1rem 0}
+        .mol-table th{background:var(--fond-surface);padding:.5rem;text-align:left;font-weight:600;font-size:.7rem;text-transform:uppercase;color:var(--texte-secondary);border-bottom:2px solid var(--bordure);position:sticky;top:0;z-index:2}
+        .mol-table td{padding:.35rem .5rem;border-bottom:1px solid var(--bordure-legere)}
+        .mol-table tr:hover{background:var(--mfc-cire-glow)}
+        .beh{font-size:.7rem;padding:.15rem .5rem;border-radius:10px;white-space:nowrap}
+        .beh.co{background:#e3f2fd;color:#1565c0}.beh.ho{background:#fff3e0;color:#e65100}
+        .beh.eq{background:#e8f5e9;color:#2e7d32}.beh.in{background:#f5f5f5;color:#999}
+        .beh.cd{background:#bbdefb;color:#0d47a1}.beh.hd{background:#ffe0b2;color:#bf360c}
+        .mol-scroll{max-height:500px;overflow-y:auto;border:1px solid var(--bordure);border-radius:var(--radius)}
+        .throw-bar{display:flex;height:16px;border-radius:3px;overflow:hidden;background:var(--fond-surface)}
+        .throw-bar .cold{background:linear-gradient(90deg,#1976d2,#42a5f5)}
+        .throw-bar .hot{background:linear-gradient(90deg,#e65100,#ff9800)}
+        .rec-card{background:var(--fond-carte);border:1px solid var(--bordure);border-radius:var(--radius-lg);padding:1rem;margin-bottom:.8rem;border-left:4px solid var(--mfc-cire)}
+        .rec-card.haute{border-left-color:#c62828}.rec-card.moyenne{border-left-color:#ff8f00}.rec-card.critique{border-left-color:#b71c1c;background:#fff5f5}
+        .rec-card h4{font-size:.85rem;font-weight:700;margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:center}
+        .rec-card h4 .badge{font-size:.65rem;padding:.15rem .5rem;border-radius:10px;color:#fff}
+        .rec-card h4 .badge.haute{background:#c62828}.rec-card h4 .badge.moyenne{background:#ff8f00}.rec-card h4 .badge.critique{background:#b71c1c}
+        .rec-action{padding:.6rem;background:var(--fond-surface);border-radius:var(--radius);margin-bottom:.5rem;font-size:.8rem}
+        .rec-action strong{display:block;color:var(--mfc-cire-fonce);margin-bottom:.2rem}
+        .rec-action .sci{font-size:.72rem;color:var(--texte-secondary);font-style:italic;margin-top:.3rem}
+        .mech-card{background:var(--fond-carte);border:1px solid var(--bordure);border-radius:var(--radius-lg);padding:1rem;margin-bottom:.8rem}
+        .mech-card h4{font-family:var(--font-display);font-size:.88rem;color:var(--mfc-cire);margin-bottom:.5rem}
+        .mech-card .pr{font-size:.78rem;color:var(--texte);line-height:1.6;margin-bottom:.5rem}
+        .csq{font-size:.76rem;padding:.4rem .6rem;border-radius:var(--radius);margin-bottom:.3rem}
+        .csq.pos{background:#e8f5e9;color:#2e7d32}.csq.neg{background:#ffebee;color:#c62828}.csq.fix{background:#e3f2fd;color:#1565c0}
+        .diag-banner{padding:1.2rem;border-radius:var(--radius-lg);margin-bottom:1.5rem}
+        .diag-banner.excellent{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:2px solid #4caf50}
+        .diag-banner.bon{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:2px solid #2196f3}
+        .diag-banner.problématique{background:linear-gradient(135deg,#fff8e1,#ffecb3);border:2px solid #ff9800}
+        .diag-banner.inadapté{background:linear-gradient(135deg,#ffebee,#ffcdd2);border:2px solid #f44336}
+        .diag-banner h2{font-family:var(--font-display);font-size:1.1rem;margin-bottom:.4rem}
+        .diag-banner p{font-size:.82rem;line-height:1.5}
+        [data-theme="dark"] .diag-banner,[data-theme="dark"] .csq,[data-theme="dark"] .issue{color:#222}
+        .issue{padding:.6rem .8rem;border-radius:var(--radius);margin-bottom:.4rem;font-size:.78rem;border-left:4px solid}
+        .issue.critical{border-color:#c62828;background:#ffebee}.issue.warning{border-color:#ff8f00;background:#fff8e1}.issue.strength{border-color:#2e7d32;background:#e8f5e9}
+        .issue strong{display:block;font-size:.8rem}.issue .sci{font-size:.72rem;color:#666;font-style:italic;margin-top:.2rem}
+        .loading{text-align:center;padding:3rem;color:var(--texte-secondary)}
+        .spin{display:inline-block;width:30px;height:30px;border:3px solid var(--bordure);border-top-color:var(--mfc-cire);border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .empty{text-align:center;padding:4rem 2rem;color:var(--texte-muted)}.empty .icon{font-size:3rem;margin-bottom:1rem}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC" style="height:36px;border-radius:6px;margin-right:.5rem;">
+            <div class="brand-text">
+                <div style="font-family:var(--font-display);font-weight:700;font-size:.95rem;color:#fff;">MFC Laboratoire</div>
+                <div style="font-size:.6rem;color:#aaa;">Diagnostic Throw</div>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="matieres.html">Matières</a>
+            <a href="fds.html">FDS</a>
+            <a href="formulateur.html">🧪 Formulateur</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="diagnostic.html" class="active" style="color:#d4a853;font-weight:600;">🔬 Diagnostic</a>
+            <a href="connaissances.html">Connaissances</a>
+        </div>
+    </nav>
+    <div class="container" style="max-width:1200px;margin:0 auto;padding:1rem;">
+        <div class="diag-header">
+            <h1>🔬 Diagnostic de diffusion <span>à froid et à chaud</span></h1>
+            <p>Analyse thermodynamique diffusion à froid vs diffusion à chaud — Clausius-Clapeyron × Stokes-Einstein</p>
+        </div>
+        <div class="selector-bar">
+            <div class="field"><label>Parfum (avec FDS)</label><select id="sel-fragrance"><option value="">Chargement...</option></select></div>
+            <div class="field" style="max-width:180px"><label>Cire de référence</label>
+                <select id="sel-wax">
+                    <optgroup label="🪨 Minérales">
+                        <option value="paraffine">Paraffine</option>
+                        <option value="cire_minerale">Cire minérale (6213/6214/6220)</option>
+                        <option value="microcristalline">Microcristalline</option>
+                    </optgroup>
+                    <optgroup label="🌿 Végétales">
+                        <option value="soja">Soja</option>
+                        <option value="colza">Colza</option>
+                        <option value="coco">Coco</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="field" style="max-width:150px"><label>Contenant</label>
+                <select id="sel-container"><option value="container">Verre</option><option value="pilier">Pilier</option><option value="melt">Fondant</option></select>
+            </div>
+            <button class="btn-analyze" id="btn-go" onclick="runDiagnostic()">🔬 Analyser</button>
+            <button class="btn-analyze" id="btn-pdf" style="display:none;background:linear-gradient(135deg,#c62828,#e53935);margin-left:.5rem" onclick="downloadPDF()">📄 Compte-rendu PDF</button>
+        </div>
+        <div class="tabs" id="tabs" style="display:none">
+            <div class="tab active" data-tab="overview">Vue d'ensemble</div>
+            <div class="tab" data-tab="comparison">Comparaison cires</div>
+            <div class="tab" data-tab="molecules">Molécules</div>
+            <div class="tab" data-tab="optimization">🔧 Optimisation</div>
+            <div class="tab" data-tab="science">Science</div>
+            <div class="tab" data-tab="recs">Recommandations</div>
+        </div>
+        <div id="results"><div class="empty"><div class="icon">🕯️</div><p>Sélectionnez un parfum et lancez l'analyse</p></div></div>
+    </div>
+<script>
+let TW=null,COMP=null,SCI=null,BLEND=null,PROF=null,OPTIM=null,CHARTS={};
+
+// Badge méthodologie — honnêteté sur les sources
+function methoBadge(lois, empirique) {
+    return `<div style="font-size:.7rem;margin:.4rem 0 .6rem;padding:.4rem .6rem;background:linear-gradient(90deg,#e3f2fd,#fff3e0);border-radius:6px;border-left:3px solid #1565C0;border-right:3px solid #E65100;display:flex;gap:.8rem;flex-wrap:wrap">
+        <span style="color:#1565C0"><strong>📐 Lois :</strong> ${lois}</span>
+        <span style="color:#E65100"><strong>🔧 Calibration :</strong> ${empirique}</span>
+    </div>`;
+}
+
+document.addEventListener('DOMContentLoaded',async()=>{
+    const r=await fetch('/api/fragrances');const d=await r.json();
+    const fl=Array.isArray(d)?d:(d.fragrances||[]);
+    const sel=document.getElementById('sel-fragrance');
+    sel.innerHTML='<option value="">— Choisir un parfum —</option>';
+    // Charger les composants en parallèle (pas séquentiel)
+    const checks=await Promise.all(fl.map(f=>fetch('/api/fragrances/'+f.id+'/components').then(r=>r.json()).then(cd=>{const c=Array.isArray(cd)?cd:(cd.components||cd.data||[]);return{id:f.id,name:f.name,n:c.length};}).catch(()=>({id:f.id,name:f.name,n:0}))));
+    checks.filter(c=>c.n>0).forEach(c=>{const o=document.createElement('option');o.value=c.id;o.textContent=c.name+' ('+c.n+' comp.)';sel.appendChild(o);});
+    document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+        document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');const p=document.getElementById('p-'+t.dataset.tab);if(p)p.classList.add('active');
+    }));
+});
+
+function downloadPDF(){
+    const fid=document.getElementById('sel-fragrance').value;
+    const wax=document.getElementById('sel-wax').value;
+    if(!fid||!wax)return alert('Lancez d\'abord une analyse');
+    const btn=document.getElementById('btn-pdf');
+    btn.textContent='⏳ Génération...';btn.disabled=true;
+    
+    // Méthode directe : ouvrir dans un nouvel onglet (fonctionne partout)
+    const url = '/api/fragrances/'+fid+'/report-pdf/'+wax;
+    
+    fetch(url)
+        .then(r=>{
+            if(!r.ok) return r.json().then(d=>{throw new Error(d.error||'Erreur '+r.status)});
+            return r.blob();
+        })
+        .then(blob=>{
+            if(blob.size < 100){throw new Error('PDF vide ou trop petit ('+blob.size+' octets)');}
+            const blobUrl=URL.createObjectURL(blob);
+            const a=document.createElement('a');
+            a.href=blobUrl;
+            a.download='MFC_Rapport_'+document.getElementById('sel-fragrance').selectedOptions[0].text.split(' (')[0].replace(/[^a-zA-Z0-9]/g,'_')+'_'+wax+'.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(()=>URL.revokeObjectURL(blobUrl), 5000);
+        })
+        .catch(e=>{
+            console.error('Erreur PDF:', e);
+            // Fallback : ouvrir directement dans le navigateur
+            if(confirm('Erreur téléchargement : '+e.message+'\n\nOuvrir le PDF dans un nouvel onglet ?')){
+                window.open(url, '_blank');
+            }
+        })
+        .finally(()=>{btn.textContent='📄 Compte-rendu PDF';btn.disabled=false;});
+}
+
+async function runDiagnostic(){
+    const fid=document.getElementById('sel-fragrance').value;
+    const wax=document.getElementById('sel-wax').value;
+    const ctn=document.getElementById('sel-container').value;
+    if(!fid)return alert('Sélectionnez un parfum');
+    const btn=document.getElementById('btn-go');btn.disabled=true;btn.textContent='⏳ Analyse...';
+    document.getElementById('results').innerHTML='<div class="loading"><div class="spin"></div><p>Analyse thermodynamique...</p></div>';
+    try{
+        const[r1,r2,r3,r4,r5,r6]=await Promise.all([
+            fetch('/api/fragrances/'+fid+'/throw-diagnostic/'+wax),
+            fetch('/api/fragrances/'+fid+'/throw-comparison'),
+            fetch('/api/fragrances/'+fid+'/scientific-report?container='+ctn),
+            fetch('/api/fragrances/'+fid+'/recommend-blend?container='+ctn),
+            fetch('/api/fragrances/'+fid+'/profile'),
+            fetch('/api/fragrances/'+fid+'/optimization/'+wax)
+        ]);
+        TW=await r1.json();COMP=await r2.json();SCI=await r3.json();BLEND=await r4.json();PROF=await r5.json();OPTIM=await r6.json();
+        renderAll();document.getElementById('tabs').style.display='flex';document.getElementById('btn-pdf').style.display='inline-block';
+    }catch(e){document.getElementById('results').innerHTML='<div class="empty"><div class="icon">❌</div><p>'+e.message+'</p></div>';}
+    btn.disabled=false;btn.textContent='🔬 Analyser';
+}
+
+function renderAll(){
+    Object.values(CHARTS).forEach(c=>{try{c.destroy();}catch(e){}});CHARTS={};
+    document.getElementById('results').innerHTML=
+        '<div class="tab-panel active" id="p-overview">'+renderOverview()+'</div>'+
+        '<div class="tab-panel" id="p-comparison">'+renderComparison()+'</div>'+
+        '<div class="tab-panel" id="p-molecules">'+renderMolecules()+'</div>'+
+        '<div class="tab-panel" id="p-optimization">'+renderOptimization()+'</div>'+
+        '<div class="tab-panel" id="p-science">'+renderScience()+'</div>'+
+        '<div class="tab-panel" id="p-recs">'+renderRecs()+'</div>';
+    setTimeout(()=>{renderChartVol();renderChartReg();renderChartComp();},150);
+}
+
+// ═══ OVERVIEW ═══
+function renderOverview(){
+    const d=SCI.diagnostic||{};const v=d.overall_viability||'bon';
+    const ci=TW.cold_throw_index||0,hi=TW.hot_throw_index||0;
+    const mx=Math.max(ci,hi,1e-10);
+    let be=TW.diagnostic?.balance||'',bx='⚖️',bt=be;
+    let bsub = '';
+    if(be==='cold_dominant'){bx='❄️';bt='Froid dominant';bsub='Sent bon en magasin, s\'épuise à la combustion';}
+    else if(be==='hot_dominant'){bx='🔥';bt='Chaud dominant';bsub='Performant à la combustion, discret bougie éteinte';}
+    else if(be==='faible_global'){bx='⛔';bt='Faible global';bsub='Diffusion insuffisante dans cette cire';}
+    else if(be==='équilibré'){bx='✅';bt='Équilibré';bsub='Bonne diffusion bougie allumée et éteinte';}
+
+    let h=`<div class="diag-banner ${v}"><h2>${TW.fragrance||'?'} × ${TW.wax_name||''}</h2><p>${TW.diagnostic?.explanation||''}</p></div>`;
+    // Normaliser cold/hot en score /100 (échelle log, 1e-1=100, 1e-6=0)
+    const normScore = (v) => { if(v<=0) return 0; const lg=Math.log10(v); return Math.max(0,Math.min(100,Math.round((lg+6)*20))); };
+    const nFroid = normScore(ci), nChaud = normScore(hi);
+    const labelNorm = (n) => n>=80?'Excellent':n>=60?'Bon':n>=40?'Moyen':n>=20?'Faible':'Très faible';
+    const colorNorm = (n) => n>=80?'#2e7d32':n>=60?'#1565c0':n>=40?'#e65100':n>=20?'#c62828':'#880e4f';
+    h+=`<div class="gauge-row">
+        <div class="gauge cold">
+            <div class="score">${ci.toExponential(2)}</div>
+            <div class="lbl">❄️ Diffusion à froid</div>
+            <div style="margin-top:.4rem;font-size:1.3rem;font-weight:800;color:${colorNorm(nFroid)}">${nFroid}/100</div>
+            <div style="font-size:.72rem;color:var(--texte-secondary)">${labelNorm(nFroid)}</div>
+            <div style="margin-top:.5rem"><div class="throw-bar"><div class="cold" style="width:${nFroid}%"></div></div></div>
+        </div>
+        <div class="gauge hot">
+            <div class="score">${hi.toExponential(2)}</div>
+            <div class="lbl">🔥 Diffusion à chaud</div>
+            <div style="margin-top:.4rem;font-size:1.3rem;font-weight:800;color:${colorNorm(nChaud)}">${nChaud}/100</div>
+            <div style="font-size:.72rem;color:var(--texte-secondary)">${labelNorm(nChaud)}</div>
+            <div style="margin-top:.5rem"><div class="throw-bar"><div class="hot" style="width:${nChaud}%"></div></div></div>
+        </div>
+        <div class="gauge balance"><div class="score">${bx}</div><div class="lbl">${bt}</div><div style="margin-top:.3rem;font-size:.72rem;color:var(--texte-secondary);font-style:italic">${bsub}</div><div style="margin-top:.3rem;font-size:.75rem;color:var(--texte-secondary)">Ratio chaud/froid : ${TW.ratio_hot_cold}×</div></div>
+    </div>`;
+    (d.critical_issues||[]).forEach(i=>{h+=`<div class="issue critical"><strong>⛔ ${i.type||''}</strong>${i.message||''}</div>`;});
+    (d.warnings||[]).forEach(i=>{h+=`<div class="issue warning"><strong>⚠️ ${i.type||''}</strong>${i.message||''}</div>`;});
+    (d.strengths||[]).forEach(i=>{h+=`<div class="issue strength"><strong>✅ ${i.type||''}</strong>${i.message||''}</div>`;});
+    h+=`<div class="profile-grid">
+        <div class="profile-card"><h3>Distribution par volatilité</h3><div class="chart-box"><canvas id="cv-vol"></canvas></div></div>
+        <div class="profile-card"><h3>Froid vs Chaud par registre</h3><div class="chart-box"><canvas id="cv-reg"></canvas></div></div>
+    </div>`;
+    const pc=SCI.process_constraints||{};
+    h+=`<div class="profile-card" style="margin-bottom:1rem"><h3>Contraintes process</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;font-size:.82rem">
+        <div><strong>Bain de fusion :</strong> ${TW.T_hot}°C — <strong>Viscosité :</strong> ${TW.viscosity} cSt</div>
+        <div><strong>Incorporation parfum :</strong> ${pc.temp_max_incorporation?.value||'?'}</div>
+        <div title="Charge max = pourcentage maximum de parfum que cette cire peut absorber sans suintement ni séparation.&#10;&#10;Calculé à partir de la compatibilité chimique (Hildebrand) entre le parfum et la cire.&#10;Au-delà de cette charge : le parfum suinte en surface, la bougie transpire, la combustion est mauvaise.&#10;En dessous : marge de sécurité, le parfum est bien retenu."><strong>Charge parfum max. :</strong> ${TW.charge_max_scientifique ? TW.charge_max_scientifique.charge_display : (pc.charge_max?.value||'?')}
+            ${TW.charge_max_scientifique ? '<span style="font-size:.72rem;color:var(--texte-secondary);margin-left:.3rem">(calculé par Hildebrand × Flory-Huggins)</span>' : ''} <span style="font-size:.65rem;color:var(--texte-secondary);cursor:help">ⓘ</span>
+        </div>
+        <div><strong>Maturation & stabilisation :</strong> ${pc.cure_minimum?.paraffine||'?'} (paraf.) / ${pc.cure_minimum?.soja||'?'} (soja)</div>
+        </div></div>`;
+    // Résumé propriétés physico-chimiques
+    const mols=TW.molecules||[];
+    const withBP=mols.filter(m=>m.bp).length;
+    const measured=mols.filter(m=>m.bp_source==='mesuré').length;
+    const avgLogP=mols.length?mols.reduce((s,m)=>s+(m.logp||0)*m.pct,0)/mols.reduce((s,m)=>s+m.pct,0):0;
+    const highVP=mols.filter(m=>(m.vapor_pressure_25C||0)>100);
+    const lowOT=mols.filter(m=>(m.odor_threshold||999)<10);
+    h+=`<div class="profile-card" style="margin-bottom:1rem"><h3>🧬 Profil physico-chimique</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.8rem;font-size:.82rem">
+        <div><strong>Molécules :</strong> ${mols.length} identifiées (${withBP} avec Eb., ${measured} mesurés)</div>
+        <div title="LogP = coefficient de partage octanol/eau. Mesure l'affinité d'une molécule pour les corps gras (la cire) vs l'eau.&#10;&#10;LogP < 2 = polaire, s'évapore vite mais risque suintement/séparation&#10;LogP 2-4 = zone idéale, équilibre entre tenue et diffusion&#10;LogP > 4 = lipophile, forte tenue mais diffusion à froid faible&#10;&#10;Pondéré = moyenne selon le % de chaque molécule dans le parfum"><strong>LogP moyen pondéré :</strong> <span style="font-weight:700;color:${avgLogP>4?'#2e7d32':avgLogP>2?'#e65100':'#c62828'}">${avgLogP.toFixed(2)}</span> ${avgLogP>4?'— lipophile : forte tenue dans la cire, diffusion à froid faible':avgLogP>3?'— équilibré : bon compromis tenue / diffusion':avgLogP>2?'— moyennement lipophile : diffusion correcte mais surveiller la tenue':'— polaire : risque suintement et séparation de phase, tenue faible'} <span style="font-size:.65rem;color:var(--texte-secondary);cursor:help">ⓘ</span></div>
+        <div title="Pression de vapeur > 100 Pa à 25°C = molécule qui s'évapore très vite.&#10;Beaucoup de volatiles = diffusion à froid forte mais parfum qui s'épuise vite.&#10;Peu de volatiles = bougie qui sent peu à froid."><strong>Très volatiles :</strong> ${highVP.length} molécules > 100 Pa — ${highVP.length>3?'diffusion à froid puissante mais durée limitée':highVP.length>0?'quelques notes de tête présentes':'peu de diffusion à froid spontanée'} <span style="font-size:.65rem;color:var(--texte-secondary);cursor:help">ⓘ</span></div>
+        <div title="Seuil olfactif < 10 µg/m³ = molécule perçue en infime quantité.&#10;Ce sont les 'amplificateurs' du parfum : même à 1% dans la formule, elles dominent la perception.&#10;Source : Leffingwell, PubChem."><strong>Très puissantes :</strong> ${lowOT.length} molécules < 10 µg/m³ — ${lowOT.length>2?'perception olfactive très amplifiée':lowOT.length>0?'quelques amplificateurs présents':'pas d\'amplificateur majeur'} <span style="font-size:.65rem;color:var(--texte-secondary);cursor:help">ⓘ</span></div>
+        </div>
+        ${highVP.length>0?'<div style="margin-top:.5rem;font-size:.75rem;color:var(--texte-secondary)">🔺 Volatiles: '+highVP.map(m=>m.name+' ('+Math.round(m.vapor_pressure_25C)+' Pa)').join(', ')+'</div>':''}
+        ${lowOT.length>0?'<div style="margin-top:.3rem;font-size:.75rem;color:var(--texte-secondary)">👃 Puissantes: '+lowOT.map(m=>m.name+' ('+m.odor_threshold+' µg/m³)').join(', ')+'</div>':''}
+    </div>`;
+    // ═══ RÉPARTITION PAR FLASH POINT ═══
+    const fpd = TW.fp_distribution;
+    if (fpd) {
+        const zones = [
+            { key: 'ultra_volatile', color: '#f44336', icon: '🔥' },
+            { key: 'volatile', color: '#ff9800', icon: '💨' },
+            { key: 'semi_fixe', color: '#2196f3', icon: '⏳' },
+            { key: 'fixateur', color: '#4a148c', icon: '⚓' }
+        ];
+        h += `<div class="profile-card" style="margin-bottom:1rem"><h3>🌡️ Structure temporelle du parfum (par flash point)</h3>
+        ${methoBadge('Clausius-Clapeyron (relation FP / pression vapeur / volatilité)', 'Seuils de zones (50/80/100°C) basés sur classification olfactive MFC')}
+        <div style="font-size:.75rem;color:var(--texte-secondary);margin-bottom:.6rem">Le flash point d'une molécule détermine quand elle se libère : les FP bas partent en premier (tête), les FP hauts restent (fond). Couverture : ${TW.fp_coverage} molécules avec FP connu.</div>
+        <div style="display:flex;height:22px;border-radius:8px;overflow:hidden;margin-bottom:.8rem">`;
+        zones.forEach(z => {
+            const d = fpd[z.key];
+            if (d.pct_relatif > 0) {
+                h += `<div style="width:${d.pct_relatif}%;background:${z.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:.65rem;font-weight:700" title="${d.label} (${d.fp}) : ${d.pct_relatif}%\n${d.role}">${d.pct_relatif}%</div>`;
+            }
+        });
+        h += `</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.5rem;font-size:.78rem">`;
+        zones.forEach(z => {
+            const d = fpd[z.key];
+            h += `<div style="padding:.5rem;background:var(--bg-secondary);border-radius:var(--radius);border-left:3px solid ${z.color}">
+                <div style="font-weight:700">${z.icon} ${d.label} <span style="color:${z.color}">${d.fp}</span> — ${d.pct_relatif}%</div>
+                <div style="font-size:.72rem;color:var(--texte-secondary)">${d.role}</div>
+                ${d.mols.length > 0 ? '<div style="font-size:.7rem;margin-top:.3rem;color:var(--texte-secondary)">' + d.mols.slice(0,3).map(m => m.name + ' (' + m.fp + '°C, ' + m.pct.toFixed(1) + '%)').join(', ') + '</div>' : '<div style="font-size:.7rem;color:#999">Aucune molécule</div>'}
+            </div>`;
+        });
+        h += `</div></div>`;
+    }
+    // ═══ MATURATION / CURE ═══
+    const mat = TW.maturation;
+    if (mat) {
+        h += `<div class="profile-card" style="margin-bottom:1rem;border:2px solid var(--mfc-cire)">
+        <h3 style="font-family:var(--font-display);color:var(--mfc-cire)">⏱️ Maturation recommandée</h3>
+        ${methoBadge('Avrami (cinétique cristallisation), Sato 2001 (polymorphisme), Fick/Crank (diffusion phase solide)', 'Temps de transition, distances inter-cristallines et coefficients D calibrés sur mesures MFC')}
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin:.5rem 0 1rem">
+            <div style="text-align:center;padding:1rem;background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:var(--radius);min-width:140px">
+                <div style="font-size:2rem;font-weight:800;color:#E65100">${mat.duree_recommandee}</div>
+                <div style="font-size:.82rem;font-weight:600">Cure recommandée</div>
+            </div>
+            <div style="flex:1;min-width:250px;font-size:.82rem">
+                <div style="margin-bottom:.3rem"><strong>Facteur limitant :</strong> ${mat.facteur_limitant}</div>
+                <div style="color:var(--texte-secondary);font-size:.78rem" title="Paramètres utilisés pour le calcul">
+                    T coulage ≈ ${mat.parametres.T_coulage}°C → T ambiante ${mat.parametres.T_ambiante}°C (ΔT = ${mat.parametres.delta_T_surfusion}°C) | 
+                    MW moy. = ${mat.parametres.MW_moyen} g/mol | LogP moy. = ${mat.parametres.logP_moyen} | 
+                    Fraction amorphe = ${Math.round(mat.parametres.fraction_amorphe*100)}% | D solide ≈ ${mat.parametres.D_solide} m²/s
+                </div>
+            </div>
+        </div>`;
+        
+        // Phases
+        h += `<div style="font-size:.82rem;margin-bottom:.6rem"><strong>Phases de maturation :</strong></div>`;
+        mat.phases.forEach((p, i) => {
+            const dureeJ = p.duree_h < 24 ? p.duree_h + 'h' : Math.round(p.duree_h/24) + 'j';
+            const colors = ['#1565C0', '#E65100', '#2E7D32'];
+            h += `<div style="padding:.5rem .6rem;margin:.3rem 0;background:var(--bg-secondary);border-radius:var(--radius);border-left:3px solid ${colors[i%3]}">
+                <div style="font-weight:700">${i+1}. ${p.nom} <span style="color:${colors[i%3]};font-weight:400">(~${dureeJ})</span></div>
+                <div style="font-size:.78rem;color:var(--texte-secondary);margin:.2rem 0">${p.description}</div>
+                <div style="font-size:.72rem;color:var(--texte-secondary)"><strong>Loi :</strong> ${p.loi}</div>
+                <div style="font-size:.7rem;font-style:italic;color:#1565C0;margin-top:.2rem">${p.science}</div>
+            </div>`;
+        });
+        
+        // Recommandations
+        if (mat.recommandations.length > 0) {
+            h += `<div style="margin-top:.6rem;padding:.5rem;background:#fff8e1;border-radius:var(--radius);font-size:.8rem">`;
+            mat.recommandations.forEach(r => { h += `<div style="margin:.2rem 0">💡 ${r}</div>`; });
+            h += `</div>`;
+        }
+        
+        // Sources
+        h += `<details style="margin-top:.6rem;font-size:.7rem;color:var(--texte-secondary)"><summary style="cursor:pointer;font-weight:600">📚 Sources scientifiques (${mat.sources.length})</summary>
+        <div style="margin-top:.3rem;padding:.3rem;line-height:1.5">`;
+        mat.sources.forEach(s => { h += `<div>• ${s}</div>`; });
+        h += `</div></details>`;
+        
+        h += `</div>`;
+    }
+    // ═══ PROFIL OLFACTIF SUCRÉ ═══
+    const sp = TW.sweet_profile;
+    if (sp && sp.count > 0) {
+        h += `<div class="profile-card" style="margin-bottom:1rem;border:2px solid #E65100">
+        <h3 style="font-family:var(--font-display);color:#E65100">🍯 Facette sucrée détectée (${sp.count} molécules, ${sp.total_pct}% du parfum)</h3>
+        ${methoBadge('Descripteurs olfactifs PubChem (NCBI, vérifié 2026-02-20)', 'Mot-clé "sweet" présent dans la fiche officielle PubChem')}
+        <div style="font-size:.78rem;color:var(--texte-secondary);margin-bottom:.5rem">
+            Ces molécules sont décrites comme ayant une facette sucrée dans la base PubChem. 
+            Si le parfum ne devrait pas sentir le sucré, ces composants en sont la cause.
+        </div>`;
+        sp.molecules.forEach(m => {
+            h += `<div style="font-size:.8rem;padding:.3rem .5rem;margin:.2rem 0;background:#fff3e0;border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center">
+                <div><strong>${m.name}</strong> <span style="font-size:.7rem;color:#666">(${m.pct}%)</span></div>
+                <div style="font-size:.7rem;color:#E65100;max-width:55%;text-align:right" title="${m.pubchem_raw || ''}">${m.odor.join(', ')}</div>
+            </div>`;
+        });
+        h += `<div style="font-size:.65rem;color:var(--texte-secondary);margin-top:.4rem;font-style:italic">Source : ${sp.source}</div>`;
+        h += `</div>`;
+    }
+    // ═══ RAPPORT SCIENTIFIQUE ═══
+    const rpt = TW.rapport;
+    if (rpt) {
+        const colorScore = (s) => s >= 7 ? '#2e7d32' : s >= 5 ? '#e65100' : '#c62828';
+        h += `<div class="profile-card" style="margin-bottom:1rem;border:2px solid var(--mfc-cire)"><h3>📊 Rapport scientifique</h3>
+        ${methoBadge('Clausius-Clapeyron (pression vapeur), Stokes-Einstein (diffusion), OAV — Odor Activity Value (Leffingwell 2002, perception olfactive)', 'Pondérations des facteurs, seuils olfactifs (PubChem, Leffingwell) et scores calibrés sur retours MFC')}
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin:.8rem 0">
+            <div style="text-align:center;padding:1rem;background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:var(--radius);min-width:120px">
+                <div style="font-size:2rem;font-weight:800;color:${colorScore(rpt.score_froid)}">❄️ ${rpt.score_froid}/10</div>
+                <div style="font-size:.82rem;font-weight:600">Diffusion à froid</div>
+                <div style="font-size:.75rem;color:var(--texte-secondary)">${rpt.verdict_froid}</div>
+            </div>
+            <div style="text-align:center;padding:1rem;background:linear-gradient(135deg,#fff8e1,#ffe0b2);border-radius:var(--radius);min-width:120px">
+                <div style="font-size:2rem;font-weight:800;color:${colorScore(rpt.score_chaud)}">🔥 ${rpt.score_chaud}/10</div>
+                <div style="font-size:.82rem;font-weight:600">Diffusion à chaud</div>
+                <div style="font-size:.75rem;color:var(--texte-secondary)">${rpt.verdict_chaud}</div>
+            </div>
+            <div style="text-align:center;padding:1rem;background:linear-gradient(135deg,#f3e5f5,#e1bee7);border-radius:var(--radius);min-width:120px">
+                <div style="font-size:2rem;font-weight:800;color:${colorScore(rpt.score_global)}">⚖️ ${rpt.score_global}/10</div>
+                <div style="font-size:.82rem;font-weight:600">Score global</div>
+            </div>
+        </div>`;
+        // Analyse froid
+        if (rpt.analyse_froid?.length) {
+            h += '<h4 style="margin:.8rem 0 .4rem;font-size:.88rem">❄️ Analyse diffusion à froid</h4>';
+            rpt.analyse_froid.forEach(a => {
+                const ic = a.impact === 'positif' ? '🟢' : a.impact === 'négatif' ? '🔴' : '🟡';
+                h += `<div style="font-size:.82rem;margin:.3rem 0;padding:.4rem .6rem;background:var(--bg-secondary);border-radius:var(--radius);border-left:3px solid ${a.impact==='positif'?'#4caf50':a.impact==='négatif'?'#f44336':'#ff9800'}">
+                    ${ic} <strong>${a.facteur}</strong> : ${a.valeur}<br><span style="font-size:.75rem;color:var(--texte-secondary)">${a.explication}</span>${a.loi ? '<div style="font-size:.7rem;color:#1565c0;margin-top:.2rem;font-style:italic">📐 '+a.loi+'</div>' : ''}</div>`;
+            });
+        }
+        // Analyse chaud
+        if (rpt.analyse_chaud?.length) {
+            h += '<h4 style="margin:.8rem 0 .4rem;font-size:.88rem">🔥 Analyse diffusion à chaud</h4>';
+            rpt.analyse_chaud.forEach(a => {
+                const ic = a.impact === 'positif' ? '🟢' : a.impact === 'négatif' ? '🔴' : '🟡';
+                h += `<div style="font-size:.82rem;margin:.3rem 0;padding:.4rem .6rem;background:var(--bg-secondary);border-radius:var(--radius);border-left:3px solid ${a.impact==='positif'?'#4caf50':a.impact==='négatif'?'#f44336':'#ff9800'}">
+                    ${ic} <strong>${a.facteur}</strong> : ${a.valeur}<br><span style="font-size:.75rem;color:var(--texte-secondary)">${a.explication}</span>${a.loi ? '<div style="font-size:.7rem;color:#1565c0;margin-top:.2rem;font-style:italic">📐 '+a.loi+'</div>' : ''}</div>`;
+            });
+        }
+        // Boosters
+        if (rpt.boosters?.length) {
+            h += '<h4 style="margin:.8rem 0 .4rem;font-size:.88rem">🚀 Molécules motrices (boosters)</h4>';
+            rpt.boosters.forEach(b => {
+                h += `<div style="font-size:.82rem;margin:.3rem 0;padding:.4rem .6rem;background:#e8f5e9;border-radius:var(--radius)">
+                    <strong>${b.nom}</strong> (${b.pct}%, masse mol. ${b.mw}) — ${b.roles.join(', ')}
+                    ${b.contrib_froid > 0 || b.contrib_chaud > 0 ? '<span style="font-size:.75rem;color:#666"> | Froid: ' + b.contrib_froid + '% | Chaud: ' + b.contrib_chaud + '%</span>' : ''}
+                    ${b.note_diffusion ? '<div style="font-size:.72rem;color:#E65100;margin-top:.2rem">⚠️ ' + b.note_diffusion + '</div>' : ''}
+                </div>`;
+            });
+        }
+        // Bloquants
+        if (rpt.bloquants?.length) {
+            h += '<h4 style="margin:.8rem 0 .4rem;font-size:.88rem">⛔ Bloquants et freins</h4>';
+            rpt.bloquants.forEach(b => {
+                const bg = b.impact === 'bloquant' ? '#ffebee' : '#fff8e1';
+                const emoji = b.impact === 'bloquant' ? '🔴' : '🟠';
+                h += `<div style="font-size:.82rem;margin:.3rem 0;padding:.4rem .6rem;background:${bg};border-radius:var(--radius)">
+                    ${emoji} <strong>${b.nom}</strong> (${b.pct}%, masse mol. ${b.mw}) — ${b.impact.toUpperCase()}
+                    <div style="font-size:.75rem;color:#666;margin-top:.2rem">${b.problemes.join(' | ')}</div></div>`;
+            });
+        }
+        // Conclusion
+        h += `<div style="margin-top:1rem;padding:.8rem;background:linear-gradient(135deg,#f5f5f5,#e8e8e8);border-radius:var(--radius);border-left:4px solid var(--mfc-cire)">
+            <strong>📋 Conclusion :</strong><br><span style="font-size:.85rem;line-height:1.6">${rpt.conclusion}</span></div>`;
+        h += '</div>';
+    }
+    (TW.diagnostic?.wax_issues||[]).forEach(i=>{
+        h+=`<div class="rec-card moyenne"><h4>🧱 ${i.type||''} <span class="badge moyenne">cire</span></h4>
+        <p style="font-size:.82rem">${i.problem||''}</p>
+        ${i.science?'<div class="rec-action"><strong>🔬 Science</strong>'+i.science+'</div>':''}
+        ${i.fix?'<div class="rec-action"><strong>💡 Solution</strong>'+i.fix+'</div>':''}
+        </div>`;
+    });
+    return h;
+}
+
+// ═══ COMPARISON ═══
+function renderComparison(){
+    const a=COMP.analyses||{};const s=Object.entries(a).sort((a,b)=>b[1].hot_throw_index-a[1].hot_throw_index);
+    const mxC=Math.max(...s.map(([,x])=>x.cold_throw_index));
+    const mxH=Math.max(...s.map(([,x])=>x.hot_throw_index));
+    let h=`<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin-bottom:1rem">${COMP.fragrance} — Toutes les cires</h3>
+    <div style="margin-bottom:.8rem;font-size:.82rem">❄️ Meilleure cire à froid : <strong>${COMP.best_cold_throw}</strong> | 🔥 Meilleure cire à chaud : <strong>${COMP.best_hot_throw}</strong> | ⚖️ Meilleur équilibre : <strong>${COMP.best_balance}</strong></div>
+    <table class="comp-table"><thead><tr><th>Cire</th><th>Bain de fusion °C</th><th>Viscosité cSt</th><th>Diffusion à froid</th><th>Diffusion à chaud</th><th>Ratio chaud/froid</th><th>Équilibre</th></tr></thead><tbody>`;
+    s.forEach(([wk,x])=>{
+        const ib=wk===COMP.best_balance,ic=wk===COMP.best_cold_throw,ih=wk===COMP.best_hot_throw;
+        h+=`<tr class="${ib?'best':x.diagnostic?.balance==='faible_global'?'worst':''}">
+        <td><strong>${x.wax_name}</strong> ${ic?'❄️':''}${ih?'🔥':''}${ib?'⚖️':''}</td>
+        <td>${x.T_hot}°C</td><td>${x.viscosity}</td>
+        <td><div class="throw-bar" style="width:70px;display:inline-block;vertical-align:middle"><div class="cold" style="width:${Math.round(x.cold_throw_index/mxC*100)}%"></div></div> <span style="font-size:.68rem">${x.cold_throw_index.toExponential(1)}</span></td>
+        <td><div class="throw-bar" style="width:70px;display:inline-block;vertical-align:middle"><div class="hot" style="width:${Math.round(x.hot_throw_index/mxH*100)}%"></div></div> <span style="font-size:.68rem">${x.hot_throw_index.toExponential(1)}</span></td>
+        <td>${x.ratio_hot_cold}×</td><td>${x.diagnostic?.balance||'?'}</td></tr>`;
+    });
+    h+='</tbody></table>';
+    h+='<div class="profile-card" style="margin-top:1.5rem"><h3>Comparaison visuelle</h3><div class="chart-box" style="height:300px"><canvas id="cv-comp"></canvas></div></div>';
+    return h;
+}
+
+// ═══ MOLECULES ═══
+function renderMolecules(){
+    const ms=[...(TW.molecules||[])].sort((a,b)=>(b.cold_contribution+b.hot_contribution)-(a.cold_contribution+a.hot_contribution));
+    const mx=Math.max(...ms.map(m=>Math.max(m.cold_contribution,m.hot_contribution)),1e-10);
+    function bc(b){if(b.includes('COLD ONLY'))return'co';if(b.includes('HOT ONLY'))return'ho';if(b.includes('COLD DOM'))return'cd';if(b.includes('HOT DOM'))return'hd';if(b.includes('INERTE'))return'in';return'eq';}
+    function bl(b){if(b.includes('COLD ONLY'))return'❄️ Froid seul';if(b.includes('HOT ONLY'))return'🔥 Chaud seul';if(b.includes('COLD DOM'))return'❄️ Froid dom.';if(b.includes('HOT DOM'))return'🔥 Chaud dom.';if(b.includes('INERTE'))return'⚫ Inerte';return'✅ Équilibré';}
+    let h=`<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin-bottom:1rem">Analyse molécule par molécule — ${TW.fragrance} × ${TW.wax_name}</h3>
+    <p style="font-size:.8rem;color:var(--texte-secondary);margin-bottom:1rem">Pvap(20°C) → diffusion à froid | Pvap(${TW.T_hot}°C) × D × channel_factor → diffusion à chaud | ${ms.length} molécules analysées</p>
+    <div class="mol-scroll"><table class="mol-table"><thead><tr><th>Molécule</th><th>Masse mol.</th><th>%</th><th>Ébullition °C</th><th>LogP (lipophilicité)</th><th>Densité g/mL</th><th>Pression vap. 25°C</th><th>Seuil olfactif µg/m³</th><th>Pression vap. 20°C</th><th>Pression vap. ${TW.T_hot}°C</th><th>Diffusion à froid</th><th>Diffusion à chaud</th><th>Comportement</th></tr></thead><tbody>`;
+    ms.forEach(m=>{
+        const bpSrc=m.bp_source==='mesuré'?'':'*';
+        const lpColor=m.logp!=null?(m.logp>4?'#2e7d32':m.logp>2?'#e65100':'#c62828'):'#999';
+        const vpStr=m.vapor_pressure_25C!=null?(m.vapor_pressure_25C>=1?Math.round(m.vapor_pressure_25C):m.vapor_pressure_25C.toFixed(3)):'—';
+        const otStr=m.odor_threshold!=null?(m.odor_threshold>=1?Math.round(m.odor_threshold):m.odor_threshold.toFixed(2)):'—';
+        h+=`<tr><td><strong>${(m.name||m.cas).substring(0,28)}</strong><br><span style="font-size:.65rem;color:var(--texte-muted)">${m.family||''}</span></td>
+        <td>${m.mw}</td><td>${m.pct}%</td><td>${m.bp||m.Teb_estimated||'?'}${bpSrc}</td>
+        <td style="color:${lpColor};font-weight:600">${m.logp??'—'}</td>
+        <td>${m.density||'—'}</td>
+        <td style="font-size:.68rem">${vpStr}</td>
+        <td style="font-size:.68rem">${otStr}</td>
+        <td>${m.Pvap_cold?.toExponential(1)}</td><td>${m.Pvap_hot?.toExponential(1)}</td>
+        <td><div class="throw-bar" style="width:45px;display:inline-block;vertical-align:middle"><div class="cold" style="width:${Math.round(m.cold_contribution/mx*100)}%"></div></div> <span style="font-size:.65rem;color:var(--texte-secondary)">${m.cold_contribution>0?m.cold_contribution.toExponential(1):'—'}</span></td>
+        <td><div class="throw-bar" style="width:45px;display:inline-block;vertical-align:middle"><div class="hot" style="width:${Math.round(m.hot_contribution/mx*100)}%"></div></div> <span style="font-size:.65rem;color:var(--texte-secondary)">${m.hot_contribution>0?m.hot_contribution.toExponential(1):'—'}</span></td>
+        <td><span class="beh ${bc(m.behavior)}">${bl(m.behavior)}</span></td></tr>`;
+    });
+    h+='</tbody></table></div>';
+    const issues=TW.diagnostic?.molecule_issues||[];
+    if(issues.length){
+        h+='<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:1.5rem 0 .8rem">⚠️ Problèmes moléculaires</h3>';
+        issues.forEach(i=>{
+            h+=`<div class="rec-card moyenne"><h4>${i.molecule} <span class="badge moyenne">${i.type}</span></h4>
+            <p style="font-size:.82rem">${i.problem}</p>
+            <div class="rec-action"><strong>🔬 Science</strong>${i.science}</div>
+            ${i.fix_parfum?'<div class="rec-action"><strong>💊 Parfum</strong>'+i.fix_parfum+'</div>':''}
+            ${i.fix_cire?'<div class="rec-action"><strong>🧱 Cire</strong>'+i.fix_cire+'</div>':''}
+            </div>`;
+        });
+    }
+    return h;
+}
+
+// ═══ SCIENCE ═══
+function renderScience(){
+    const mechs=SCI.mechanisms_triggered||[];
+    const bw=SCI.by_wax_type||{};const sw=Object.entries(bw).sort((a,b)=>b[1].score-a[1].score);
+    const cm = TW.charge_max_scientifique;
+    let h='';
+    
+    // --- Charge max scientifique ---
+    if (cm) {
+        const colorF = (s) => s >= 0.8 ? '#2e7d32' : s >= 0.5 ? '#e65100' : '#c62828';
+        h += `<div class="profile-card" style="margin-bottom:1.5rem;border:2px solid var(--mfc-cire)">
+            <h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin-bottom:.8rem">🧪 Charge maximale de parfum — Calcul scientifique</h3>
+            ${methoBadge('Flory-Huggins (interactions polymère-solvant), Hildebrand (paramètres de solubilité), Barton 1991', 'Constantes cire (δ, viscosité, channel factor) calibrées sur formulations MFC')}
+            <div style="display:flex;gap:2rem;flex-wrap:wrap;margin:.5rem 0 1rem">
+                <div style="text-align:center;padding:1rem;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:var(--radius);min-width:140px">
+                    <div style="font-size:2rem;font-weight:800;color:#2e7d32">${cm.charge_display}</div>
+                    <div style="font-size:.82rem;font-weight:600">Charge recommandée</div>
+                </div>
+                <div style="flex:1;min-width:250px;font-size:.82rem">
+                    <div style="margin-bottom:.3rem"><strong>Formule :</strong> ${cm.formule.description}</div>
+                    <div style="color:var(--texte-secondary)">
+                        <span title="12% = maximum théorique pour une cire parfaite (compatibilité totale, canaux ouverts). Les facteurs ci-dessous réduisent cette base selon la réalité de votre couple parfum × cire.">Base théo. ${cm.formule.base}%</span> × Solubilité ${cm.formule.solubility_factor} × Cristaux ${cm.formule.crystal_factor} × Viscosité ${cm.formule.viscosity_factor} × Sécurité ${cm.formule.safety_factor} = <strong style="color:#2e7d32">${cm.formule.resultat}% → recommandé ${cm.charge_display}</strong>
+                    </div>
+                    <div style="margin-top:.5rem;font-size:.78rem;color:var(--texte-secondary)" title="δ (delta) Hildebrand = paramètre de solubilité. Plus l'écart entre parfum et cire est faible, mieux le parfum se dissout.&#10;χ (chi) Flory-Huggins = paramètre d'interaction. χ < 0.5 = miscibilité totale. χ > 1.5 = séparation de phase.">
+                        <span title="Paramètre de solubilité du parfum, estimé depuis le LogP moyen (méthode Barton 1991). Unité : MPa½">δ parfum ≈ ${cm.parametres_parfum.delta_hildebrand_estime} MPa½</span> | 
+                        <span title="Paramètre de solubilité de la cire, valeur tabulée. Plus l'écart |δ parfum - δ cire| est petit, meilleure est la compatibilité.">δ cire = ${cm.parametres_cire.delta_hildebrand} MPa½</span> | 
+                        <span title="Paramètre d'interaction de Flory-Huggins.&#10;χ < 0.5 = parfum et cire parfaitement miscibles&#10;χ 0.5-1.5 = miscibilité partielle&#10;χ > 1.5 = séparation de phase, le parfum suinte">χ = ${cm.parametres_parfum.chi_flory_huggins}</span> | 
+                        <span title="Moyenne pondérée du LogP de toutes les molécules. Indique si le parfum est globalement lipophile (aime la cire) ou polaire.">LogP moy. = ${cm.parametres_parfum.logP_moyen}</span> | 
+                        <span title="Masse molaire moyenne pondérée. Plus elle est élevée, plus le parfum contient de molécules lourdes (notes de fond).">MW moy. = ${cm.parametres_parfum.masse_mol_moyenne} g/mol</span>
+                    </div>
+                </div>
+            </div>`;
+        
+        // Facteurs détaillés
+        cm.facteurs.forEach(f => {
+            const ic = f.impact === 'positif' ? '🟢' : f.impact === 'négatif' ? '🔴' : '🟡';
+            h += `<div style="font-size:.82rem;margin:.3rem 0;padding:.5rem .6rem;background:var(--bg-secondary);border-radius:var(--radius);border-left:3px solid ${f.impact==='positif'?'#4caf50':f.impact==='négatif'?'#f44336':'#ff9800'}">
+                ${ic} <strong>${f.nom}</strong> — ${f.valeur} (facteur : ${Math.round(f.score*100)/100})<br>
+                <span style="font-size:.78rem;color:var(--texte-secondary)">${f.explication}</span>
+            </div>`;
+        });
+        h += '</div>';
+    }
+    
+    h+=`<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin-bottom:1rem">${mechs.length} mécanismes scientifiques activés</h3>
+    ${methoBadge('Thermodynamique des mélanges, cinétique de cristallisation, loi de Hertz-Knudsen (évaporation)', 'Seuils de déclenchement (% terpènes, % muscs, FP) ajustés sur observations MFC')}
+    <div style="font-size:.75rem;color:var(--texte-secondary);margin-bottom:.8rem">Phénomènes physico-chimiques détectés dans ce parfum. Chaque mécanisme impacte une zone : ❄️ diffusion à froid, 🔥 diffusion à chaud, 🔒 sécurité, ⚗️ stabilité, 🏭 fabrication.</div>`;
+    mechs.forEach(m=>{
+        const zoneIcons = {'froid':'❄️','chaud':'🔥','froid + chaud':'❄️🔥','sécurité':'🔒','stabilité':'⚗️','fabrication':'🏭'};
+        const zoneColors = {'froid':'#1565C0','chaud':'#E65100','froid + chaud':'#7B1FA2','sécurité':'#C62828','stabilité':'#FF8F00','fabrication':'#546E7A'};
+        const zi = zoneIcons[m.zone] || '📐';
+        const zc = zoneColors[m.zone] || '#666';
+        h+=`<div class="mech-card"><h4>${zi} ${m.title} <span style="font-size:.7rem;font-weight:400;background:${zc};color:#fff;padding:1px 8px;border-radius:10px;margin-left:.4rem">${m.zone||'général'}</span></h4>
+        <div class="pr"><strong>Principe :</strong> ${m.principle}</div>
+        <div class="pr"><strong>Mécanisme :</strong> ${m.mechanism}</div>
+        ${m.consequence_positive?'<div class="csq pos">✅ '+m.consequence_positive+'</div>':''}
+        ${m.consequence_negative?'<div class="csq neg">❌ '+m.consequence_negative+'</div>':''}
+        ${m.mitigation?'<div class="csq fix">💡 '+m.mitigation+'</div>':''}
+        </div>`;
+    });
+    h+='<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:2rem 0 1rem">Analyse par type de cire</h3>';
+    sw.forEach(([wk,a])=>{
+        const bdr=a.score>=7?'#4caf50':a.score<4?'#f44336':'#ff9800';
+        h+=`<div class="profile-card" style="margin-bottom:1rem;border-left:4px solid ${bdr}">
+        <h3>${a.wax_name||wk} — ${a.score||'?'}/10 — ${a.verdict||''}</h3>`;
+        (a.works||[]).forEach(w=>{h+=`<div class="csq pos"><strong>✅ ${w.factor||''}</strong><br>${w.detail||''}${w.impact?'<br><em>→ '+w.impact+'</em>':''}</div>`;});
+        (a.fails||[]).forEach(w=>{h+=`<div class="csq neg"><strong>❌ ${w.factor||''}</strong><br>${w.detail||''}${w.impact?'<br><em>→ '+w.impact+'</em>':''}</div>`;});
+        (a.neutral||[]).forEach(w=>{h+=`<div class="csq fix"><strong>ℹ️ ${w.factor||''}</strong><br>${w.detail||''}</div>`;});
+        h+='</div>';
+    });
+    return h;
+}
+
+// ═══ RECOMMENDATIONS ═══
+function renderOptimization(){
+    const O = OPTIM?.optimization;
+    if (!O) return '<p style="color:var(--texte-secondary)">Données d\'optimisation non disponibles.</p>';
+    
+    let h = '';
+    const dr = O.diagnostic_resume || {};
+    const colorS = (s) => s >= 7 ? '#2e7d32' : s >= 5 ? '#e65100' : '#c62828';
+    const prioriteLabel = {maintenance:'✅ Produit performant',froid:'❄️ Priorité : améliorer le froid',chaud:'🔥 Priorité : améliorer le chaud',global:'⚠️ Priorité : améliorer froid + chaud',equilibre:'⚖️ Affinage froid/chaud'};
+    
+    // --- En-tête diagnostic ---
+    h += `<div class="profile-card" style="margin-bottom:1.5rem;border-left:4px solid ${dr.score_global>=7?'#4caf50':dr.score_global>=5?'#ff9800':'#f44336'}">
+        <h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin-bottom:.8rem">🔧 Plan d'optimisation — ${OPTIM.fragrance} × ${dr.cire_actuelle}</h3>
+        <div style="display:flex;gap:2rem;flex-wrap:wrap;margin:.5rem 0">
+            <div>❄️ Froid : <strong style="color:${colorS(dr.score_froid)};font-size:1.2rem">${dr.score_froid}/10</strong></div>
+            <div>🔥 Chaud : <strong style="color:${colorS(dr.score_chaud)};font-size:1.2rem">${dr.score_chaud}/10</strong></div>
+            <div>⚖️ Global : <strong style="color:${colorS(dr.score_global)};font-size:1.2rem">${dr.score_global}/10</strong></div>
+            <div>🚀 ${dr.nb_boosters} booster(s)</div>
+            <div>⛔ ${dr.nb_bloquants} bloquant(s)</div>
+        </div>
+        <div style="margin-top:.8rem;padding:.6rem 1rem;background:${O.priorite==='maintenance'?'#e8f5e9':'#fff8e1'};border-radius:var(--radius);font-weight:600;font-size:.9rem">
+            ${prioriteLabel[O.priorite] || O.priorite}
+        </div>
+    </div>`;
+    
+    // --- Objectifs ---
+    if (O.objectifs?.length) {
+        h += '<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:1.5rem 0 .8rem">🎯 Objectifs d\'optimisation</h3>';
+        O.objectifs.forEach(obj => {
+            h += `<div class="profile-card" style="margin-bottom:.8rem;border-left:4px solid #1565c0">
+                <h4 style="font-size:.9rem;font-weight:700;color:#1565c0">${obj.cible}</h4>
+                <p style="font-size:.82rem;margin:.3rem 0">${obj.detail}</p>
+                ${obj.gain_vise ? '<p style="font-size:.82rem;font-weight:600;color:#2e7d32">'+obj.gain_vise+'</p>' : ''}
+            </div>`;
+        });
+    }
+    
+    // --- Actions sur la cire ---
+    if (O.actions_cire?.length) {
+        h += '<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:1.5rem 0 .8rem">🧱 Actions sur la cire</h3>';
+        O.actions_cire.forEach((a,i) => {
+            h += `<div class="rec-card" style="border-left-color:#795548">
+                <h4><span style="background:#795548;color:#fff;padding:.15rem .5rem;border-radius:8px;font-size:.72rem;margin-right:.5rem">CIRE ${i+1}</span> ${a.action}</h4>
+                <p style="font-size:.82rem;margin:.4rem 0"><strong>Impact :</strong> ${a.impact}</p>
+                <p style="font-size:.8rem;color:var(--texte-secondary)">${a.explication}</p>
+                ${a.gain_estime ? '<p style="font-size:.82rem;margin-top:.3rem;color:#2e7d32;font-weight:600">📈 Gain estimé : '+a.gain_estime+'</p>' : ''}
+                ${a.risque ? '<p style="font-size:.78rem;margin-top:.3rem;color:#e65100">⚠️ '+a.risque+'</p>' : ''}
+            </div>`;
+        });
+    }
+    
+    // --- Actions process ---
+    if (O.actions_process?.length) {
+        h += '<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:1.5rem 0 .8rem">⚙️ Actions sur le process</h3>';
+        O.actions_process.forEach((a,i) => {
+            h += `<div class="rec-card" style="border-left-color:#1565c0">
+                <h4><span style="background:#1565c0;color:#fff;padding:.15rem .5rem;border-radius:8px;font-size:.72rem;margin-right:.5rem">PROCESS ${i+1}</span> ${a.action}</h4>
+                <p style="font-size:.82rem;margin:.4rem 0"><strong>Impact :</strong> ${a.impact}</p>
+                <p style="font-size:.8rem;color:var(--texte-secondary)">${a.explication}</p>
+                ${a.gain_estime ? '<p style="font-size:.82rem;margin-top:.3rem;color:#2e7d32;font-weight:600">📈 Gain estimé : '+a.gain_estime+'</p>' : ''}
+            </div>`;
+        });
+    }
+    
+    // --- Actions parfum ---
+    if (O.actions_parfum?.length) {
+        h += '<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:1.5rem 0 .8rem">🌸 Actions sur le parfum</h3>';
+        O.actions_parfum.forEach((a,i) => {
+            const isParf = a.type === 'modification_parfumeur';
+            h += `<div class="rec-card" style="border-left-color:${isParf?'#6a1b9a':'#e65100'}">
+                <h4><span style="background:${isParf?'#6a1b9a':'#e65100'};color:#fff;padding:.15rem .5rem;border-radius:8px;font-size:.72rem;margin-right:.5rem">${isParf?'PARFUMEUR':'PARFUM'} ${i+1}</span> ${a.action}</h4>
+                <p style="font-size:.82rem;margin:.4rem 0"><strong>Impact :</strong> ${a.impact}</p>
+                <p style="font-size:.8rem;color:var(--texte-secondary)">${a.explication}</p>
+                ${a.molecules_suggerees ? '<div style="margin-top:.5rem;display:flex;flex-wrap:wrap;gap:.3rem">'+a.molecules_suggerees.map(m=>'<span style="background:#f3e5f5;padding:.2rem .5rem;border-radius:8px;font-size:.75rem">'+m+'</span>').join('')+'</div>' : ''}
+            </div>`;
+        });
+    }
+    
+    // --- Simulations alternatives ---
+    if (O.simulation_blends?.length) {
+        h += '<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:1.5rem 0 .8rem">🔄 Simulation — changement de cire</h3>';
+        h += '<p style="font-size:.82rem;color:var(--texte-secondary);margin-bottom:.8rem">Comparaison avec les autres cires disponibles (scores normalisés /100)</p>';
+        h += '<table class="comp-table"><thead><tr><th>Cire alternative</th><th>❄️ Froid /100</th><th>🔥 Chaud /100</th><th>Score total</th><th>Écart vs cire actuelle</th><th>Verdict</th></tr></thead><tbody>';
+        O.simulation_blends.forEach(s => {
+            const deltaColor = s.delta_vs_actuel > 5 ? '#2e7d32' : s.delta_vs_actuel > 0 ? '#e65100' : s.delta_vs_actuel === 0 ? '#999' : '#c62828';
+            const deltaSign = s.delta_vs_actuel > 0 ? '+' : '';
+            const rowClass = s.delta_vs_actuel > 5 ? 'best' : s.delta_vs_actuel < -5 ? 'worst' : '';
+            h += `<tr class="${rowClass}"><td><strong>${s.cire}</strong></td>
+                <td>${s.score_froid_100}</td><td>${s.score_chaud_100}</td>
+                <td><strong>${s.score_total_100}</strong></td>
+                <td style="color:${deltaColor};font-weight:700">${deltaSign}${s.delta_vs_actuel}</td>
+                <td>${s.amelioration}</td></tr>`;
+        });
+        h += '</tbody></table>';
+    }
+    
+    // --- Message si tout va bien ---
+    if (!O.actions_cire?.length && !O.actions_process?.length && !O.actions_parfum?.length) {
+        h += `<div class="profile-card" style="margin-top:1rem;background:#e8f5e9;border:1px solid #4caf50">
+            <p style="font-size:.9rem;text-align:center">✅ Ce produit est déjà bien optimisé. Aucune action corrective majeure n'est nécessaire.</p>
+        </div>`;
+    }
+    
+    return h;
+}
+
+function renderRecs(){
+    const recs=TW.recommendations||[];
+    const blends=BLEND.recommended_blends||[];
+    let h='<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin-bottom:1rem">Recommandations d\'ajustement</h3>';
+    if(recs.length){
+        recs.forEach(r=>{
+            h+=`<div class="rec-card ${r.priority||''}"><h4>${r.category||''} <span class="badge ${r.priority||''}">${r.priority||''}</span></h4>`;
+            (r.actions||[]).forEach(a=>{
+                h+=`<div class="rec-action"><strong>${a.action||''}</strong>${a.detail||''}${a.science?'<div class="sci">🔬 '+a.science+'</div>':''}</div>`;
+            });
+            h+='</div>';
+        });
+    } else {
+        h+='<p style="font-size:.85rem;color:var(--texte-secondary)">Aucun ajustement nécessaire — le profil est bien équilibré.</p>';
+    }
+    h+='<h3 style="font-family:var(--font-display);color:var(--mfc-cire);margin:2rem 0 1rem">Blends recommandés</h3>';
+    blends.forEach(b=>{
+        const color=b.rank===1?'#4caf50':b.rank===2?'#2196f3':'#ff9800';
+        h+=`<div class="profile-card" style="margin-bottom:1rem;border-left:4px solid ${color}">
+        <h3>#${b.rank||'?'} ${b.name||'?'} — ${b.score||'?'}/10 <span style="font-size:.72rem;color:var(--texte-secondary)">(${b.type||''})</span></h3>
+        <p style="font-size:.78rem;color:var(--texte-secondary);margin-bottom:.5rem">${b.best_for||''}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem">
+            ${(b.components||[]).map(c=>'<span style="background:var(--fond-surface);padding:.2rem .5rem;border-radius:10px;font-size:.76rem"><strong>'+(c.pct||'?')+'%</strong> '+(c.wax||'?')+'</span>').join('')}
+        </div>`;
+        (b.why_works||[]).slice(0,2).forEach(w=>{h+='<div class="csq pos" style="font-size:.76rem">✅ '+w+'</div>';});
+        (b.why_not_works||[]).slice(0,2).forEach(w=>{h+='<div class="csq neg" style="font-size:.76rem">❌ '+w+'</div>';});
+        h+=`<div style="font-size:.76rem;margin-top:.5rem;color:var(--texte-secondary)">Incorporation : ${b.process?.temp_incorporation_parfum||'?'} | Charge: ${b.process?.charge_parfum_max||'?'} | Maturation : ${b.process?.cure||'?'}</div>`;
+        h+='</div>';
+    });
+    return h;
+}
+
+// ═══ CHARTS ═══
+function renderChartVol(){
+    const el=document.getElementById('cv-vol');if(!el)return;
+    const vol=PROF.volatility||{};
+    const labels=['très haute','haute','moyenne','basse','très basse'];
+    const keys=['très_haute','haute','moyenne','basse','très_basse'];
+    const data=keys.map(k=>Math.round((vol[k]?.pct||0)*10)/10);
+    CHARTS.vol=new Chart(el,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:['#c62828','#e65100','#ff8f00','#2e7d32','#1565c0'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:11}}}}}});
+}
+function renderChartReg(){
+    const el=document.getElementById('cv-reg');if(!el)return;
+    const reg=TW.by_register||{};
+    const labels=['Tête','Cœur','Fond'];
+    const colds=[reg.tête?.cold||0,reg.coeur?.cold||0,reg.fond?.cold||0];
+    const hots=[reg.tête?.hot||0,reg.coeur?.hot||0,reg.fond?.hot||0];
+    const mx=Math.max(...colds,...hots,1e-10);
+    CHARTS.reg=new Chart(el,{type:'bar',data:{labels,datasets:[
+        {label:'❄️ Cold',data:colds.map(v=>v/mx*100),backgroundColor:'#42a5f5'},
+        {label:'🔥 Hot',data:hots.map(v=>v/mx*100),backgroundColor:'#ff7043'}
+    ]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{title:{display:true,text:'Contribution relative %'}}},plugins:{legend:{position:'top'}}}});
+}
+function renderChartComp(){
+    const el=document.getElementById('cv-comp');if(!el)return;
+    const a=COMP.analyses||{};const keys=Object.keys(a);
+    const labels=keys.map(k=>a[k].wax_name?.replace('Cire de ','').replace(' hydrogénée','').replace(' raffinée','')||k);
+    const colds=keys.map(k=>a[k].cold_throw_index);
+    const hots=keys.map(k=>a[k].hot_throw_index);
+    const mx=Math.max(...colds,...hots,1e-10);
+    CHARTS.comp=new Chart(el,{type:'bar',data:{labels,datasets:[
+        {label:'❄️ Diffusion à froid',data:colds.map(v=>v/mx*100),backgroundColor:'#1976d2'},
+        {label:'🔥 Diffusion à chaud',data:hots.map(v=>v/mx*100),backgroundColor:'#e65100'}
+    ]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{title:{display:true,text:'Index relatif %'}}},plugins:{legend:{position:'top'}}}});
+}
+</script>
+</body>
+</html>

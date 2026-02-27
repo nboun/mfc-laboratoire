@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opérateurs — MFC Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC">
+            <div class="brand-text"><h1>LABORATOIRE</h1><span>Opérateurs</span></div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a>
+            <a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+            <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html" class="active">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">👥 Opérateurs du laboratoire</h3>
+                <button class="btn btn-primary" onclick="openModal()">+ Nouvel opérateur</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Initiales</th>
+                            <th>Nom</th>
+                            <th>Rôle</th>
+                            <th>Email</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="operators-table">
+                        <tr><td colspan="6" class="loading"><div class="spinner"></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Journal d'activité -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">📋 Journal d'activité</h3>
+                <div style="display:flex;gap:0.5rem;">
+                    <select id="filter-operator" class="form-control" style="font-size:0.78rem;" onchange="loadActivity()">
+                        <option value="">Tous les opérateurs</option>
+                    </select>
+                    <select id="filter-entity" class="form-control" style="font-size:0.78rem;" onchange="loadActivity()">
+                        <option value="">Toutes les entités</option>
+                        <option value="echantillon">Échantillons</option>
+                        <option value="formulation">Formulations</option>
+                        <option value="test">Tests</option>
+                        <option value="cycle">Cycles</option>
+                    </select>
+                </div>
+            </div>
+            <div id="activity-log" style="max-height:500px;overflow-y:auto;padding:0 0.5rem;">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal opérateur -->
+    <div class="modal-overlay" id="op-modal">
+        <div class="modal" style="max-width:500px;">
+            <div class="modal-header"><h2 id="modal-title">Nouvel opérateur</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label>Nom complet *</label>
+                    <input type="text" class="form-control" id="op_name" placeholder="Ex: Marie Dupont" required>
+                </div>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Initiales * (2-3 lettres)</label>
+                        <input type="text" class="form-control" id="op_initials" placeholder="Ex: MD" maxlength="3" style="text-transform:uppercase;" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Rôle</label>
+                        <select class="form-control" id="op_role">
+                            <option value="opérateur">Opérateur</option>
+                            <option value="formulateur">Formulateur</option>
+                            <option value="responsable labo">Responsable labo</option>
+                            <option value="directeur">Directeur</option>
+                            <option value="stagiaire">Stagiaire</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email (optionnel)</label>
+                    <input type="email" class="form-control" id="op_email" placeholder="Ex: m.dupont@mfc.fr">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="saveOperator()">💾 Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let operators = [];
+
+        async function loadOperators() {
+            try {
+                const r = await fetch('/api/operators');
+                operators = await r.json();
+                const tb = document.getElementById('operators-table');
+                if (!operators.length) {
+                    tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">👥</div><p>Aucun opérateur</p><button class="btn btn-primary" onclick="openModal()">Ajouter le premier</button></div></td></tr>';
+                    return;
+                }
+                tb.innerHTML = operators.map(o => `
+                    <tr style="${!o.active ? 'opacity:0.5;' : ''}">
+                        <td><span style="background:${o.active ? 'var(--mfc-cire)' : '#999'};color:#fff;padding:0.2rem 0.5rem;border-radius:12px;font-weight:700;font-size:0.82rem;">${o.initials}</span></td>
+                        <td><strong>${o.name}</strong></td>
+                        <td>${o.role || 'opérateur'}</td>
+                        <td>${o.email || '—'}</td>
+                        <td>${o.active ? '<span style="color:#27ae60;">✅ Actif</span>' : '<span style="color:#999;">Inactif</span>'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="editOperator(${o.id})">✎</button>
+                            ${o.active 
+                                ? `<button class="btn btn-sm" onclick="toggleOperator(${o.id}, 0)" style="background:#e74c3c;color:#fff;" title="Désactiver">✕</button>`
+                                : `<button class="btn btn-sm" onclick="toggleOperator(${o.id}, 1)" style="background:#27ae60;color:#fff;" title="Réactiver">✓</button>`
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Remplir le filtre opérateur du journal
+                const sel = document.getElementById('filter-operator');
+                sel.innerHTML = '<option value="">Tous les opérateurs</option>' + 
+                    operators.filter(o => o.active).map(o => `<option value="${o.id}">${o.initials} — ${o.name}</option>`).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadActivity() {
+            const op = document.getElementById('filter-operator').value;
+            const entity = document.getElementById('filter-entity').value;
+            let url = '/api/activity?limit=100';
+            if (op) url += '&operator=' + op;
+            if (entity) url += '&entity=' + entity;
+            
+            try {
+                const r = await fetch(url);
+                const activities = await r.json();
+                const el = document.getElementById('activity-log');
+                
+                if (!activities.length) {
+                    el.innerHTML = '<div style="padding:2rem;text-align:center;color:#999;">Aucune activité enregistrée</div>';
+                    return;
+                }
+
+                const icons = {
+                    'création': '📋', 'modification': '✏️', 'validation': '✅', 'suppression': '🗑️',
+                    'test_lancé': '🔥', 'cycle_enregistré': '📊', 'impression': '🖨️',
+                    'echantillon': '📋', 'formulation': '🧪', 'test': '🔥', 'cycle': '📊'
+                };
+
+                el.innerHTML = activities.map(a => {
+                    const date = new Date(a.created_at);
+                    const timeStr = date.toLocaleDateString('fr-FR', {day:'2-digit',month:'short'}) + ' ' + 
+                                   date.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+                    return `<div style="display:flex;align-items:center;padding:0.5rem 0;border-bottom:1px solid #f0ebe3;gap:0.5rem;">
+                        <span style="font-size:0.9rem;">${icons[a.action] || icons[a.entity_type] || '📌'}</span>
+                        <span style="background:var(--mfc-cire);color:#fff;padding:0.1rem 0.4rem;border-radius:10px;font-size:0.68rem;font-weight:700;min-width:32px;text-align:center;">${a.operator_name === 'Non identifié' ? '?' : (operators.find(o=>o.id===a.operator_id)?.initials || a.operator_name?.substring(0,3) || '?')}</span>
+                        <span style="flex:1;font-size:0.82rem;">
+                            <strong style="color:var(--mfc-cire);">${a.operator_name}</strong> · 
+                            ${a.action} ${a.entity_type} 
+                            ${a.entity_code ? '<span style="color:#888;">' + a.entity_code + '</span>' : ''}
+                            ${a.detail ? '<br><span style="font-size:0.75rem;color:#888;">' + a.detail + '</span>' : ''}
+                        </span>
+                        <span style="font-size:0.68rem;color:#999;min-width:85px;text-align:right;">${timeStr}</span>
+                    </div>`;
+                }).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        function openModal(id) {
+            document.getElementById('edit-id').value = id || '';
+            document.getElementById('op_name').value = '';
+            document.getElementById('op_initials').value = '';
+            document.getElementById('op_role').value = 'opérateur';
+            document.getElementById('op_email').value = '';
+            document.getElementById('modal-title').textContent = id ? 'Modifier opérateur' : 'Nouvel opérateur';
+            
+            if (id) {
+                const o = operators.find(x => x.id === id);
+                if (o) {
+                    document.getElementById('op_name').value = o.name;
+                    document.getElementById('op_initials').value = o.initials;
+                    document.getElementById('op_role').value = o.role || 'opérateur';
+                    document.getElementById('op_email').value = o.email || '';
+                }
+            }
+            document.getElementById('op-modal').classList.add('active');
+        }
+
+        function closeModal() { document.getElementById('op-modal').classList.remove('active'); }
+
+        async function saveOperator() {
+            const name = document.getElementById('op_name').value.trim();
+            const initials = document.getElementById('op_initials').value.trim().toUpperCase();
+            if (!name || !initials) { alert('Nom et initiales obligatoires'); return; }
+            
+            const data = {
+                name, initials,
+                role: document.getElementById('op_role').value,
+                email: document.getElementById('op_email').value || null
+            };
+            
+            const editId = document.getElementById('edit-id').value;
+            const url = editId ? '/api/operators/' + editId : '/api/operators';
+            const method = editId ? 'PUT' : 'POST';
+            
+            await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+            closeModal();
+            loadOperators();
+        }
+
+        function editOperator(id) { openModal(id); }
+
+        async function toggleOperator(id, active) {
+            await fetch('/api/operators/' + id, {
+                method: 'PUT',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ active })
+            });
+            loadOperators();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => { loadOperators(); loadActivity(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    </script>
+    <script src="/js/operator-selector.js"></script>
+    <script src="/js/cache-buster.js"></script>
+</body>
+</html>

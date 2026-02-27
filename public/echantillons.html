@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Échantillons - MFC Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC">
+            <div class="brand-text">
+                <h1>LABORATOIRE</h1>
+                <span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html" class="active">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a><a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+                <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="container">
+        <!-- Workflow global -->
+        <div class="workflow-bar">
+            <div class="workflow-step active"><span class="step-num">1</span><span class="step-label">Échantillon</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step"><span class="step-num">2</span><span class="step-label">Formulation</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step"><span class="step-num">3</span><span class="step-label">Test combustion</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step"><span class="step-num">4</span><span class="step-label">Validation</span></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">📋 Gestion des échantillons</h3>
+                <button class="btn btn-primary" onclick="openSampleModal()">+ Nouvel échantillon</button>
+            </div>
+            <div class="filters">
+                <select id="filter-status" class="form-control">
+                    <option value="">Tous les statuts</option>
+                    <option value="demande">Demande</option>
+                    <option value="en_cours">En cours</option>
+                    <option value="en_attente">En attente</option>
+                    <option value="en_test">En test</option>
+                    <option value="validé">Validé</option>
+                </select>
+                <input type="text" class="form-control" id="search-input" placeholder="Rechercher..." style="min-width: 250px;">
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N°</th><th>Client</th><th>Type</th><th>Dimensions</th><th>Masse</th>
+                            <th>Parfum</th><th>Couleur</th><th>Statut</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="samples-table"><tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ÉCHANTILLON -->
+    <div class="modal-overlay" id="sample-modal">
+        <div class="modal" style="max-width: 780px;">
+            <div class="modal-header">
+                <h2 id="sample-modal-title">Nouvel échantillon</h2>
+                <button class="modal-close" onclick="closeSampleModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="sample-form">
+                    <input type="hidden" id="sample-edit-id">
+                    <input type="hidden" id="sample_number">
+
+                    <div class="alert alert-info" style="margin-bottom: 1.25rem;">
+                        <strong>N° :</strong> <span id="auto-number-label">Génération...</span>
+                    </div>
+
+                    <div class="form-section">Client</div>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <div class="input-group">
+                            <select class="form-control" id="client_id"><option value="">Sélectionner...</option></select>
+                            <button type="button" class="btn btn-secondary" onclick="openClientModal()">+</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Demande client</label>
+                        <textarea class="form-control" id="client_request" rows="2" placeholder="Description de la demande..."></textarea>
+                    </div>
+
+                    <div class="form-section">Spécifications bougie</div>
+                    <div class="grid grid-4">
+                        <div class="form-group">
+                            <label>Type</label>
+                            <select class="form-control" id="candle_type">
+                                <option value="container">Container</option>
+                                <option value="pilier">Pilier</option>
+                                <option value="chandelle">Chandelle</option>
+                                <option value="chauffe-plat">Chauffe-plat</option>
+                                <option value="massage">Massage</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Diamètre (mm)</label><input type="number" class="form-control" id="diameter" placeholder="65"></div>
+                        <div class="form-group"><label>Hauteur (mm)</label><input type="number" class="form-control" id="height" placeholder="80"></div>
+                        <div class="form-group"><label>Masse totale (g) *</label><input type="number" class="form-control" id="total_mass" placeholder="200" step="0.1"></div>
+                    </div>
+
+                    <div class="form-section">Parfum</div>
+                    <div class="form-group">
+                        <label>Sélectionner un parfum existant</label>
+                        <div class="input-group">
+                            <select class="form-control" id="fragrance_id" onchange="onFragranceSelect()">
+                                <option value="">— Saisie libre ou sélection —</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" type="button" onclick="openFragranceModal()" title="Créer un nouveau parfum">+</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-2">
+                        <div class="form-group"><label>Nom du parfum</label><input type="text" class="form-control" id="fragrance_name" placeholder="Ex: Rose de Mai"></div>
+                        <div class="form-group"><label>Référence</label><input type="text" class="form-control" id="fragrance_ref" placeholder="Ex: DR-30364971"></div>
+                    </div>
+                    <div class="grid grid-2">
+                        <div class="form-group"><label>Fournisseur parfum</label><input type="text" class="form-control" id="fragrance_supplier" placeholder="Ex: Givaudan"></div>
+                        <div class="form-group"><label>Pourcentage (%)</label><input type="number" class="form-control" id="fragrance_percentage" placeholder="10" step="0.1" min="0" max="15"></div>
+                    </div>
+                    <div id="fragrance-info" style="display:none;">
+                        <div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:0.6rem 0.75rem; margin-bottom:0.5rem; font-size:0.82rem;">
+                            <span id="fragrance-detail"></span>
+                        </div>
+                    </div>
+
+                    <!-- Zone FDS Parfum -->
+                    <div id="fds-zone" style="margin-bottom:1rem;">
+                        <div id="fds-drop" style="border:2px dashed #d4a853; border-radius:10px; padding:1rem; text-align:center; cursor:pointer; background:#fdfbf6; transition:all 0.2s;"
+                             onclick="document.getElementById('fds-file-input').click()"
+                             ondragover="event.preventDefault(); this.style.background='#f5eedd'; this.style.borderColor='#b8942e';"
+                             ondragleave="this.style.background='#fdfbf6'; this.style.borderColor='#d4a853';"
+                             ondrop="event.preventDefault(); this.style.background='#fdfbf6'; this.style.borderColor='#d4a853'; handleSampleFDS(event.dataTransfer.files[0]);">
+                            <div id="fds-drop-label" style="font-size:0.82rem; color:#999;">
+                                📄 Glisser la FDS du parfum ici <span style="font-size:0.72rem;">(optionnel)</span>
+                            </div>
+                            <input type="file" id="fds-file-input" accept=".pdf" style="display:none" onchange="if(this.files[0]) handleSampleFDS(this.files[0])">
+                        </div>
+                        <div id="fds-results" style="display:none; margin-top:0.5rem;"></div>
+                    </div>
+
+                    <div class="form-section">Couleur (Pantone / RGB / HEX)</div>
+                    <div class="grid grid-3">
+                        <div class="form-group pantone-picker-container">
+                            <label>Recherche Pantone</label>
+                            <input type="text" class="form-control" id="pantone_search" placeholder="Tapez un code ou nom..." autocomplete="off"
+                                   oninput="searchPantone(this.value)" onfocus="searchPantone(this.value)">
+                            <div class="pantone-search-results" id="pantone-results"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Code Pantone</label>
+                            <input type="text" class="form-control" id="pantone_code" placeholder="485 C" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Code HEX</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="pantone_hex" placeholder="#DA291C" oninput="onHexInput(this.value)">
+                                <input type="color" id="color_picker" value="#000000" style="width: 45px; height: 38px; padding: 0; border: 1px solid var(--mfc-gris-fonce); border-radius: var(--radius-sm); cursor: pointer;" oninput="onPickerInput(this.value)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-3">
+                        <div class="form-group"><label>R</label><input type="number" class="form-control" id="color_r" min="0" max="255" placeholder="0" oninput="onRGBInput()"></div>
+                        <div class="form-group"><label>G</label><input type="number" class="form-control" id="color_g" min="0" max="255" placeholder="0" oninput="onRGBInput()"></div>
+                        <div class="form-group"><label>B</label><input type="number" class="form-control" id="color_b" min="0" max="255" placeholder="0" oninput="onRGBInput()"></div>
+                    </div>
+                    <div id="color-preview-bar" style="height: 30px; border-radius: var(--radius-sm); border: 1px solid var(--mfc-gris-fonce); margin-bottom: 1rem; background: transparent;"></div>
+
+                    <div class="form-section">Workflow</div>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label>Statut</label>
+                            <select class="form-control" id="sample_status">
+                                <option value="demande">Demande</option>
+                                <option value="en_cours">En cours</option>
+                                <option value="en_attente">En attente</option>
+                                <option value="en_test">En test</option>
+                                <option value="validé">Validé</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                            <p class="text-muted" style="font-size: 0.82rem;">
+                                💡 <strong>En attente</strong> = action suspendue.<br>
+                                Passez à l'étape suivante quand vous êtes prêt.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="form-section">Notes</div>
+                    <div class="form-group"><textarea class="form-control" id="notes" rows="2" placeholder="Remarques..."></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSampleModal()">Annuler</button>
+                <button class="btn btn-success" id="btn-save-wait" onclick="saveSample('en_attente')" style="display:none;">⏸ Mettre en attente</button>
+                <button class="btn btn-primary" onclick="saveSample()">💾 Enregistrer</button>
+                <button class="btn btn-primary" id="btn-next-step" onclick="saveAndNextStep()" style="display:none;">→ Étape suivante</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CLIENT -->
+    <div class="modal-overlay" id="client-modal">
+        <div class="modal" style="max-width: 500px;">
+            <div class="modal-header"><h2>Nouveau client</h2><button class="modal-close" onclick="closeClientModal()">&times;</button></div>
+            <div class="modal-body">
+                <form id="client-form">
+                    <div class="form-group"><label>Nom / Contact *</label><input type="text" class="form-control" id="client_name" required placeholder="Nom du contact"></div>
+                    <div class="form-group"><label>Société</label><input type="text" class="form-control" id="client_company" placeholder="Nom de l'entreprise"></div>
+                    <div class="form-group"><label>Adresse</label><textarea class="form-control" id="client_address" rows="2" placeholder="Adresse complète"></textarea></div>
+                    <div class="form-group"><label>Type</label><select class="form-control" id="client_type_field"><option value="client">Client</option><option value="operateur">Opérateur</option></select></div>
+                    <div class="form-group"><label>Notes</label><textarea class="form-control" id="client_notes" rows="2"></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeClientModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="saveClient()">💾 Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantone database -->
+    <script src="js/pantone-db.js"></script>
+
+    <script>
+        let samples = [], clients = [], fragrances = [];
+
+        function showToast(m, t='success') {
+            const c = document.getElementById('toast-container'), d = document.createElement('div');
+            d.className = `toast toast-${t}`; d.textContent = m; c.appendChild(d);
+            setTimeout(() => d.remove(), 3500);
+        }
+        function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+        // === PANTONE PICKER ===
+        function searchPantone(query) {
+            const container = document.getElementById('pantone-results');
+            if (!query || query.length < 1) { container.classList.remove('active'); return; }
+            const q = query.toLowerCase();
+            const matches = (typeof PANTONE_DB !== 'undefined' ? PANTONE_DB : [])
+                .filter(p => p.code.toLowerCase().includes(q) || p.hex.toLowerCase().includes(q))
+                .slice(0, 15);
+            if (matches.length === 0) { container.classList.remove('active'); return; }
+            container.innerHTML = matches.map(p => `
+                <div class="pantone-item" onclick="selectPantone('${p.code}','${p.hex}',${p.r||0},${p.g||0},${p.b||0})">
+                    <div class="swatch" style="background:${p.hex}"></div>
+                    <div class="info"><span class="name">${p.code}</span><br><span class="hex">${p.hex} — R:${p.r} V:${p.g} B:${p.b}</span></div>
+                </div>
+            `).join('');
+            container.classList.add('active');
+        }
+
+        function selectPantone(code, hex, r, g, b) {
+            document.getElementById('pantone_code').value = code;
+            document.getElementById('pantone_hex').value = hex;
+            document.getElementById('color_picker').value = hex;
+            document.getElementById('color_r').value = r;
+            document.getElementById('color_g').value = g;
+            document.getElementById('color_b').value = b;
+            document.getElementById('color-preview-bar').style.background = hex;
+            document.getElementById('pantone_search').value = code;
+            document.getElementById('pantone-results').classList.remove('active');
+        }
+
+        function onHexInput(hex) {
+            if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                document.getElementById('color_picker').value = hex;
+                document.getElementById('color-preview-bar').style.background = hex;
+                const r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+                document.getElementById('color_r').value = r;
+                document.getElementById('color_g').value = g;
+                document.getElementById('color_b').value = b;
+            }
+        }
+
+        function onPickerInput(hex) {
+            document.getElementById('pantone_hex').value = hex;
+            document.getElementById('color-preview-bar').style.background = hex;
+            const r = parseInt(hex.substr(1,2),16), g = parseInt(hex.substr(3,2),16), b = parseInt(hex.substr(5,2),16);
+            document.getElementById('color_r').value = r;
+            document.getElementById('color_g').value = g;
+            document.getElementById('color_b').value = b;
+        }
+
+        function onRGBInput() {
+            const r = parseInt(document.getElementById('color_r').value) || 0;
+            const g = parseInt(document.getElementById('color_g').value) || 0;
+            const b = parseInt(document.getElementById('color_b').value) || 0;
+            const hex = '#' + [r,g,b].map(x => Math.min(255,Math.max(0,x)).toString(16).padStart(2,'0')).join('');
+            document.getElementById('pantone_hex').value = hex;
+            document.getElementById('color_picker').value = hex;
+            document.getElementById('color-preview-bar').style.background = hex;
+        }
+
+        // Close Pantone results on outside click
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.pantone-picker-container')) {
+                document.getElementById('pantone-results').classList.remove('active');
+            }
+        });
+
+        // === CLIENTS ===
+        async function loadFragrances() {
+            try {
+                const res = await fetch('/api/fragrances'); fragrances = await res.json();
+                const s = document.getElementById('fragrance_id');
+                s.innerHTML = '<option value="">— Saisie libre ou sélection —</option>';
+                fragrances.forEach(f => {
+                    const o = document.createElement('option');
+                    o.value = f.id;
+                    const av = (f.available === null || f.available === undefined) ? 1 : f.available;
+                    o.textContent = (av === 0 ? '⊘ ' : '✓ ') + f.name + (f.reference ? ' [' + f.reference + ']' : '') + (f.supplier_name ? ' — ' + f.supplier_name : '') + (f.recommended_percentage ? ' (' + f.recommended_percentage + '%)' : '');
+                    if (av === 0) o.style.color = '#999';
+                    s.appendChild(o);
+                });
+            } catch(e) {}
+        }
+
+        function onFragranceSelect() {
+            const fid = document.getElementById('fragrance_id').value;
+            const div = document.getElementById('fragrance-info');
+            if (!fid) { div.style.display = 'none'; return; }
+            const f = fragrances.find(x => x.id == fid);
+            if (!f) { div.style.display = 'none'; return; }
+            document.getElementById('fragrance_name').value = f.name;
+            if (f.recommended_percentage && !document.getElementById('fragrance_percentage').value) {
+                document.getElementById('fragrance_percentage').value = f.recommended_percentage;
+            }
+            div.style.display = 'block';
+            let info = '<strong style="color:var(--mfc-cire);">' + f.name + '</strong>';
+            if (f.reference) info += ' — Réf: ' + f.reference;
+            if (f.supplier_name) info += ' | Fournisseur: ' + f.supplier_name;
+            if (f.family) info += ' | Famille: ' + f.family;
+            if (f.ifra_max) info += ' | IFRA max: ' + f.ifra_max + '%';
+            if (f.flash_point) info += ' | Point éclair: ' + f.flash_point + '°C';
+            document.getElementById('fragrance-detail').innerHTML = info;
+        }
+
+        async function loadClients() {
+            const res = await fetch('/api/clients'); clients = await res.json(); updateClientSelect();
+        }
+        function updateClientSelect() {
+            const s = document.getElementById('client_id'), v = s.value;
+            s.innerHTML = '<option value="">Sélectionner...</option>';
+            clients.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.company ? `${c.name} — ${c.company}` : c.name; s.appendChild(o); });
+            if (v) s.value = v;
+        }
+        function openClientModal() { document.getElementById('client-form').reset(); document.getElementById('client-modal').classList.add('active'); }
+        function closeClientModal() { document.getElementById('client-modal').classList.remove('active'); }
+        async function saveClient() {
+            const name = document.getElementById('client_name').value.trim();
+            if (!name) { showToast('Nom obligatoire','error'); return; }
+            const res = await fetch('/api/clients', { method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({ name, company: document.getElementById('client_company').value.trim(),
+                    address: document.getElementById('client_address').value.trim(),
+                    client_type: document.getElementById('client_type_field').value,
+                    notes: document.getElementById('client_notes').value.trim() }) });
+            const r = await res.json();
+            if (r.error) { showToast(r.error,'error'); return; }
+            await loadClients(); document.getElementById('client_id').value = r.id;
+            closeClientModal(); showToast(`Client "${name}" créé`);
+        }
+
+        // === ÉCHANTILLONS ===
+        async function loadSamples() {
+            const status = document.getElementById('filter-status').value;
+            let url = '/api/samples'; if (status) url += '?status=' + status;
+            const res = await fetch(url); samples = await res.json(); renderSamples();
+        }
+
+        function renderSamples() {
+            const tbody = document.getElementById('samples-table');
+            const q = document.getElementById('search-input').value.toLowerCase();
+            let f = samples;
+            if (q) f = samples.filter(s => (s.sample_number||'').toLowerCase().includes(q) || (s.client_name||'').toLowerCase().includes(q) || (s.fragrance_name||'').toLowerCase().includes(q));
+            if (!f.length) { tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="icon">📋</div><p>${q?'Aucun résultat':'Aucun échantillon'}</p>${!q?'<button class="btn btn-primary" onclick="openSampleModal()">Créer le premier</button>':''}</div></td></tr>`; return; }
+            tbody.innerHTML = f.map(s => `
+                <tr>
+                    <td><strong style="color:var(--mfc-cire);">${s.sample_number}</strong></td>
+                    <td>${s.client_name||'<span class="text-muted">—</span>'}</td>
+                    <td>${cap(s.candle_type)||'—'}</td>
+                    <td>${s.diameter&&s.height?s.diameter+'×'+s.height+'mm':'—'}</td>
+                    <td>${s.total_mass?s.total_mass+'g':'—'}</td>
+                    <td>${s.fragrance_name||'—'} ${s.fragrance_ref?'<span class="text-muted">('+s.fragrance_ref+')</span>':''} ${s.fragrance_percentage?'<span class="text-muted">'+s.fragrance_percentage+'%</span>':''}</td>
+                    <td>${s.pantone_hex?'<span class="color-preview" style="background:'+s.pantone_hex+'"></span>':''}${s.pantone_code||'—'}</td>
+                    <td><span class="badge badge-${s.status}">${s.status}</span></td>
+                    <td class="actions">
+                        ${s.status==='demande'||s.status==='en_cours'?'<button class="btn btn-success btn-sm" onclick="advanceStatus('+s.id+')" title="Étape suivante">→</button>':''}
+                        <button class="btn btn-sm" onclick="window.open('/print.html?type=echantillon&id='+${s.id},'_blank')" style="background:#666;color:#fff;" title="Imprimer fiche échantillon">🖨️</button>
+                        <button class="btn btn-sm" onclick="location.href='formulations.html?sample='+${s.id}" style="background:var(--mfc-cire);color:#fff;" title="Créer une formulation">🧪</button>
+                        ${s.status!=='en_attente'?'<button class="btn btn-sm" style="background:rgba(168,85,247,0.2);color:#c084fc;border:1px solid rgba(168,85,247,0.3);" onclick="setWaiting('+s.id+')" title="Mettre en attente">⏸</button>':'<button class="btn btn-sm" style="background:rgba(34,197,94,0.2);color:#4ade80;border:1px solid rgba(34,197,94,0.3);" onclick="resumeSample('+s.id+')" title="Reprendre">▶</button>'}
+                        <button class="btn btn-secondary btn-sm" onclick="editSample(${s.id})">✎</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteSample(${s.id})">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // === WORKFLOW STATUS ACTIONS ===
+        const STATUS_FLOW = ['demande','en_cours','en_test','validé'];
+        async function advanceStatus(id) {
+            const s = samples.find(x => x.id === id);
+            if (!s) return;
+            const idx = STATUS_FLOW.indexOf(s.status);
+            const next = idx >= 0 && idx < STATUS_FLOW.length - 1 ? STATUS_FLOW[idx + 1] : null;
+            if (!next) { showToast('Déjà à l\'étape finale','error'); return; }
+            await fetch('/api/samples/' + id, { method:'PUT', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({...s, status: next}) });
+            loadSamples();
+            showToast(`Échantillon passé à : ${next}`);
+            // If moving to en_test, offer to create formulation
+            if (next === 'en_test') {
+                if (confirm('Voulez-vous créer une formulation pour cet échantillon ?')) {
+                    window.location.href = 'formulations.html?sample=' + id;
+                }
+            }
+        }
+
+        async function setWaiting(id) {
+            const s = samples.find(x => x.id === id);
+            if (!s) return;
+            s._previousStatus = s.status;
+            await fetch('/api/samples/' + id, { method:'PUT', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({...s, status: 'en_attente', notes: (s.notes||'') + '\n[Mis en attente depuis: ' + s.status + ']'}) });
+            loadSamples(); showToast('Mis en attente');
+        }
+
+        async function resumeSample(id) {
+            const s = samples.find(x => x.id === id);
+            if (!s) return;
+            // Try to find previous status from notes
+            const match = (s.notes||'').match(/\[Mis en attente depuis: (\w+)\]/);
+            const prev = match ? match[1] : 'en_cours';
+            await fetch('/api/samples/' + id, { method:'PUT', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({...s, status: prev}) });
+            loadSamples(); showToast('Repris : ' + prev);
+        }
+
+        async function saveAndNextStep() {
+            await saveSample();
+            // After save, advance to next step
+            const editId = document.getElementById('sample-edit-id').value;
+            if (editId) advanceStatus(parseInt(editId));
+        }
+
+        // === MODAL ÉCHANTILLON ===
+        async function openSampleModal(id = null) {
+            // Reset form FIRST, then set edit id
+            document.getElementById('sample-form').reset();
+            document.getElementById('sample-edit-id').value = id || '';
+            document.getElementById('sample_number').value = '';
+            document.getElementById('sample-modal-title').textContent = id ? 'Modifier l\'échantillon' : 'Nouvel échantillon';
+            document.getElementById('color-preview-bar').style.background = 'transparent';
+            document.getElementById('color_picker').value = '#000000';
+
+            // Reset elements not covered by form.reset()
+            document.getElementById('fragrance-info').style.display = 'none';
+            document.getElementById('fragrance-detail').innerHTML = '';
+            document.getElementById('fds-results').style.display = 'none';
+            document.getElementById('fds-results').innerHTML = '';
+            document.getElementById('fds-drop-label').innerHTML = '📄 Glisser la FDS du parfum ici <span style="font-size:0.72rem;">(optionnel)</span>';
+            document.getElementById('pantone_search').value = '';
+            document.getElementById('color_r').value = '';
+            document.getElementById('color_g').value = '';
+            document.getElementById('color_b').value = '';
+            // Force select elements to default (first option)
+            document.getElementById('fragrance_id').selectedIndex = 0;
+            document.getElementById('client_id').selectedIndex = 0;
+            document.getElementById('sample_status').selectedIndex = 0;
+            document.getElementById('auto-number-label').textContent = 'Génération...';
+
+            // Show/hide workflow buttons
+            document.getElementById('btn-save-wait').style.display = id ? '' : 'none';
+            document.getElementById('btn-next-step').style.display = id ? '' : 'none';
+
+            if (id) {
+                const s = samples.find(x => x.id === id);
+                if (s) {
+                    document.getElementById('sample_number').value = s.sample_number;
+                    document.getElementById('auto-number-label').textContent = s.sample_number;
+                    document.getElementById('client_id').value = s.client_id || '';
+                    document.getElementById('client_request').value = s.client_request || '';
+                    document.getElementById('candle_type').value = s.candle_type || 'container';
+                    document.getElementById('diameter').value = s.diameter || '';
+                    document.getElementById('height').value = s.height || '';
+                    document.getElementById('total_mass').value = s.total_mass || '';
+                    document.getElementById('fragrance_name').value = s.fragrance_name || '';
+                    document.getElementById('fragrance_ref').value = s.fragrance_ref || '';
+                    document.getElementById('fragrance_supplier').value = s.fragrance_supplier || '';
+                    document.getElementById('fragrance_percentage').value = s.fragrance_percentage || '';
+                    if (s.fragrance_id) { document.getElementById('fragrance_id').value = s.fragrance_id; onFragranceSelect(); }
+                    document.getElementById('pantone_code').value = s.pantone_code || '';
+                    document.getElementById('pantone_hex').value = s.pantone_hex || '';
+                    document.getElementById('sample_status').value = s.status || 'demande';
+                    document.getElementById('notes').value = s.notes || '';
+                    if (s.pantone_hex) {
+                        onHexInput(s.pantone_hex);
+                        document.getElementById('pantone_search').value = s.pantone_code || '';
+                    }
+                }
+            } else {
+                try {
+                    const res = await fetch('/api/samples/next-number');
+                    const d = await res.json();
+                    document.getElementById('sample_number').value = d.sample_number;
+                    document.getElementById('auto-number-label').textContent = d.sample_number;
+                } catch(e) { document.getElementById('auto-number-label').textContent = 'Erreur'; }
+            }
+            document.getElementById('sample-modal').classList.add('active');
+        }
+
+        function closeSampleModal() { document.getElementById('sample-modal').classList.remove('active'); }
+
+        async function saveSample(forceStatus) {
+            const editId = document.getElementById('sample-edit-id').value;
+            const num = document.getElementById('sample_number').value;
+            if (!num) { showToast('Numéro non généré','error'); return; }
+            const data = {
+                sample_number: num,
+                client_id: document.getElementById('client_id').value || null,
+                client_request: document.getElementById('client_request').value,
+                candle_type: document.getElementById('candle_type').value,
+                diameter: document.getElementById('diameter').value || null,
+                height: document.getElementById('height').value || null,
+                total_mass: document.getElementById('total_mass').value || null,
+                fragrance_name: document.getElementById('fragrance_name').value,
+                fragrance_ref: document.getElementById('fragrance_ref').value,
+                fragrance_supplier: document.getElementById('fragrance_supplier').value,
+                fragrance_percentage: document.getElementById('fragrance_percentage').value || null,
+                fragrance_id: document.getElementById('fragrance_id').value || null,
+                pantone_code: document.getElementById('pantone_code').value,
+                pantone_hex: document.getElementById('pantone_hex').value,
+                status: forceStatus || document.getElementById('sample_status').value,
+                notes: document.getElementById('notes').value
+            };
+            const url = editId ? '/api/samples/' + editId : '/api/samples';
+            const method = editId ? 'PUT' : 'POST';
+            const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+            const r = await res.json();
+            if (r.error) { showToast(r.error,'error'); return; }
+            // Log activité opérateur
+            mfcLogActivity(editId ? 'modification' : 'création', 'echantillon', editId || r.id, data.sample_number, data.fragrance_name || '');
+            closeSampleModal(); loadSamples();
+            showToast(editId ? 'Modifié' : 'Créé');
+        }
+
+        function editSample(id) { openSampleModal(id); }
+        async function deleteSample(id) {
+            const s = samples.find(x => x.id === id);
+            if (confirm('Supprimer ' + (s?s.sample_number:'') + ' ?')) {
+                await fetch('/api/samples/'+id, {method:'DELETE'}); loadSamples(); showToast('Supprimé');
+            }
+        }
+
+        // === ESCAPE / CLIC ===
+        document.addEventListener('keydown', e => { if (e.key==='Escape') { closeSampleModal(); closeClientModal(); } });
+        document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target===o) o.classList.remove('active'); }));
+
+        // === INIT ===
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClients(); loadFragrances(); loadSamples();
+            document.getElementById('filter-status').addEventListener('change', loadSamples);
+            document.getElementById('search-input').addEventListener('input', renderSamples);
+            
+            // Auto-ouverture depuis FDS
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('from') === 'fds') {
+                setTimeout(() => {
+                    openSampleModal();
+                    setTimeout(() => {
+                        if (params.get('fragrance_name')) document.getElementById('fragrance_name').value = params.get('fragrance_name');
+                        if (params.get('fragrance_ref')) document.getElementById('fragrance_ref').value = params.get('fragrance_ref');
+                        if (params.get('fragrance_supplier')) document.getElementById('fragrance_supplier').value = params.get('fragrance_supplier');
+                    }, 300);
+                }, 500);
+                // Nettoyer l'URL
+                window.history.replaceState({}, '', 'echantillons.html');
+            }
+            // Vérifier si l'extracteur FDS est disponible
+            checkFDSAvailability();
+        });
+
+        async function checkFDSAvailability() {
+            try {
+                const res = await fetch('/api/fds/status');
+                const data = await res.json();
+                if (!data.ok) {
+                    const label = document.getElementById('fds-drop-label');
+                    const dropZone = document.getElementById('fds-drop');
+                    if (label && dropZone) {
+                        label.innerHTML = '⚠️ <strong>Extraction FDS indisponible</strong><br><span style="font-size:0.7rem;color:#e67e22;">' + data.error + '</span>';
+                        label.style.color = '#e67e22';
+                        dropZone.style.borderColor = '#e67e22';
+                        dropZone.style.opacity = '0.7';
+                    }
+                }
+            } catch(e) {}
+        }
+    </script>
+    <!-- ══════════ MODAL CRÉATION PARFUM ══════════ -->
+    <div class="modal-overlay" id="fragrance-modal">
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header"><h2>Nouveau parfum</h2><button class="modal-close" onclick="closeFragranceModal()">&times;</button></div>
+            <div class="modal-body">
+                <form id="fragrance-form">
+                    <div class="form-section">Identification</div>
+                    <div class="grid grid-2">
+                        <div class="form-group"><label>Nom *</label><input type="text" class="form-control" id="fr_name" required placeholder="Ex: Rose de Mai"></div>
+                        <div class="form-group"><label>Référence</label><input type="text" class="form-control" id="fr_reference" placeholder="Ex: GF-ROS-002"></div>
+                    </div>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label>Fournisseur *</label>
+                            <div class="input-group">
+                                <select class="form-control" id="fr_supplier_id" required>
+                                    <option value="">— Sélectionner —</option>
+                                </select>
+                                <button class="btn btn-primary btn-sm" type="button" onclick="toggleNewSupplier('fr')" title="Nouveau fournisseur">+</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Famille olfactive</label>
+                            <select class="form-control" id="fr_family">
+                                <option value="">—</option>
+                                <option>Florale</option><option>Boisée</option><option>Ambrée</option>
+                                <option>Hespéridée</option><option>Orientale</option><option>Gourmande</option>
+                                <option>Aromatique</option><option>Verte</option><option>Fougère</option>
+                                <option>Chyprée</option><option>Cuirée</option><option>Marine</option>
+                                <option>Musquée</option><option>Fruitée</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="fr-new-supplier" style="display:none;">
+                        <div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:0.75rem; margin-bottom:0.75rem;">
+                            <p style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--mfc-cire); font-weight:600; margin-bottom:0.5rem;">Nouveau fournisseur</p>
+                            <div class="grid grid-3" style="gap:0.5rem;">
+                                <div class="form-group"><label>Nom *</label><input type="text" class="form-control" id="fr_sup_name" placeholder="Ex: Givaudan"></div>
+                                <div class="form-group"><label>Pays</label><input type="text" class="form-control" id="fr_sup_country" placeholder="Ex: Suisse"></div>
+                                <div class="form-group"><label>Site web</label><input type="text" class="form-control" id="fr_sup_website" placeholder="https://..."></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">Spécifications techniques</div>
+                    <div class="grid grid-3">
+                        <div class="form-group"><label>IFRA max (%)</label><input type="number" class="form-control" id="fr_ifra" step="0.1" placeholder="10"></div>
+                        <div class="form-group"><label>Point éclair (°C)</label><input type="number" class="form-control" id="fr_flash" step="1" placeholder="80"></div>
+                        <div class="form-group"><label>% recommandé</label><input type="number" class="form-control" id="fr_pct" step="0.1" placeholder="8"></div>
+                    </div>
+
+                    <div class="form-section">Notes</div>
+                    <div class="form-group"><textarea class="form-control" id="fr_notes" rows="2" placeholder="Comportement en combustion, compatibilités, remarques..."></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeFragranceModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="saveFragrance()">💾 Enregistrer le parfum</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fragrance modal management
+        let allSuppliers = [];
+
+        async function loadSuppliers() {
+            try {
+                const r = await fetch('/api/suppliers'); allSuppliers = await r.json();
+                const s = document.getElementById('fr_supplier_id');
+                s.innerHTML = '<option value="">— Sélectionner —</option>';
+                allSuppliers.filter(x => 
+                    x.specialty && (x.specialty.toLowerCase().includes('parfum') || 
+                    x.specialty.toLowerCase().includes('arôme') || 
+                    x.specialty.toLowerCase().includes('composition'))
+                ).forEach(sup => {
+                    const o = document.createElement('option');
+                    o.value = sup.id; o.textContent = sup.name + ' (' + sup.country + ')';
+                    s.appendChild(o);
+                });
+                // Add all others in a separate group
+                const others = allSuppliers.filter(x => 
+                    !x.specialty || (!x.specialty.toLowerCase().includes('parfum') && 
+                    !x.specialty.toLowerCase().includes('arôme') && 
+                    !x.specialty.toLowerCase().includes('composition'))
+                );
+                if (others.length) {
+                    const og = document.createElement('optgroup');
+                    og.label = 'Autres fournisseurs';
+                    others.forEach(sup => {
+                        const o = document.createElement('option');
+                        o.value = sup.id; o.textContent = sup.name + ' (' + sup.country + ')';
+                        og.appendChild(o);
+                    });
+                    s.appendChild(og);
+                }
+            } catch(e) {}
+        }
+
+        function openFragranceModal() {
+            document.getElementById('fragrance-form').reset();
+            document.getElementById('fr-new-supplier').style.display = 'none';
+            document.getElementById('fragrance-modal').classList.add('active');
+        }
+        function closeFragranceModal() { document.getElementById('fragrance-modal').classList.remove('active'); }
+
+        function toggleNewSupplier(prefix) {
+            const div = document.getElementById(prefix + '-new-supplier');
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+            if (div.style.display === 'block') {
+                document.getElementById(prefix + '_supplier_id').value = '';
+                document.getElementById(prefix + '_sup_name').focus();
+            }
+        }
+
+        async function saveFragrance() {
+            const name = document.getElementById('fr_name').value.trim();
+            let supplier_id = document.getElementById('fr_supplier_id').value;
+            if (!name) { showToast('Nom obligatoire', 'error'); return; }
+
+            // Create supplier if needed
+            const newSupDiv = document.getElementById('fr-new-supplier');
+            if (newSupDiv.style.display !== 'none') {
+                const supName = document.getElementById('fr_sup_name').value.trim();
+                if (!supName) { showToast('Nom du fournisseur obligatoire', 'error'); return; }
+                const supR = await fetch('/api/suppliers', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+                    name: supName,
+                    country: document.getElementById('fr_sup_country').value,
+                    specialty: 'Parfums et arômes',
+                    website: document.getElementById('fr_sup_website').value
+                })});
+                const supRes = await supR.json();
+                if (supRes.error) { showToast(supRes.error, 'error'); return; }
+                supplier_id = supRes.id;
+                showToast('Fournisseur "' + supName + '" créé');
+                await loadSuppliers();
+            }
+
+            if (!supplier_id) { showToast('Fournisseur obligatoire', 'error'); return; }
+
+            const data = {
+                name,
+                reference: document.getElementById('fr_reference').value,
+                supplier_id: parseInt(supplier_id),
+                family: document.getElementById('fr_family').value,
+                ifra_max: parseFloat(document.getElementById('fr_ifra').value) || null,
+                flash_point: parseFloat(document.getElementById('fr_flash').value) || null,
+                recommended_percentage: parseFloat(document.getElementById('fr_pct').value) || null,
+                notes: document.getElementById('fr_notes').value
+            };
+            const r = await fetch('/api/fragrances', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const res = await r.json();
+            if (res.error) { showToast(res.error, 'error'); return; }
+            closeFragranceModal();
+            showToast('Parfum "' + name + '" créé');
+            await loadFragrances();
+            document.getElementById('fragrance_id').value = res.id;
+            onFragranceSelect();
+        }
+
+        // Load suppliers on init
+        document.addEventListener('DOMContentLoaded', () => { loadSuppliers(); });
+
+        // ── FDS Drop on Sample ──
+        let sampleFDSData = null;
+
+        async function handleSampleFDS(file) {
+            if (!file || !file.name.toLowerCase().endsWith('.pdf')) return;
+            const label = document.getElementById('fds-drop-label');
+            label.innerHTML = '⏳ Extraction de <strong>' + file.name + '</strong>...';
+
+            const form = new FormData();
+            form.append('fds', file);
+            // Pass fragrance name for crossref matching
+            const fname = document.getElementById('fragrance_name').value;
+            if (fname) form.append('fragrance_name', fname);
+
+            try {
+                const res = await fetch('/api/formulateur/parse-and-analyze', { method: 'POST', body: form });
+                const data = await res.json();
+                if (data.success && data.fds) {
+                    sampleFDSData = data.fds;
+                    const id = data.fds.identification || {};
+                    const nb = data.fds.nb_composants || 0;
+                    const fp = data.fds.proprietes_physiques?.flash_point_c || '?';
+                    label.innerHTML = '✅ <strong>' + (id.nom || file.name) + '</strong> — ' + nb + ' molécules · Flash ' + fp + '°C';
+                    label.style.color = '#27ae60';
+
+                    // Auto-fill from FDS: nom, référence, fournisseur (écrase toujours)
+                    if (id.nom) {
+                        document.getElementById('fragrance_name').value = id.nom;
+                    }
+                    if (id.code) {
+                        document.getElementById('fragrance_ref').value = id.code;
+                    }
+                    if (id.fournisseur) {
+                        document.getElementById('fragrance_supplier').value = id.fournisseur;
+                    }
+
+                    const resultsDiv = document.getElementById('fds-results');
+                    let html = '';
+
+                    // Flash safety (PRIORITÉ)
+                    if (data.crossref?.flash_safety) {
+                        for (const fs of data.crossref.flash_safety) {
+                            if (fs.severity === 'ok') continue;
+                            const colors = { danger: '#fde8e8;border-left:3px solid #e74c3c', warning: '#fef9e7;border-left:3px solid #f39c12', info: '#eaf2f8;border-left:3px solid #3498db' };
+                            const icons = { danger: '🔴', warning: '🟡', info: 'ℹ️' };
+                            html += '<div style="background:' + (colors[fs.severity] || colors.info) + ';padding:0.5rem 0.7rem;border-radius:6px;margin-bottom:0.3rem;font-size:0.78rem;">';
+                            html += '<strong>' + (icons[fs.severity] || '') + ' ' + fs.message + '</strong>';
+                            if (fs.detail) html += '<br><span style="color:#666;">' + fs.detail + '</span>';
+                            html += '</div>';
+                        }
+                    }
+
+                    // Validated matches
+                    if (data.crossref?.validated_matches?.length > 0) {
+                        const m = data.crossref.validated_matches[0];
+                        html += '<div style="background:#e8f5e9;padding:0.5rem 0.7rem;border-radius:6px;margin-bottom:0.3rem;font-size:0.78rem;border-left:3px solid #27ae60;">';
+                        html += '<strong>✅ Déjà validé :</strong> ' + m.recette + ' chez ' + m.client + ' · ' + m.pct_parfum + '% · mèche ' + m.meche;
+                        html += '</div>';
+                    }
+
+                    // Molecule × cire insights
+                    if (data.crossref?.learned_insights?.length > 0) {
+                        for (const ins of data.crossref.learned_insights) {
+                            const colors = { danger: '#fde8e8;border-left:3px solid #e74c3c', warning: '#fef9e7;border-left:3px solid #f39c12', info: '#eaf2f8;border-left:3px solid #3498db' };
+                            const icons = { danger: '🔴', warning: '🟡', info: '💡' };
+                            html += '<div style="background:' + (colors[ins.severity] || colors.info) + ';padding:0.5rem 0.7rem;border-radius:6px;margin-bottom:0.3rem;font-size:0.78rem;">';
+                            html += '<strong>' + (icons[ins.severity] || '') + ' ' + ins.rule + '</strong>';
+                            if (ins.detail) html += '<br><span style="color:#666;">' + ins.detail + '</span>';
+                            html += '</div>';
+                        }
+                    }
+                    
+                    // Recommendation
+                    if (data.crossref?.recommendation) {
+                        const conf = { haute: '🟢', moyenne: '🟡' };
+                        html += '<div style="background:#fff8e1;padding:0.5rem 0.7rem;border-radius:6px;margin-bottom:0.3rem;font-size:0.78rem;border-left:3px solid #d4a853;">';
+                        html += (conf[data.crossref.recommendation.confidence] || '') + ' <strong>' + data.crossref.recommendation.message + '</strong>';
+                        html += '</div>';
+                    }
+
+                    // Molecule analysis detail (dépliable)
+                    if (data.crossref?.molecule_analysis?.length > 0) {
+                        html += '<details style="margin-top:0.3rem;"><summary style="cursor:pointer;font-size:0.75rem;color:#d4a853;font-weight:600;">🔬 Détail molécules × combustion (' + data.crossref.molecule_analysis.length + ')</summary>';
+                        html += '<div style="padding:0.3rem;font-size:0.72rem;">';
+                        for (const mol of data.crossref.molecule_analysis) {
+                            html += '<div style="padding:0.2rem 0;"><strong>' + mol.nom + '</strong> ' + mol.concentration + '%';
+                            for (const imp of mol.impact) {
+                                const ic = { danger: '🔴', warning: '🟡', info: '🔵' };
+                                html += '<br><span style="margin-left:0.5rem;color:#666;">' + (ic[imp.severity]||'') + ' ' + imp.message + '</span>';
+                            }
+                            html += '</div>';
+                        }
+                        html += '</div></details>';
+                    }
+
+                    // Top molecules badges
+                    if (data.fds.composition && data.fds.composition.length) {
+                        html += '<div style="margin-top:0.4rem;display:flex;flex-wrap:wrap;gap:0.25rem;">';
+                        data.fds.composition.slice(0, 6).forEach(m => {
+                            html += '<span style="background:#f0ebe3;padding:0.12rem 0.45rem;border-radius:10px;font-size:0.7rem;color:#555;">' + (m.nom_chimique || m.cas) + ' (' + m.concentration + '%)</span>';
+                        });
+                        if (data.fds.composition.length > 6) html += '<span style="font-size:0.7rem;color:#999;">+' + (data.fds.composition.length - 6) + '</span>';
+                        html += '</div>';
+                    }
+
+                    // Link to detailed formulateur with sample data
+                    const _fp = new URLSearchParams();
+                    const _fv = (id) => document.getElementById(id)?.value || '';
+                    if (_fv('candle_type')) _fp.set('type', _fv('candle_type'));
+                    if (_fv('diameter')) _fp.set('diameter', _fv('diameter'));
+                    if (_fv('height')) _fp.set('height', _fv('height'));
+                    if (_fv('total_mass')) _fp.set('mass', _fv('total_mass'));
+                    if (_fv('fragrance_name')) _fp.set('fragrance', _fv('fragrance_name'));
+                    if (_fv('fragrance_ref')) _fp.set('ref', _fv('fragrance_ref'));
+                    if (_fv('fragrance_supplier')) _fp.set('supplier', _fv('fragrance_supplier'));
+                    if (_fv('fragrance_percentage')) _fp.set('pct', _fv('fragrance_percentage'));
+                    const _furl = 'formulateur.html' + (_fp.toString() ? '?' + _fp.toString() : '');
+                    html += '<div style="margin-top:0.5rem;text-align:right;"><a href="' + _furl + '" style="font-size:0.75rem;color:#d4a853;">→ Analyse détaillée dans le Formulateur</a></div>';
+
+                    resultsDiv.innerHTML = html;
+                    resultsDiv.style.display = 'block';
+                } else {
+                    label.innerHTML = '❌ Erreur : ' + (data.error || 'extraction impossible');
+                    label.style.color = '#e74c3c';
+                }
+            } catch (e) {
+                label.innerHTML = '❌ ' + e.message;
+                label.style.color = '#e74c3c';
+            }
+        }
+    </script>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

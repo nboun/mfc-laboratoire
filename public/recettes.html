@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Recettes MFC - Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar"><div class="navbar-brand"><img src="img/logo-mfc-carre.jpg" alt="MFC"><div class="brand-text"><h1>LABORATOIRE</h1><span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span></div></div>
+        <div class="navbar-menu"><a href="index.html">Accueil</a><a href="echantillons.html">Échantillons</a><a href="formulations.html">Formulations</a><a href="tests.html">Tests</a><a href="matieres.html">Matières</a><a href="recettes.html" class="active">Recettes</a><a href="connaissances.html">IA</a><a href="fds.html">FDS Parfums</a><a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a><a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a><a href="operateurs.html">Opérateurs</a></div>
+    </nav>
+    <div class="container">
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">📋 Recettes MFC — Savoir-faire maison</h3>
+                <button class="btn btn-primary" onclick="openRecipeModal()">+ Nouvelle recette</button>
+            </div>
+            <div class="tabs" style="padding:0 1rem;flex-wrap:wrap;">
+                <button class="tab active" onclick="filterType('')">Toutes</button>
+                <button class="tab" onclick="filterType('container')">Container</button>
+                <button class="tab" onclick="filterType('pilier')">Pilier</button>
+                <button class="tab" onclick="filterType('moulee')">Moulée</button>
+                <button class="tab" onclick="filterType('chandelle')">Chandelle</button>
+                <button class="tab" onclick="filterType('votive')">Votive</button>
+                <button class="tab" onclick="filterType('figurine')">Figurine</button>
+            </div>
+            <div id="recipes-list" style="padding:1rem;"></div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- MODAL RECETTE -->
+    <div class="modal-overlay" id="recipe-modal">
+        <div class="modal" style="max-width:750px;">
+            <div class="modal-header"><h2 id="recipe-modal-title">Nouvelle recette</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+            <div class="modal-body" style="max-height:75vh;overflow-y:auto;">
+                <input type="hidden" id="r_id">
+
+                <p style="background:#e3f2fd;padding:0.6rem;border-radius:var(--radius);font-size:0.78rem;color:#1565c0;margin-bottom:1rem;">💡 Décrivez votre recette comme vous l'expliqueriez à un collègue. Le champ "Savoir empirique" est le plus important — c'est là que votre expérience prend de la valeur.</p>
+
+                <div class="grid grid-3" style="gap:0.75rem;">
+                    <div class="form-group"><label>Nom de la recette *</label><input type="text" id="r_name" class="form-control" placeholder="Ex: Base Container Souple"></div>
+                    <div class="form-group"><label>Code</label><input type="text" id="r_code" class="form-control" placeholder="Ex: BC-01"></div>
+                    <div class="form-group"><label>Type de bougie *</label><select id="r_type" class="form-control"><option value="container">Container</option><option value="pilier">Pilier</option><option value="moulee">Moulée</option><option value="chandelle">Chandelle</option><option value="votive">Votive</option><option value="chauffe-plat">Chauffe-plat</option><option value="figurine">Figurine</option><option value="massage">Massage</option><option value="other">Autre</option></select></div>
+                </div>
+
+                <div class="form-group"><label>Description courte</label><input type="text" id="r_desc" class="form-control" placeholder="Ex: Base polyvalente pour containers verre, bonne diffusion"></div>
+
+                <div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:1rem;margin:1rem 0;">
+                    <p style="font-size:0.72rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.5rem;">🧪 Composition cires</p>
+                    <div id="wax-rows"></div>
+                    <button class="btn btn-sm btn-secondary" onclick="addWaxRow()" style="margin-top:0.5rem;">+ Ajouter une cire</button>
+                </div>
+
+                <div class="grid grid-2" style="gap:0.75rem;">
+                    <div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.8rem;">
+                        <p style="font-size:0.72rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.5rem;">📏 Dimensions compatibles</p>
+                        <div class="grid grid-2" style="gap:0.5rem;">
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">Ø min (mm)</label><input type="number" id="r_diam_min" class="form-control" placeholder="50"></div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">Ø max (mm)</label><input type="number" id="r_diam_max" class="form-control" placeholder="90"></div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">H min (mm)</label><input type="number" id="r_h_min" class="form-control" placeholder="60"></div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">H max (mm)</label><input type="number" id="r_h_max" class="form-control" placeholder="120"></div>
+                        </div>
+                    </div>
+                    <div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.8rem;">
+                        <p style="font-size:0.72rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.5rem;">🌸 Parfum & Couleur</p>
+                        <div class="grid grid-3" style="gap:0.5rem;">
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">% min</label><input type="number" step="0.5" id="r_frag_min" class="form-control" placeholder="6"></div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">% max</label><input type="number" step="0.5" id="r_frag_max" class="form-control" placeholder="10"></div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">% défaut</label><input type="number" step="0.5" id="r_frag_def" class="form-control" placeholder="8"></div>
+                        </div>
+                        <div style="margin-top:0.6rem;">
+                            <p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.3rem;">🎨 Colorants (% de la masse cire, en sus)</p>
+                            <div id="colorant-rows"></div>
+                            <button class="btn btn-sm btn-secondary" type="button" onclick="addColorantRow()" style="margin-top:0.3rem;">+ Ajouter un colorant</button>
+                        </div>
+                        <input type="hidden" id="r_color" value="0.20">
+                    </div>
+                </div>
+
+                <div class="grid grid-2" style="gap:0.75rem;margin-top:0.75rem;">
+                    <div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.8rem;">
+                        <p style="font-size:0.72rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.5rem;">🕯️ Mèche recommandée</p>
+                        <div class="grid grid-2" style="gap:0.5rem;">
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">Série</label>
+                                <select id="r_wick_series_sel" class="form-control" onchange="filterRecipeWicks()">
+                                    <option value="">— Toutes —</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">Référence</label>
+                                <select id="r_wick_ref_sel" class="form-control" onchange="showRecipeWickInfo()">
+                                    <option value="">— Sélectionner —</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="r-wick-info" style="display:none;margin-top:0.4rem;background:var(--fond);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.5rem 0.6rem;font-size:0.78rem;"></div>
+                        <input type="hidden" id="r_wick_series">
+                        <div class="form-group" style="margin:0.5rem 0 0;"><label style="font-size:0.68rem;">Guide tailles (complément libre)</label><textarea id="r_wick_guide" class="form-control" rows="2" placeholder="Ex: Ø50-60→LX14, Ø60-70→LX16-18, Ø70-80→LX20"></textarea></div>
+                        <div style="margin-top:0.6rem;border-top:1px solid var(--bordure-legere);padding-top:0.5rem;">
+                            <p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.3rem;">🔥 Mèches testées / validées</p>
+                            <p style="font-size:0.65rem;color:var(--texte-muted);margin:0 0 0.4rem;">Associez les mèches qui fonctionnent avec cette recette, par diamètre</p>
+                            <div id="wick-test-rows"></div>
+                            <button class="btn btn-sm btn-secondary" type="button" onclick="addWickTestRow()" style="margin-top:0.3rem;">+ Ajouter une mèche testée</button>
+                        </div>
+                    </div>
+                    <div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.8rem;">
+                        <p style="font-size:0.72rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.5rem;">🌡️ Fabrication</p>
+                        <div class="grid grid-2" style="gap:0.5rem;">
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">T° coulée min</label><input type="number" id="r_pour_min" class="form-control" placeholder="70"></div>
+                            <div class="form-group" style="margin:0;"><label style="font-size:0.68rem;">T° coulée max</label><input type="number" id="r_pour_max" class="form-control" placeholder="75"></div>
+                        </div>
+                        <div class="form-group" style="margin:0.4rem 0 0;"><label style="font-size:0.68rem;">Cure (heures)</label><input type="number" id="r_cure" class="form-control" value="72" style="width:80px;"></div>
+                    </div>
+                </div>
+
+                <div style="background:linear-gradient(135deg, #fff8e1, #fff3e0);border:2px solid #e67e22;border-radius:var(--radius);padding:1rem;margin:1rem 0;">
+                    <p style="font-size:0.78rem;text-transform:uppercase;color:#e67e22;font-weight:700;margin:0 0 0.5rem;">🧠 SAVOIR EMPIRIQUE — le plus important !</p>
+                    <p style="font-size:0.72rem;color:#666;margin:0 0 0.5rem;">Décrivez tout ce que l'expérience vous a appris sur cette recette : ce qui marche, ce qui ne marche pas, les variantes selon les parfums, les retours clients récurrents...</p>
+                    <div class="form-group" style="margin:0 0 0.5rem;"><label style="font-size:0.72rem;font-weight:600;">Observations & savoir-faire</label><textarea id="r_empirical" class="form-control" rows="4" placeholder="Ex: Fonctionne très bien avec les floraux. Avec les boisés lourds, monter à 9-10% et préférer LX 18 au lieu de 16. Le client qui veut plus de diffusion → remplacer 10% de la cire dure par de la souple. Bien laisser curer 72h sinon le parfum ne prend pas."></textarea></div>
+                    <div class="form-group" style="margin:0 0 0.5rem;"><label style="font-size:0.72rem;font-weight:600;">Variantes connues</label><textarea id="r_variants" class="form-control" rows="3" placeholder="Ex: Pour les grands formats (Ø90+), ajouter 5% de micro pour la tenue. Pour un effet crémeux, remplacer la 5603 par de la 5403."></textarea></div>
+                    <div class="form-group" style="margin:0 0 0.5rem;"><label style="font-size:0.72rem;font-weight:600;">⚠️ Pièges à éviter</label><textarea id="r_pitfalls" class="form-control" rows="2" placeholder="Ex: Ne pas dépasser 80mm de diamètre sinon ça tunnel. Le parfum X ne fonctionne pas avec cette base."></textarea></div>
+                    <div class="form-group" style="margin:0;"><label style="font-size:0.72rem;font-weight:600;">Idéale pour...</label><input type="text" id="r_bestfor" class="form-control" placeholder="Ex: Bougies parfumées haut de gamme, floraux et gourmands, containers verre"></div>
+                </div>
+            </div>
+            <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveRecipe()">Enregistrer</button></div>
+        </div>
+    </div>
+
+    <!-- MODAL DETAIL -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal" style="max-width:700px;">
+            <div class="modal-header"><h2 id="detail-title">Recette</h2><button class="modal-close" onclick="document.getElementById('detail-modal').classList.remove('active')">&times;</button></div>
+            <div class="modal-body" id="detail-body" style="max-height:75vh;overflow-y:auto;"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('detail-modal').classList.remove('active')">Fermer</button>
+                <button class="btn btn-primary" id="btn-edit-recipe">✎ Modifier</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toast(m,t='success'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;c.appendChild(e);setTimeout(()=>e.remove(),3500);}
+        let allRecipes=[], allWaxes=[], allWicks=[], allColorants=[], currentFilter='';
+        let colorantRowCount=0, wickTestRowCount=0;
+
+        async function loadWaxes(){ const r=await fetch('/api/waxes'); allWaxes=await r.json(); }
+        async function loadRecipeWicks(){
+            const r=await fetch('/api/wicks'); allWicks=await r.json();
+            const series=new Set(); allWicks.forEach(w=>{if(w.series)series.add(w.series);});
+            const sel=document.getElementById('r_wick_series_sel');
+            sel.innerHTML='<option value="">— Toutes —</option>';
+            [...series].sort().forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sel.appendChild(o);});
+            filterRecipeWicks();
+        }
+        function filterRecipeWicks(){
+            const series=document.getElementById('r_wick_series_sel').value;
+            const filtered=series?allWicks.filter(w=>w.series===series):allWicks;
+            const sel=document.getElementById('r_wick_ref_sel');
+            const cur=sel.value;
+            sel.innerHTML='<option value="">— Sélectionner —</option>';
+            filtered.forEach(w=>{const o=document.createElement('option');o.value=w.reference;
+                o.textContent=w.reference+' (Ø'+( w.diameter_min||'?')+'-'+(w.diameter_max||'?')+'mm)'+(w.meters_per_kg?' — '+Math.round(w.meters_per_kg)+' m/kg':'');
+                sel.appendChild(o);});
+            if(cur)sel.value=cur;
+            // Sync hidden field
+            document.getElementById('r_wick_series').value=series||'';
+            showRecipeWickInfo();
+        }
+        function showRecipeWickInfo(){
+            const ref=document.getElementById('r_wick_ref_sel').value;
+            const div=document.getElementById('r-wick-info');
+            if(!ref){div.style.display='none';return;}
+            const w=allWicks.find(x=>x.reference===ref);
+            if(!w){div.style.display='none';return;}
+            div.style.display='block';
+            let html='<strong style="color:var(--mfc-cire);">'+w.reference+'</strong> — '+w.series;
+            html+=' | Ø '+(w.diameter_min||'?')+'–'+(w.diameter_max||'?')+' mm';
+            if(w.meters_per_kg) html+=' | <strong>'+Math.round(w.meters_per_kg)+' m/kg</strong> ('+(1000/w.meters_per_kg).toFixed(2)+' g/m)';
+            if(w.chemical_treatment&&w.chemical_treatment!=='Aucun') html+=' | Traitement: '+w.chemical_treatment;
+            if(w.recommended_container_mm) html+=' | Container Ø'+w.recommended_container_mm+' mm';
+            if(w.self_trimming) html+=' | Auto-rognage ✓';
+            if(w.type) html+='<br><span class="text-muted" style="font-size:0.72rem;">'+w.type+(w.core&&w.core!=='Sans'?' — noyau '+w.core:'')+(w.wax_type?' — '+w.wax_type:'')+(w.application?' — '+w.application:'')+'</span>';
+            if(w.manufacturer_notes) html+='<br><span class="text-muted" style="font-size:0.7rem;">'+w.manufacturer_notes+'</span>';
+            div.innerHTML=html;
+            // Sync series hidden
+            document.getElementById('r_wick_series').value=w.series||document.getElementById('r_wick_series_sel').value||'';
+        }
+        function filterType(t){ currentFilter=t; document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); event.target.classList.add('active'); loadRecipes(); }
+
+        async function loadRecipes(){
+            let url='/api/recipes'; if(currentFilter)url+='?type='+currentFilter;
+            const r=await fetch(url); allRecipes=await r.json();
+            const el=document.getElementById('recipes-list');
+            if(!allRecipes.length){ el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>Aucune recette</p><p class="text-muted" style="font-size:0.75rem;">Créez votre première recette pour numériser votre savoir-faire.</p><button class="btn btn-primary" onclick="openRecipeModal()">+ Créer une recette</button></div>'; return; }
+            el.innerHTML=allRecipes.map(r=>{
+                const typeLabel={container:'Container',pilier:'Pilier',moulee:'Moulée',chandelle:'Chandelle',votive:'Votive','chauffe-plat':'Chauffe-plat',figurine:'Figurine',massage:'Massage'}[r.candle_type]||r.candle_type;
+                const waxStr=r.waxes.map(w=>(w.reference||w.wax_name)+' '+w.percentage+'%').join(' + ');
+                return '<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;cursor:pointer;" onclick="viewRecipe('+r.id+')">'+
+                    '<div style="display:flex;justify-content:space-between;align-items:start;">'+
+                    '<div><strong style="font-size:1rem;color:var(--mfc-cire);">'+r.name+'</strong>'+(r.code?' <span style="font-size:0.7rem;background:var(--mfc-or-pale);padding:1px 6px;border-radius:8px;">'+r.code+'</span>':'')+
+                    '<br><span style="font-size:0.75rem;background:rgba(163,45,3,0.08);padding:1px 6px;border-radius:8px;">'+typeLabel+'</span>'+
+                    (r.diameter_min?' <span class="text-muted" style="font-size:0.72rem;">Ø'+r.diameter_min+'-'+r.diameter_max+'mm</span>':'')+
+                    (r.fragrance_pct_default?' <span class="text-muted" style="font-size:0.72rem;">Parfum '+r.fragrance_pct_default+'%</span>':'')+
+                    '</div>'+
+                    '<div style="text-align:right;"><span style="font-size:0.68rem;color:var(--texte-muted);">'+r.usage_count+' formulation(s)</span>'+
+                    '<div style="margin-top:0.3rem;" class="actions" onclick="event.stopPropagation()"><button class="btn btn-secondary btn-sm" onclick="editRecipe('+r.id+')">✎</button><button class="btn btn-danger btn-sm" onclick="deleteRecipe('+r.id+')">✕</button></div></div></div>'+
+                    (waxStr?'<p style="font-size:0.78rem;margin:0.3rem 0 0;color:#555;">🧪 '+waxStr+'</p>':'')+
+                    (r.description?'<p style="font-size:0.75rem;margin:0.2rem 0 0;color:var(--texte-muted);">'+r.description+'</p>':'')+
+                    (r.empirical_notes?'<p style="font-size:0.72rem;margin:0.3rem 0 0;color:#e67e22;font-style:italic;">💡 '+r.empirical_notes.substring(0,120)+(r.empirical_notes.length>120?'...':'')+'</p>':'')+
+                    '</div>';
+            }).join('');
+        }
+
+        // ══════ WAX COMPOSITION ROWS ══════
+        let waxRowCount=0;
+        async function loadRecipeColorants(){
+            const r=await fetch('/api/colorants'); allColorants=await r.json();
+        }
+        function addColorantRow(data){
+            colorantRowCount++;
+            const i=colorantRowCount;
+            const div=document.createElement('div');
+            div.id='cr-'+i;
+            div.style.cssText='display:flex;gap:0.4rem;align-items:center;margin-bottom:0.3rem;';
+            div.innerHTML='<div style="flex:2;"><select class="form-control cr-sel" style="font-size:0.78rem;" data-idx="'+i+'"><option value="">— Sélectionner —</option>'+
+                allColorants.map(c=>'<option value="'+c.id+'"'+(data&&data.colorant_id==c.id?' selected':'')+'>'+c.name+(c.series?' ('+c.series+')':'')+(c.form?' — '+c.form:'')+'</option>').join('')+
+                '</select></div>'+
+                '<div style="flex:0 0 70px;"><input type="number" class="form-control cr-pct" step="0.01" value="'+(data?data.percentage:0.20)+'" style="font-size:0.78rem;" placeholder="0.20"></div>'+
+                '<div style="flex:1;"><input type="text" class="form-control cr-notes" value="'+(data&&data.notes?data.notes:'')+'" style="font-size:0.78rem;" placeholder="Notes"></div>'+
+                '<button class="btn btn-danger btn-sm" onclick="removeColorantRow('+i+')" style="padding:0.1rem 0.4rem;">✕</button>';
+            document.getElementById('colorant-rows').appendChild(div);
+        }
+        function removeColorantRow(i){const el=document.getElementById('cr-'+i);if(el)el.remove();}
+        function getColorantData(){
+            const rows=document.querySelectorAll('#colorant-rows > div');
+            const result=[];
+            rows.forEach(r=>{
+                const sel=r.querySelector('.cr-sel');
+                const pct=r.querySelector('.cr-pct');
+                const notes=r.querySelector('.cr-notes');
+                if(sel&&sel.value){
+                    const c=allColorants.find(x=>x.id==sel.value);
+                    result.push({colorant_id:parseInt(sel.value),colorant_name:c?c.name:'',percentage:parseFloat(pct.value)||0.20,notes:notes.value||''});
+                }
+            });
+            return result;
+        }
+
+        function addWickTestRow(data){
+            wickTestRowCount++;
+            const i=wickTestRowCount;
+            const div=document.createElement('div');
+            div.id='wt-'+i;
+            div.style.cssText='display:flex;gap:0.3rem;align-items:center;margin-bottom:0.3rem;flex-wrap:wrap;';
+            // Série filter
+            const seriesSet=new Set(); allWicks.forEach(w=>{if(w.series)seriesSet.add(w.series);});
+            let seriesOpts='<option value="">Série</option>'+[...seriesSet].sort().map(s=>'<option value="'+s+'"'+(data&&data.series===s?' selected':'')+'>'+s+'</option>').join('');
+            // Wick select
+            const filteredWicks=data&&data.series?allWicks.filter(w=>w.series===data.series):allWicks;
+            let wickOpts='<option value="">— Mèche —</option>'+filteredWicks.map(w=>'<option value="'+w.id+'"'+(data&&data.wick_id==w.id?' selected':'')+'>'+w.reference+(w.meters_per_kg?' ('+Math.round(w.meters_per_kg)+' m/kg)':'')+'</option>').join('');
+            div.innerHTML=
+                '<select class="form-control wt-series" style="flex:0 0 80px;font-size:0.72rem;" onchange="onWtSeriesChange('+i+')">'+seriesOpts+'</select>'+
+                '<select class="form-control wt-wick" style="flex:1;font-size:0.72rem;">'+wickOpts+'</select>'+
+                '<input type="number" class="form-control wt-dmin" style="flex:0 0 55px;font-size:0.72rem;" placeholder="Ømin" value="'+(data&&data.diameter_min?data.diameter_min:'')+'">'+
+                '<input type="number" class="form-control wt-dmax" style="flex:0 0 55px;font-size:0.72rem;" placeholder="Ømax" value="'+(data&&data.diameter_max?data.diameter_max:'')+'">'+
+                '<select class="form-control wt-status" style="flex:0 0 100px;font-size:0.72rem;">'+
+                    '<option value="recommandée"'+(data&&data.status==='recommandée'?' selected':'')+'>✅ Recommandée</option>'+
+                    '<option value="validée"'+(data&&data.status==='validée'?' selected':'')+'>✓ Validée</option>'+
+                    '<option value="testée"'+(data&&data.status==='testée'?' selected':'')+'>🧪 Testée</option>'+
+                    '<option value="déconseillée"'+(data&&data.status==='déconseillée'?' selected':'')+'>⚠️ Déconseillée</option>'+
+                '</select>'+
+                '<input type="text" class="form-control wt-notes" style="flex:1;font-size:0.72rem;" placeholder="Notes" value="'+(data&&data.notes?data.notes:'')+'">'+
+                '<button class="btn btn-danger btn-sm" onclick="removeWickTestRow('+i+')" style="padding:0.1rem 0.4rem;">✕</button>';
+            document.getElementById('wick-test-rows').appendChild(div);
+        }
+        function onWtSeriesChange(i){
+            const row=document.getElementById('wt-'+i);
+            if(!row)return;
+            const series=row.querySelector('.wt-series').value;
+            const sel=row.querySelector('.wt-wick');
+            const filtered=series?allWicks.filter(w=>w.series===series):allWicks;
+            sel.innerHTML='<option value="">— Mèche —</option>'+filtered.map(w=>'<option value="'+w.id+'">'+w.reference+(w.meters_per_kg?' ('+Math.round(w.meters_per_kg)+' m/kg)':'')+'</option>').join('');
+        }
+        function removeWickTestRow(i){const el=document.getElementById('wt-'+i);if(el)el.remove();}
+        function getWickTestData(){
+            const rows=document.querySelectorAll('#wick-test-rows > div');
+            const result=[];
+            rows.forEach(r=>{
+                const wickSel=r.querySelector('.wt-wick');
+                if(wickSel&&wickSel.value){
+                    const w=allWicks.find(x=>x.id==parseInt(wickSel.value));
+                    result.push({
+                        wick_id:parseInt(wickSel.value),
+                        wick_reference:w?w.reference:wickSel.options[wickSel.selectedIndex].text,
+                        diameter_min:parseInt(r.querySelector('.wt-dmin').value)||null,
+                        diameter_max:parseInt(r.querySelector('.wt-dmax').value)||null,
+                        status:r.querySelector('.wt-status').value||'recommandée',
+                        notes:r.querySelector('.wt-notes').value||''
+                    });
+                }
+            });
+            return result;
+        }
+
+        function addWaxRow(data){
+            waxRowCount++;
+            const div=document.createElement('div');
+            div.id='wax-row-'+waxRowCount;
+            div.style.cssText='display:flex;gap:0.4rem;align-items:end;margin-bottom:0.4rem;';
+            div.innerHTML='<div style="flex:2;"><select class="form-control wr-wax" style="font-size:0.78rem;"><option value="">— Sélectionner ou saisir ci-après —</option>'+allWaxes.map(w=>'<option value="'+w.id+'"'+(data&&data.wax_id==w.id?' selected':'')+'>'+w.reference+' ('+w.name+')</option>').join('')+'</select></div>'+
+                '<div style="flex:1;"><input type="text" class="form-control wr-name" placeholder="Ou nom libre" value="'+(data?.wax_name||'')+'" style="font-size:0.78rem;"></div>'+
+                '<div style="width:60px;"><input type="number" class="form-control wr-pct" placeholder="%" value="'+(data?.percentage||'')+'" step="5" style="font-size:0.78rem;"></div>'+
+                '<div style="width:80px;"><input type="text" class="form-control wr-role" placeholder="Rôle" value="'+(data?.role||'')+'" style="font-size:0.78rem;"></div>'+
+                '<button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="height:36px;">✕</button>';
+            document.getElementById('wax-rows').appendChild(div);
+        }
+
+        function getWaxRows(){
+            const rows=[];
+            document.querySelectorAll('#wax-rows > div').forEach(div=>{
+                const waxId=div.querySelector('.wr-wax')?.value||null;
+                const name=div.querySelector('.wr-name')?.value||null;
+                const pct=parseFloat(div.querySelector('.wr-pct')?.value)||0;
+                const role=div.querySelector('.wr-role')?.value||null;
+                if(pct>0) rows.push({wax_id:waxId||null,wax_name:name,percentage:pct,role});
+            });
+            return rows;
+        }
+
+        // ══════ MODAL ══════
+        function openRecipeModal(recipe){
+            document.getElementById('r_id').value='';
+            document.getElementById('r_name').value='';
+            document.getElementById('r_code').value='';
+            document.getElementById('r_type').value=currentFilter||'container';
+            document.getElementById('r_desc').value='';
+            document.getElementById('r_diam_min').value='';
+            document.getElementById('r_diam_max').value='';
+            document.getElementById('r_h_min').value='';
+            document.getElementById('r_h_max').value='';
+            document.getElementById('r_frag_min').value='';
+            document.getElementById('r_frag_max').value='';
+            document.getElementById('r_frag_def').value='';
+            document.getElementById('r_color').value='0.20';
+            document.getElementById('r_wick_series').value='';
+            document.getElementById('r_wick_series_sel').value='';
+            document.getElementById('r_wick_ref_sel').value='';
+            document.getElementById('r-wick-info').style.display='none';
+            filterRecipeWicks();
+            document.getElementById('r_wick_guide').value='';
+            document.getElementById('r_pour_min').value='';
+            document.getElementById('r_pour_max').value='';
+            document.getElementById('r_cure').value='72';
+            document.getElementById('r_empirical').value='';
+            document.getElementById('r_variants').value='';
+            document.getElementById('r_pitfalls').value='';
+            document.getElementById('r_bestfor').value='';
+            document.getElementById('wax-rows').innerHTML='';
+            waxRowCount=0;
+            document.getElementById('colorant-rows').innerHTML='';
+            colorantRowCount=0;
+            document.getElementById('wick-test-rows').innerHTML='';
+            wickTestRowCount=0;
+            document.getElementById('recipe-modal-title').textContent='Nouvelle recette';
+            if(recipe){
+                document.getElementById('recipe-modal-title').textContent='Modifier : '+recipe.name;
+                document.getElementById('r_id').value=recipe.id;
+                document.getElementById('r_name').value=recipe.name||'';
+                document.getElementById('r_code').value=recipe.code||'';
+                document.getElementById('r_type').value=recipe.candle_type||'container';
+                document.getElementById('r_desc').value=recipe.description||'';
+                document.getElementById('r_diam_min').value=recipe.diameter_min||'';
+                document.getElementById('r_diam_max').value=recipe.diameter_max||'';
+                document.getElementById('r_h_min').value=recipe.height_min||'';
+                document.getElementById('r_h_max').value=recipe.height_max||'';
+                document.getElementById('r_frag_min').value=recipe.fragrance_pct_min||'';
+                document.getElementById('r_frag_max').value=recipe.fragrance_pct_max||'';
+                document.getElementById('r_frag_def').value=recipe.fragrance_pct_default||'';
+                document.getElementById('r_color').value=recipe.colorant_pct||0.20;
+                document.getElementById('r_wick_series').value=recipe.wick_series||'';
+                // Sync sélecteur catalogue mèche
+                if(recipe.wick_series){
+                    document.getElementById('r_wick_series_sel').value=recipe.wick_series;
+                    filterRecipeWicks();
+                }
+                document.getElementById('r_wick_guide').value=recipe.wick_size_guide||'';
+                document.getElementById('r_pour_min').value=recipe.pour_temp_min||'';
+                document.getElementById('r_pour_max').value=recipe.pour_temp_max||'';
+                document.getElementById('r_cure').value=recipe.cure_hours||72;
+                document.getElementById('r_empirical').value=recipe.empirical_notes||'';
+                document.getElementById('r_variants').value=recipe.known_variants||'';
+                document.getElementById('r_pitfalls').value=recipe.pitfalls||'';
+                document.getElementById('r_bestfor').value=recipe.best_for||'';
+                if(recipe.waxes) recipe.waxes.forEach(w=>addWaxRow(w));
+                if(recipe.colorants) recipe.colorants.forEach(c=>addColorantRow(c));
+                if(recipe.wicks_tested) recipe.wicks_tested.forEach(wt=>addWickTestRow(wt));
+            }
+            if(!recipe) addWaxRow();
+            document.getElementById('recipe-modal').classList.add('active');
+        }
+        function closeModal(){document.getElementById('recipe-modal').classList.remove('active');}
+
+        async function editRecipe(id){const r=await fetch('/api/recipes/'+id);const recipe=await r.json();openRecipeModal(recipe);}
+
+        async function saveRecipe(){
+            const id=document.getElementById('r_id').value;
+            const data={
+                name:document.getElementById('r_name').value,
+                code:document.getElementById('r_code').value||null,
+                candle_type:document.getElementById('r_type').value,
+                description:document.getElementById('r_desc').value,
+                diameter_min:parseInt(document.getElementById('r_diam_min').value)||null,
+                diameter_max:parseInt(document.getElementById('r_diam_max').value)||null,
+                height_min:parseInt(document.getElementById('r_h_min').value)||null,
+                height_max:parseInt(document.getElementById('r_h_max').value)||null,
+                fragrance_pct_min:parseFloat(document.getElementById('r_frag_min').value)||null,
+                fragrance_pct_max:parseFloat(document.getElementById('r_frag_max').value)||null,
+                fragrance_pct_default:parseFloat(document.getElementById('r_frag_def').value)||null,
+                colorant_pct:parseFloat(document.getElementById('r_color').value)||0.20,
+                wick_series:document.getElementById('r_wick_series').value||document.getElementById('r_wick_series_sel').value||'',
+                wick_size_guide:document.getElementById('r_wick_guide').value,
+                pour_temp_min:parseInt(document.getElementById('r_pour_min').value)||null,
+                pour_temp_max:parseInt(document.getElementById('r_pour_max').value)||null,
+                cure_hours:parseInt(document.getElementById('r_cure').value)||72,
+                empirical_notes:document.getElementById('r_empirical').value,
+                known_variants:document.getElementById('r_variants').value,
+                pitfalls:document.getElementById('r_pitfalls').value,
+                best_for:document.getElementById('r_bestfor').value,
+                waxes:getWaxRows(),
+                colorants:getColorantData(),
+                wicks_tested:getWickTestData()
+            };
+            // Sync colorant_pct avec la somme des colorants
+            const colData=data.colorants;
+            if(colData.length) data.colorant_pct=colData.reduce((s,c)=>s+c.percentage,0);
+            if(!data.name){toast('Nom requis','error');return;}
+            await fetch(id?'/api/recipes/'+id:'/api/recipes',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+            closeModal();toast(id?'Recette modifiée':'Recette créée — ajoutée à la base de connaissances IA');loadRecipes();
+        }
+
+        async function deleteRecipe(id){if(!confirm('Supprimer cette recette ?'))return;await fetch('/api/recipes/'+id,{method:'DELETE'});loadRecipes();toast('Supprimée');}
+
+        // ══════ VIEW DETAIL ══════
+        async function viewRecipe(id){
+            const r=await fetch('/api/recipes/'+id);const rec=await r.json();
+            document.getElementById('detail-title').textContent=rec.name+(rec.code?' ('+rec.code+')':'');
+            const typeLabel={container:'Container',pilier:'Pilier',moulee:'Moulée',chandelle:'Chandelle',votive:'Votive','chauffe-plat':'Chauffe-plat',figurine:'Figurine',massage:'Massage'}[rec.candle_type]||rec.candle_type;
+            let h='';
+            h+='<div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem;"><span style="background:rgba(163,45,3,0.1);color:var(--mfc-cire);padding:3px 10px;border-radius:8px;font-size:0.8rem;font-weight:600;">'+typeLabel+'</span>';
+            if(rec.diameter_min)h+='<span style="background:var(--fond-surface);padding:3px 10px;border-radius:8px;font-size:0.78rem;">Ø '+rec.diameter_min+'-'+rec.diameter_max+'mm</span>';
+            if(rec.height_min)h+='<span style="background:var(--fond-surface);padding:3px 10px;border-radius:8px;font-size:0.78rem;">H '+rec.height_min+'-'+rec.height_max+'mm</span>';
+            if(rec.fragrance_pct_default)h+='<span style="background:var(--fond-surface);padding:3px 10px;border-radius:8px;font-size:0.78rem;">Parfum '+rec.fragrance_pct_default+'% ('+rec.fragrance_pct_min+'-'+rec.fragrance_pct_max+')</span>';
+            h+='</div>';
+            if(rec.description)h+='<p style="font-size:0.85rem;margin-bottom:1rem;">'+rec.description+'</p>';
+            // Waxes
+            if(rec.waxes&&rec.waxes.length){h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.8rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.4rem;">🧪 Composition cires</p>';
+            rec.waxes.forEach(w=>{h+='<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--bordure-legere);font-size:0.82rem;"><span><strong>'+(w.reference||w.wax_name||'Cire')+'</strong>'+(w.role?' <span class="text-muted">('+w.role+')</span>':'')+'</span><span style="font-weight:600;color:var(--mfc-cire);">'+w.percentage+'%</span></div>';});h+='</div>';}
+            // Wick
+            if(rec.wick_series||( rec.wicks_tested&&rec.wicks_tested.length)){
+                h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.8rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.3rem;">🕯️ Mèche</p>';
+                if(rec.wick_series)h+='<p style="font-size:0.82rem;margin:0;">Série recommandée : <strong>'+rec.wick_series+'</strong></p>';
+                if(rec.wick_size_guide)h+='<p style="font-size:0.78rem;margin:0.2rem 0 0;white-space:pre-line;color:#555;">'+rec.wick_size_guide+'</p>';
+                if(rec.wicks_tested&&rec.wicks_tested.length){
+                    const statusIcon={'recommandée':'✅','validée':'✓','testée':'🧪','déconseillée':'⚠️'};
+                    h+='<table style="font-size:0.78rem;margin-top:0.5rem;width:100%;border-collapse:collapse;"><thead><tr style="border-bottom:1px solid var(--bordure-legere);"><th style="text-align:left;padding:3px 6px;">Mèche</th><th style="padding:3px 6px;">Ø (mm)</th><th style="padding:3px 6px;">Statut</th><th style="padding:3px 6px;">m/kg</th><th style="text-align:left;padding:3px 6px;">Notes</th></tr></thead><tbody>';
+                    rec.wicks_tested.forEach(wt=>{
+                        const icon=statusIcon[wt.status]||'';
+                        const sColor=wt.status==='déconseillée'?'color:#c62828;':'';
+                        h+='<tr style="border-bottom:1px dotted var(--bordure-legere);">'+
+                            '<td style="padding:3px 6px;font-weight:600;color:var(--mfc-cire);">'+(wt.wick_ref_full||wt.wick_reference||'—')+'</td>'+
+                            '<td style="padding:3px 6px;text-align:center;">'+(wt.diameter_min&&wt.diameter_max?wt.diameter_min+'–'+wt.diameter_max:wt.diameter_min||wt.diameter_max||'—')+'</td>'+
+                            '<td style="padding:3px 6px;text-align:center;'+sColor+'">'+icon+' '+wt.status+'</td>'+
+                            '<td style="padding:3px 6px;text-align:center;">'+(wt.meters_per_kg?Math.round(wt.meters_per_kg):'—')+'</td>'+
+                            '<td style="padding:3px 6px;color:#555;">'+(wt.notes||'')+'</td></tr>';
+                    });
+                    h+='</tbody></table>';
+                }
+                h+='</div>';
+            }
+            // Fab
+            if(rec.pour_temp_min){h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.8rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.3rem;">🌡️ Fabrication</p><p style="font-size:0.82rem;margin:0;">Coulée : '+rec.pour_temp_min+'-'+rec.pour_temp_max+'°C — Cure : '+(rec.cure_hours||72)+'h</p></div>';}
+            if(rec.colorants&&rec.colorants.length){
+                h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.8rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.3rem;">🎨 Colorants</p>';
+                rec.colorants.forEach(c=>{
+                    h+='<p style="font-size:0.82rem;margin:0.2rem 0;"><strong>'+(c.colorant_full_name||c.colorant_name||'—')+'</strong>';
+                    if(c.colorant_ref) h+=' <span class="text-muted">['+c.colorant_ref+']</span>';
+                    if(c.series) h+=' <span class="text-muted">('+c.series+')</span>';
+                    h+=' — '+c.percentage+'%';
+                    if(c.notes) h+=' <em class="text-muted">'+c.notes+'</em>';
+                    h+='</p>';
+                });
+                h+='</div>';
+            } else if(rec.colorant_pct){
+                h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.8rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.3rem;">🎨 Colorant</p><p style="font-size:0.82rem;margin:0;">'+rec.colorant_pct+'% (en sus de la masse cire)</p></div>';
+            }
+            // EMPIRICAL — the gold
+            if(rec.empirical_notes||rec.known_variants||rec.pitfalls){h+='<div style="background:linear-gradient(135deg,#fff8e1,#fff3e0);border:2px solid #e67e22;border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;">';
+            h+='<p style="font-size:0.72rem;text-transform:uppercase;color:#e67e22;font-weight:700;margin:0 0 0.5rem;">🧠 SAVOIR EMPIRIQUE</p>';
+            if(rec.empirical_notes)h+='<div style="margin-bottom:0.5rem;"><p style="font-size:0.68rem;font-weight:600;color:#555;margin:0 0 0.2rem;">Observations :</p><p style="font-size:0.82rem;white-space:pre-line;margin:0;line-height:1.6;">'+rec.empirical_notes+'</p></div>';
+            if(rec.known_variants)h+='<div style="margin-bottom:0.5rem;"><p style="font-size:0.68rem;font-weight:600;color:#555;margin:0 0 0.2rem;">Variantes :</p><p style="font-size:0.82rem;white-space:pre-line;margin:0;line-height:1.5;">'+rec.known_variants+'</p></div>';
+            if(rec.pitfalls)h+='<div style="margin-bottom:0.5rem;"><p style="font-size:0.68rem;font-weight:600;color:#c62828;margin:0 0 0.2rem;">⚠️ Pièges :</p><p style="font-size:0.82rem;white-space:pre-line;margin:0;line-height:1.5;color:#c62828;">'+rec.pitfalls+'</p></div>';
+            if(rec.best_for)h+='<p style="font-size:0.78rem;margin:0;"><strong>Idéale pour :</strong> '+rec.best_for+'</p>';
+            h+='</div>';}
+            // Formulations using this recipe
+            if(rec.formulations&&rec.formulations.length){h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.8rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:#1565c0;font-weight:600;margin:0 0 0.4rem;">📎 Formulations utilisant cette recette</p>';
+            rec.formulations.forEach(f=>{const cl=f.client_status==='validé'?'#388e3c':f.client_status==='refusé'?'#c62828':'#666';h+='<div style="font-size:0.78rem;padding:0.2rem 0;" id="formul-'+f.id+'"><strong>'+f.code+'</strong> — '+(f.name||'')+' — '+(f.fragrance_name||'?')+' '+(f.fragrance_percentage||0)+'%'+(f.client_status?' <span style="color:'+cl+';">'+(f.client_status==='validé'?'✓':'✗')+' '+f.client_status+'</span>':'')+'<span class="diag-badge" data-fid="'+f.id+'"></span></div>';
+                // Fetch diagnostic score async
+                fetch('/api/formulations/'+f.id+'/diagnostic').then(r=>r.json()).then(d=>{
+                    const badge=document.querySelector('.diag-badge[data-fid="'+f.id+'"]');
+                    if(badge&&d.scores){
+                        const sg=d.scores.global;const col=sg>=7?'#2e7d32':sg>=5?'#e65100':'#c62828';
+                        badge.innerHTML=' <span style="background:'+col+';color:#fff;padding:1px 6px;border-radius:10px;font-size:0.68rem;font-weight:600" title="Diffusion: froid '+d.scores.froid+'/10, chaud '+d.scores.chaud+'/10">🔬 '+sg+'/10</span>';
+                        if(d.charge_max)badge.innerHTML+=' <span style="font-size:.68rem;color:#666" title="Charge max Hildebrand">max '+d.charge_max.charge_display+'</span>';
+                    }
+                }).catch(()=>{});
+            });h+='</div>';}
+            document.getElementById('detail-body').innerHTML=h;
+            document.getElementById('btn-edit-recipe').onclick=()=>{document.getElementById('detail-modal').classList.remove('active');editRecipe(id);};
+            document.getElementById('detail-modal').classList.add('active');
+        }
+
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();document.getElementById('detail-modal').classList.remove('active');}});
+        document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');}));
+        document.addEventListener('DOMContentLoaded',async()=>{await loadWaxes();await loadRecipeWicks();await loadRecipeColorants();loadRecipes();});
+    </script>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+{
+  "category": "Technique trempage",
+  "subcategory": "chandelles_paraffine",
+  "title": "Trempage chandelles — Paraffine 4110 + Micro 2528 (80/10/10)",
+  "confidence": 5,
+  "content": {
+    "type_bougie": "Chandelle (bougie longue)",
+    "diametre_vise_mm": "18-22",
+    "nombre_trempes": "~20 couches minimum (variable selon diamètre visé)",
+    "temps_immersion": "< 5 secondes par trempe",
+    "refroidissement": "Air ambiant (~20°C) entre chaque trempe",
+
+    "composition_bain": {
+      "cire_base": "Paraffine 4110 — 80%",
+      "cire_base_pf": "60-62°C",
+      "microcristalline": "Micro 2528 — 10%",
+      "parfum": "10%",
+      "note": "Ratio 80/10/10 avec parfum"
+    },
+
+    "resultats_tests": [
+      {
+        "temperature_bain": "85-90°C",
+        "delta_vs_pf": "+23 à +30°C au-dessus du PF",
+        "adhesion": "mauvaise",
+        "epaisseur_couche": "trop fine",
+        "defauts": "La cire n'adhère pas, coule immédiatement",
+        "verdict": "❌ Température trop élevée — inutilisable",
+        "explication": "Le delta thermique entre bain et chandelle est trop faible. La cire reste trop fluide pour accrocher, les couches ne se construisent pas."
+      },
+      {
+        "temperature_bain": "70-75°C",
+        "delta_vs_pf": "+8 à +15°C au-dessus du PF",
+        "adhesion": "bonne",
+        "epaisseur_couche": "correcte",
+        "defauts": "Striures visibles sur la surface",
+        "verdict": "⚠️ Bonne accroche mais finition imparfaite",
+        "explication": "La cire commence à figer avant de s'uniformiser complètement. Le delta est suffisant pour l'accroche mais trop juste pour un fini lisse."
+      }
+    ],
+
+    "fenetre_optimale_estimee": {
+      "temperature_min": "75°C",
+      "temperature_max": "80°C",
+      "delta_vs_pf": "+13 à +20°C au-dessus du PF",
+      "justification": "Compromis entre accroche suffisante (pas trop chaud) et fluidité pour finition lisse (pas trop froid). À confirmer par test."
+    },
+
+    "pistes_amelioration": [
+      "Tester la fenêtre 75-80°C pour valider le compromis accroche/finition",
+      "Augmenter le taux de microcristalline 2528 (15-20%) pour améliorer l'adhérence à chaud",
+      "Tester la paraffine 5603 (PF 56-58°C) : point de fusion plus bas = fenêtre de travail plus large",
+      "Essayer un bain d'eau froide (10-15°C) entre les trempes pour accélérer la prise et réduire les striures",
+      "Tester un temps d'égouttage plus long entre trempe et refroidissement (5-10s suspendues à l'air)"
+    ],
+
+    "cires_disponibles_non_testees": {
+      "paraffine_5603": {
+        "point_fusion": "56-58°C",
+        "interet": "PF plus bas = le bain à 70-75°C donne un delta de +12 à +19°C, potentiellement meilleur équilibre accroche/fluidité",
+        "test_recommande": "Trempage à 70-75°C avec 5603 seule ou blend 5603/4110"
+      }
+    },
+
+    "regle_generale_trempage": {
+      "delta_optimal": "Le delta température bain vs point de fusion devrait être entre +13 et +20°C pour un bon compromis",
+      "trop_chaud": "> +25°C au-dessus du PF = couche trop fine, pas d'accroche",
+      "trop_froid": "< +10°C au-dessus du PF = striures, surface irrégulière, risque de grumeaux"
+    },
+
+    "date_test": "2026-02-24",
+    "operateur": "MFC",
+    "statut": "en_cours — fenêtre 75-80°C à valider"
+  }
+}

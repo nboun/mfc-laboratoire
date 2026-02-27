@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>MFC Laboratoire - Maison Française des Cires</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="Maison Française des Cires">
+            <div class="brand-text">
+                <h1>LABORATOIRE</h1>
+                <span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <div style="position:relative;margin-right:0.5rem;">
+                <input type="text" id="global-search" placeholder="🔍 Rechercher..." 
+                    style="width:160px;padding:0.35rem 0.6rem;border:1px solid #d4c5b0;border-radius:20px;font-size:0.75rem;background:#faf8f5;outline:none;"
+                    oninput="globalSearch(this.value)" onfocus="this.style.width='240px'" onblur="setTimeout(()=>{this.style.width='160px';document.getElementById('search-results').style.display='none';},300)">
+                <div id="search-results" style="display:none;position:absolute;top:100%;left:0;right:0;width:340px;max-height:400px;overflow-y:auto;background:#fff;border:1px solid #d4c5b0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:999;margin-top:4px;"></div>
+            </div>
+            <a href="index.html" class="active">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a>
+            <a href="formulateur.html" style="color:#d4a853;font-weight:600;">🧪 Assistant Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+                <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="diagnostic.html" style="color:#d4a853;font-weight:600;">🔬 Diagnostic</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="text-align: center; padding: 1.5rem 0 0.8rem;">
+            <h2 style="font-family: var(--font-display); color: var(--mfc-cire); font-weight: 300; font-size: 1.8rem; letter-spacing: 2px;">Tableau de bord</h2>
+            <p class="text-muted" style="margin-top: 0.3rem;">120 ans d'expertise en bougies parfumées de haute gamme</p>
+        </div>
+
+        <!-- ═══ COMPTEURS PRINCIPAUX ═══ -->
+        <div class="grid grid-4 mt-1">
+            <a href="echantillons.html" class="stat-card" style="text-decoration:none;cursor:pointer;">
+                <div class="stat-value" id="stat-samples">—</div>
+                <div class="stat-label">Échantillons</div>
+                <div class="stat-detail" id="stat-samples-detail"></div>
+            </a>
+            <a href="formulations.html" class="stat-card" style="text-decoration:none;cursor:pointer;">
+                <div class="stat-value" id="stat-formulations">—</div>
+                <div class="stat-label">Formulations</div>
+                <div class="stat-detail" id="stat-formulations-detail"></div>
+            </a>
+            <a href="tests.html" class="stat-card" style="text-decoration:none;cursor:pointer;">
+                <div class="stat-value" id="stat-tests">—</div>
+                <div class="stat-label">Tests</div>
+                <div class="stat-detail" id="stat-tests-detail"></div>
+            </a>
+            <a href="clients.html" class="stat-card" style="text-decoration:none;cursor:pointer;">
+                <div class="stat-value" id="stat-clients">—</div>
+                <div class="stat-label">Clients</div>
+            </a>
+        </div>
+        <div class="grid grid-3 mt-1">
+            <a href="molecules.html" class="stat-card" style="text-decoration:none;cursor:pointer;border-left:3px solid #7c4dff;">
+                <div class="stat-value" id="stat-mol-coverage" style="color:#7c4dff;">—%</div>
+                <div class="stat-label">🧬 Couverture moléculaire</div>
+                <div class="stat-detail" id="stat-mol-detail" style="font-size:0.65rem;color:#999;"></div>
+            </a>
+            <a href="analytics.html" class="stat-card" style="text-decoration:none;cursor:pointer;border-left:3px solid #e65100;">
+                <div class="stat-value" style="color:#e65100;">📊</div>
+                <div class="stat-label">Analytics</div>
+                <div class="stat-detail" style="font-size:0.65rem;color:#999;">Graphiques & corrélations</div>
+            </a>
+            <a href="diagnostic.html" class="stat-card" style="text-decoration:none;cursor:pointer;border-left:3px solid #e65100;">
+                <div class="stat-value" id="stat-diag-score" style="color:#e65100;">🔬</div>
+                <div class="stat-label">Diagnostic de diffusion</div>
+                <div class="stat-detail" id="stat-diag-detail" style="font-size:0.65rem;color:#999;">Analyse froid & chaud</div>
+            </a>
+            <a href="formulateur.html" class="stat-card" style="text-decoration:none;cursor:pointer;border-left:3px solid #d4a853;">
+                <div class="stat-value" style="color:#d4a853;">🧪</div>
+                <div class="stat-label">Assistant Formulateur</div>
+                <div class="stat-detail" style="font-size:0.65rem;color:#999;">IA & recommandations</div>
+            </a>
+        </div>
+
+        <!-- ═══ TAUX DE VALIDATION ═══ -->
+        <div class="card mt-2" style="text-align:center;padding:1.2rem;">
+            <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:0.3rem;">Taux de validation des formulations</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:1rem;">
+                <div id="validation-rate" style="font-size:2.5rem;font-weight:700;color:var(--mfc-cire);">—%</div>
+                <div style="flex:1;max-width:300px;height:12px;background:#f0ebe3;border-radius:6px;overflow:hidden;">
+                    <div id="validation-bar" style="height:100%;background:linear-gradient(90deg,#a32d03,#d4a853);border-radius:6px;transition:width 0.8s;width:0%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ EN COURS / URGENT ═══ -->
+        <div class="grid grid-2 mt-2">
+            <!-- Échantillons à traiter -->
+            <div class="card" style="border-left:3px solid #f39c12;">
+                <div class="card-header">
+                    <h3 class="card-title">⏳ Échantillons à traiter</h3>
+                    <a href="echantillons.html" class="btn btn-sm btn-secondary" style="font-size:0.68rem;">Voir tout →</a>
+                </div>
+                <div id="pending-samples" style="max-height:220px;overflow-y:auto;padding:0 0.5rem;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+            <!-- Tests en cours -->
+            <div class="card" style="border-left:3px solid #e74c3c;">
+                <div class="card-header">
+                    <h3 class="card-title">🔥 Tests en cours</h3>
+                    <a href="tests.html" class="btn btn-sm btn-secondary" style="font-size:0.68rem;">Voir tout →</a>
+                </div>
+                <div id="active-tests" style="max-height:220px;overflow-y:auto;padding:0 0.5rem;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TOP PARFUMS + TOP CLIENTS ═══ -->
+        <div class="grid grid-2 mt-2">
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">🌸 Parfums les plus formulés</h3></div>
+                <div id="top-fragrances" style="padding:0 0.5rem;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">👥 Clients les plus actifs</h3></div>
+                <div id="top-clients" style="padding:0 0.5rem;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ TOP CIRES + TOP MÈCHES ═══ -->
+        <div class="grid grid-2 mt-2">
+            <div class="card" style="border-left:3px solid #8d6e63;">
+                <div class="card-header"><h3 class="card-title">🧱 Cires les plus utilisées</h3></div>
+                <div id="top-waxes" style="padding:0 0.5rem;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+            <div class="card" style="border-left:3px solid #5c6bc0;">
+                <div class="card-header"><h3 class="card-title">🧵 Mèches les plus utilisées</h3></div>
+                <div id="top-wicks" style="padding:0 0.5rem;">
+                    <div class="loading"><div class="spinner"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ INVENTAIRE MATIÈRES ═══ -->
+        <div class="card mt-2" style="border-left:3px solid #26a69a;background:linear-gradient(135deg,#e0f2f1,#e8f5e9);">
+            <div class="card-header" style="border:none;">
+                <h3 class="card-title">📦 Inventaire matières R&D</h3>
+                <a href="matieres.html" class="btn btn-sm" style="background:#26a69a;color:#fff;font-size:0.72rem;">Gérer →</a>
+            </div>
+            <div class="grid" style="padding:0 1rem 0.5rem;display:grid;grid-template-columns:repeat(5,1fr);gap:0.3rem;">
+                <a href="matieres.html" style="text-align:center;text-decoration:none;cursor:pointer;padding:0.5rem;border-radius:8px;">
+                    <div class="stat-value" id="stat-waxes" style="color:#00796b;">—</div>
+                    <div class="stat-label">Cires</div>
+                </a>
+                <a href="fds.html" style="text-align:center;text-decoration:none;cursor:pointer;padding:0.5rem;border-radius:8px;">
+                    <div class="stat-value" id="stat-fragrances" style="color:#00796b;">—</div>
+                    <div class="stat-label">Parfums (FDS)</div>
+                </a>
+                <div style="text-align:center;padding:0.5rem;">
+                    <div class="stat-value" id="stat-wicks" style="color:#00796b;">—</div>
+                    <div class="stat-label">Mèches</div>
+                </div>
+                <a href="molecules.html" style="text-align:center;text-decoration:none;cursor:pointer;padding:0.5rem;border-radius:8px;">
+                    <div class="stat-value" id="stat-cas-fds" style="color:#00796b;">—</div>
+                    <div class="stat-label">CAS dans FDS</div>
+                </a>
+                <a href="molecules.html" style="text-align:center;text-decoration:none;cursor:pointer;padding:0.5rem;border-radius:8px;">
+                    <div class="stat-value" id="stat-cas-moteur" style="color:#00796b;">—</div>
+                    <div class="stat-label">Connues moteur</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ═══ ACTIVITÉ RÉCENTE ═══ -->
+        <div class="card mt-2">
+            <div class="card-header"><h3 class="card-title">📋 Activité récente</h3></div>
+            <div id="recent-activity" style="max-height:300px;overflow-y:auto;padding:0 0.5rem;">
+                <div class="loading"><div class="spinner"></div></div>
+            </div>
+        </div>
+
+        <!-- ═══ PATRIMOINE NUMÉRIQUE ═══ -->
+        <div class="card mt-2" style="border-left:3px solid #f9a825;background:linear-gradient(135deg,#fffde7,#fff8e1);">
+            <div class="card-header" style="border:none;">
+                <h3 class="card-title">🧠 Patrimoine numérique MFC</h3>
+                <a href="connaissances.html" class="btn btn-sm" style="background:#f9a825;color:#fff;font-size:0.72rem;">Voir tout →</a>
+            </div>
+            <div class="grid grid-4" style="padding:0 1rem 0.5rem;">
+                <a href="connaissances.html" style="text-align:center;text-decoration:none;cursor:pointer;padding:0.5rem;border-radius:8px;">
+                    <div class="stat-value" id="stat-kb" style="color:#f57f17;">—</div>
+                    <div class="stat-label">Fiches savoir</div>
+                </a>
+                <a href="recettes.html" style="text-align:center;text-decoration:none;cursor:pointer;padding:0.5rem;border-radius:8px;">
+                    <div class="stat-value" id="stat-recipes" style="color:#f57f17;">—</div>
+                    <div class="stat-label">Recettes MFC</div>
+                </a>
+                <div style="text-align:center;padding:0.5rem;">
+                    <div class="stat-value" id="stat-kb-categories" style="color:#f57f17;">—</div>
+                    <div class="stat-label">Catégories</div>
+                </div>
+                <div style="text-align:center;padding:0.5rem;">
+                    <div class="stat-value" id="stat-changes" style="color:#f57f17;">—</div>
+                    <div class="stat-label">Modifications tracées</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ ACCÈS RAPIDE ═══ -->
+        <div class="card mt-2">
+            <div class="card-header"><h3 class="card-title">Accès rapide</h3></div>
+            <div class="grid grid-3">
+                <a href="echantillons.html" class="btn btn-primary" style="justify-content:center;padding:1rem;">📋 Nouvel échantillon</a>
+                <a href="formulations.html" class="btn btn-primary" style="justify-content:center;padding:1rem;">🧪 Nouvelle formulation</a>
+                <a href="formulateur.html" class="btn" style="justify-content:center;padding:1rem;background:#d4a853;color:#fff;">🧪 Assistant Formulateur</a>
+            </div>
+            <div class="grid grid-2" style="margin-top:0.5rem;">
+                <button class="btn" onclick="doBackup()" style="justify-content:center;padding:0.7rem;background:#2e7d32;color:#fff;">💾 Sauvegarde base</button>
+                <button class="btn" onclick="doCompleteBackup()" style="justify-content:center;padding:0.7rem;background:#1565c0;color:#fff;">📦 Sauvegarde complète</button>
+            </div>
+            <div class="grid grid-2" style="margin-top:0.5rem;">
+                <a href="/api/patrimoine/pdf" target="_blank" class="btn" style="justify-content:center;padding:0.7rem;background:#1a1a1a;color:#c9a96e;text-decoration:none;">📄 Patrimoine PDF</a>
+                <a href="/api/backup/complete/download" class="btn" style="justify-content:center;padding:0.7rem;background:#6a1b9a;color:#fff;text-decoration:none;" id="btn-dl-backup">📥 Télécharger backup</a>
+            </div>
+        </div>
+
+        <div class="footer mt-3">
+            <p><strong>MFC Laboratoire</strong> <span id="mfc-vf" style="background:#a32d03;color:#fff;padding:0.15rem 0.5rem;border-radius:10px;font-size:0.7rem;font-weight:600;"></span> — Maison Française des Cires</p>
+            <p style="margin-top: 0.3rem;">© 2026 — Maître Cirier depuis 1904 — 120 ans d'expertise</p>
+            <p id="build-info" style="margin-top:0.3rem;font-size:0.65rem;color:#999;"></p>
+        </div>
+
+        <script>
+        // Vérification version au chargement
+        fetch('/api/status').then(r=>r.json()).then(d=>{
+            document.getElementById('build-info').innerHTML = 
+                '🔧 Serveur v' + d.version + ' — Build ' + d.build + ' — ' + d.features;
+        }).catch(()=>{
+            document.getElementById('build-info').innerHTML = '⚠️ Serveur non joignable';
+        });
+        </script>
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const res = await fetch('/api/dashboard');
+                const d = await res.json();
+
+                // Compteurs
+                document.getElementById('stat-samples').textContent = d.counts.samples;
+                document.getElementById('stat-formulations').textContent = d.counts.formulations;
+                document.getElementById('stat-tests').textContent = d.counts.tests;
+                document.getElementById('stat-clients').textContent = d.counts.clients;
+                document.getElementById('stat-kb').textContent = d.counts.knowledge;
+                document.getElementById('stat-recipes').textContent = d.counts.recipes;
+                document.getElementById('stat-kb-categories').textContent = d.kb_by_category?.length || 0;
+
+                // Sous-détails par statut
+                const statusLabels = {demande:'📋',en_cours:'🔄',en_attente:'⏸',validé:'✅',rejeté:'❌',terminé:'✅'};
+                function statusDetail(arr) {
+                    return arr.map(s => `<span style="font-size:0.68rem;color:#888;">${statusLabels[s.status]||''} ${s.count} ${s.status}</span>`).join(' · ');
+                }
+                document.getElementById('stat-samples-detail').innerHTML = statusDetail(d.samples_by_status);
+                document.getElementById('stat-formulations-detail').innerHTML = statusDetail(d.formulations_by_status);
+                document.getElementById('stat-tests-detail').innerHTML = statusDetail(d.tests_by_status);
+
+                // Taux de validation
+                document.getElementById('validation-rate').textContent = d.validation_rate + '%';
+                document.getElementById('validation-bar').style.width = d.validation_rate + '%';
+
+                // Learning stats
+                try {
+                    const lr = await fetch('/api/learning/stats');
+                    const ls = await lr.json();
+                    document.getElementById('stat-changes').textContent = ls.total_changes || 0;
+                } catch(e) {}
+
+                // Échantillons à traiter
+                const pendEl = document.getElementById('pending-samples');
+                if (d.pending_samples?.length) {
+                    pendEl.innerHTML = d.pending_samples.map(s => `
+                        <a href="echantillons.html" style="display:flex;align-items:center;padding:0.45rem 0;border-bottom:1px solid #f0ebe3;text-decoration:none;color:#333;">
+                            <span style="font-size:0.7rem;color:#999;min-width:65px;">${s.sample_number}</span>
+                            <span style="flex:1;font-size:0.82rem;font-weight:500;">${s.fragrance_name || 'Sans parfum'}</span>
+                            <span style="font-size:0.72rem;color:#888;">${s.client_name || ''}</span>
+                            <span class="badge badge-${s.status}" style="margin-left:0.5rem;font-size:0.62rem;">${s.status}</span>
+                        </a>
+                    `).join('');
+                } else {
+                    pendEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucun échantillon en attente 👍</div>';
+                }
+
+                // Tests en cours
+                const testEl = document.getElementById('active-tests');
+                if (d.active_tests?.length) {
+                    testEl.innerHTML = d.active_tests.map(t => `
+                        <a href="tests.html" style="display:flex;align-items:center;padding:0.45rem 0;border-bottom:1px solid #f0ebe3;text-decoration:none;color:#333;">
+                            <span style="font-size:0.7rem;color:var(--mfc-cire);font-weight:600;min-width:60px;">${t.test_number}</span>
+                            <span style="flex:1;font-size:0.82rem;">${t.fragrance_name || t.formulation_name || t.formulation_code}</span>
+                            <span style="font-size:0.72rem;color:#888;">${t.total_burn_time || 0}h brûlé</span>
+                        </a>
+                    `).join('');
+                } else {
+                    testEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucun test en cours</div>';
+                }
+
+                // Top parfums
+                const fragEl = document.getElementById('top-fragrances');
+                if (d.top_fragrances?.length) {
+                    fragEl.innerHTML = d.top_fragrances.map((f, i) => `
+                        <div style="display:flex;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f0ebe3;">
+                            <span style="font-size:0.75rem;color:#999;min-width:24px;text-align:center;">${i+1}.</span>
+                            <span style="flex:1;font-size:0.82rem;font-weight:500;">🌸 ${f.name}${f.pct ? ' <span style="color:#999;font-size:0.72rem;">'+f.pct+'%</span>' : ''}</span>
+                            <span style="font-size:0.82rem;font-weight:700;color:var(--mfc-cire);min-width:30px;text-align:right;">${f.count}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    fragEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucune formulation encore</div>';
+                }
+
+                // Top clients
+                const cliEl = document.getElementById('top-clients');
+                if (d.top_clients?.length) {
+                    cliEl.innerHTML = d.top_clients.map((c, i) => `
+                        <div style="display:flex;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f0ebe3;">
+                            <span style="font-size:0.75rem;color:#999;min-width:24px;text-align:center;">${i+1}.</span>
+                            <span style="flex:1;font-size:0.82rem;font-weight:500;">👤 ${c.name}</span>
+                            <span style="font-size:0.82rem;font-weight:700;color:var(--mfc-cire);min-width:30px;text-align:right;">${c.count} form.</span>
+                        </div>
+                    `).join('');
+                } else {
+                    cliEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucun client encore</div>';
+                }
+
+                // Top cires
+                const waxEl = document.getElementById('top-waxes');
+                if (d.top_waxes?.length) {
+                    waxEl.innerHTML = d.top_waxes.map((w, i) => `
+                        <div style="display:flex;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f0ebe3;">
+                            <span style="font-size:0.75rem;color:#999;min-width:24px;text-align:center;">${i+1}.</span>
+                            <span style="flex:1;font-size:0.82rem;font-weight:500;">${w.reference}</span>
+                            <span style="font-size:0.72rem;color:#888;margin-right:0.5rem;">moy. ${w.avg_pct}%</span>
+                            <span style="font-size:0.82rem;font-weight:700;color:#5d4037;min-width:30px;text-align:right;">${w.count}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    waxEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucune donnée</div>';
+                }
+
+                // Top mèches
+                const wickEl = document.getElementById('top-wicks');
+                if (d.top_wicks?.length) {
+                    wickEl.innerHTML = d.top_wicks.map((w, i) => `
+                        <div style="display:flex;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f0ebe3;">
+                            <span style="font-size:0.75rem;color:#999;min-width:24px;text-align:center;">${i+1}.</span>
+                            <span style="flex:1;font-size:0.82rem;font-weight:500;">🧵 ${w.name}</span>
+                            <span style="font-size:0.82rem;font-weight:700;color:#3949ab;min-width:30px;text-align:right;">${w.count}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    wickEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucune donnée</div>';
+                }
+
+                // Compteurs matières R&D
+                document.getElementById('stat-waxes').textContent = d.counts.waxes || 0;
+                document.getElementById('stat-fragrances').textContent = d.counts.fragrances || 0;
+                document.getElementById('stat-wicks').textContent = d.counts.wicks || 0;
+                document.getElementById('stat-cas-fds').textContent = d.counts.cas_in_fds || 0;
+                document.getElementById('stat-cas-moteur').textContent = d.counts.cas_in_engine || 0;
+
+                // Activité récente
+                const actEl = document.getElementById('recent-activity');
+                if (d.recent_activity?.length) {
+                    const icons = {echantillon:'📋',formulation:'🧪',test:'🔥'};
+                    actEl.innerHTML = d.recent_activity.map(a => {
+                        const date = a.created_at ? new Date(a.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+                        return `<div style="display:flex;align-items:center;padding:0.35rem 0;border-bottom:1px solid #f0ebe3;">
+                            <span style="font-size:1rem;margin-right:0.5rem;">${icons[a.type]||'📌'}</span>
+                            <span style="font-size:0.7rem;color:var(--mfc-cire);font-weight:600;min-width:70px;">${a.code}</span>
+                            <span style="flex:1;font-size:0.78rem;color:#555;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${a.detail || ''}</span>
+                            <span class="badge badge-${a.status}" style="font-size:0.6rem;margin:0 0.3rem;">${a.status}</span>
+                            <span style="font-size:0.65rem;color:#999;min-width:80px;text-align:right;">${date}</span>
+                        </div>`;
+                    }).join('');
+                } else {
+                    actEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#999;font-size:0.82rem;">Aucune activité</div>';
+                }
+
+            } catch(e) {
+                console.error('Dashboard error:', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+            // Charger stats molécules pour la carte dashboard
+            fetch('/api/molecule/stats').then(r=>r.json()).then(d=>{
+                const el = document.getElementById('stat-mol-coverage');
+                const det = document.getElementById('stat-mol-detail');
+                if(el) el.textContent = d.coverage_pct + '%';
+                if(det) det.textContent = d.unique_cas + ' CAS · ' + d.known_cas_in_engine + ' connus';
+            }).catch(()=>{});
+            // Charger résumé diagnostic (score moyen des parfums avec composants)
+            fetch('/api/molecule/stats').then(r=>r.json()).then(async d=>{
+                if(d.fragrances_with_components < 1) return;
+                const el = document.getElementById('stat-diag-score');
+                const det = document.getElementById('stat-diag-detail');
+                try {
+                    // Get a quick average from the first 5 fragrances
+                    const frags = await fetch('/api/molecule/batch-analysis').then(r=>r.json());
+                    const profiles = frags.profiles || frags || [];
+                    if(el) el.textContent = profiles.length + ' parfums';
+                    if(det) det.textContent = d.known_cas_in_engine + ' molécules · ' + d.fragrances_with_components + ' parfums analysables';
+                } catch(e) {
+                    if(det) det.textContent = d.fragrances_with_components + ' parfums avec FDS';
+                }
+            }).catch(()=>{});
+        });
+
+        async function doBackup() {
+            try {
+                const r = await fetch('/api/backup', { method: 'POST' });
+                const d = await r.json();
+                if (d.success) {
+                    alert('✅ Sauvegarde base réussie !\n\n' +
+                          '• Base de données : ' + (d.sqlite_size / 1024).toFixed(0) + ' Ko\n' +
+                          '• Fiches savoir : ' + d.kb_entries + '\n' +
+                          '• Modifications tracées : ' + d.changes_entries + '\n' +
+                          '• Patterns détectés : ' + d.patterns_entries);
+                } else alert('Erreur : ' + (d.error || 'inconnue'));
+            } catch(e) { alert('Erreur : ' + e.message); }
+        }
+
+        async function doCompleteBackup() {
+            if (!confirm('📦 Sauvegarde complète (code + données) ?\n\nCela peut prendre quelques secondes...')) return;
+            try {
+                const btn = document.querySelector('[onclick="doCompleteBackup()"]');
+                if (btn) { btn.disabled = true; btn.textContent = '⏳ En cours...'; }
+                const r = await fetch('/api/backup/complete', { method: 'POST' });
+                const d = await r.json();
+                if (btn) { btn.disabled = false; btn.textContent = '📦 Sauvegarde complète'; }
+                if (d.success) {
+                    alert('✅ Sauvegarde complète réussie !\n\n' +
+                          '• Fichier : ' + d.filename + '\n' +
+                          '• Taille : ' + d.size_mb + ' Mo\n' +
+                          '• Contenu : ' + d.includes.join(', ') + '\n\n' +
+                          (d.note || '') + '\n\n' +
+                          'Cliquez sur "📥 Télécharger backup" pour récupérer le fichier.');
+                } else alert('Erreur : ' + (d.error || 'inconnue'));
+            } catch(e) { alert('Erreur : ' + e.message); }
+        }
+
+        let searchTimeout;
+        async function globalSearch(q) {
+            clearTimeout(searchTimeout);
+            const box = document.getElementById('search-results');
+            if (!q || q.length < 2) { box.style.display = 'none'; return; }
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const r = await fetch('/api/search?q=' + encodeURIComponent(q));
+                    const data = await r.json();
+                    
+                    let html = '';
+                    const sections = [
+                        { key: 'formulations', icon: '🧪', label: 'Formulations', render: f => 
+                            `<b>${f.name || f.code}</b> · ${f.client || '?'} · ${f.fragrance_ref || ''} ${f.fragrance_percentage ? f.fragrance_percentage+'%' : ''}`,
+                            url: f => 'formulations.html' },
+                        { key: 'fragrances', icon: '🌸', label: 'Parfums', render: f => 
+                            `<b>${f.name}</b> · ${f.supplier || '?'} · FP ${f.flash_point || '?'}°C · ${f.nb_composants} comp.`,
+                            url: f => 'fds.html' },
+                        { key: 'waxes', icon: '🧱', label: 'Cires', render: w => 
+                            `<b>${w.reference}</b> ${w.name} · ${w.type} · ${w.supplier || ''}`,
+                            url: w => 'matieres.html' },
+                        { key: 'wicks', icon: '🧵', label: 'Mèches', render: w => 
+                            `<b>${w.reference}</b> · ${w.series} · Ø${w.diameter_min}-${w.diameter_max}mm`,
+                            url: w => 'matieres.html' },
+                        { key: 'molecules', icon: '🔬', label: 'Molécules', render: m => 
+                            `<b>${m.name}</b> · CAS ${m.cas_number || '?'} · dans ${m.fragrance_name}`,
+                            url: m => 'fds.html' },
+                        { key: 'clients', icon: '👤', label: 'Clients', render: c => 
+                            `<b>${c.name}</b> · ${c.nb_formulations} formulation(s)`,
+                            url: c => 'clients.html' },
+                        { key: 'knowledge', icon: '📚', label: 'Base savoir', render: k => 
+                            `<b>${k.title}</b>`,
+                            url: k => 'connaissances.html' }
+                    ];
+                    
+                    for (const s of sections) {
+                        const items = data[s.key];
+                        if (!items || !items.length) continue;
+                        html += `<div style="padding:0.3rem 0.75rem;background:#f5f0e8;font-size:0.68rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.5px;">${s.icon} ${s.label} (${items.length})</div>`;
+                        for (const item of items.slice(0, 5)) {
+                            const url = s.url(item);
+                            html += `<a href="${url}" style="display:block;padding:0.45rem 0.75rem;border-bottom:1px solid #f0ece6;text-decoration:none;color:#333;font-size:0.78rem;" onmousedown="event.preventDefault()">${s.render(item)}</a>`;
+                        }
+                    }
+                    
+                    if (!html) {
+                        html = '<div style="padding:1rem;color:#999;text-align:center;font-size:0.8rem;">Aucun résultat pour "' + q + '"</div>';
+                    } else {
+                        html += `<a href="recherche.html?q=${encodeURIComponent(q)}" style="display:block;padding:0.6rem;text-align:center;font-size:0.75rem;color:var(--mfc-cire);font-weight:600;text-decoration:none;border-top:2px solid #f0ece6;" onmousedown="event.preventDefault()">Voir tous les résultats (${data.total}) →</a>`;
+                    }
+                    
+                    box.innerHTML = html;
+                    box.style.display = '';
+                } catch(e) { box.style.display = 'none'; }
+            }, 250);
+        }
+    </script>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFC Lab — Analytics R&D</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <style>
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.2rem; margin-top: 1rem; }
+        .chart-card { background: var(--fond-carte); border: 1px solid var(--bordure); border-radius: var(--radius-lg); padding: 1.2rem; }
+        .chart-card h3 { font-size: 0.95rem; color: var(--mfc-cire); margin-bottom: 0.8rem; font-family: var(--font-display); }
+        .chart-container { position: relative; height: 280px; }
+        .metric-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+        .metric-card { background: var(--fond-carte); border: 1px solid var(--bordure); border-radius: var(--radius); padding: 1rem; text-align: center; }
+        .metric-value { font-size: 1.8rem; font-weight: 700; color: var(--mfc-cire); font-family: var(--font-display); }
+        .metric-label { font-size: 0.78rem; color: var(--texte-secondary); margin-top: 0.2rem; }
+        .metric-sub { font-size: 0.7rem; color: var(--texte-muted); }
+        .insight-card { background: linear-gradient(135deg, var(--mfc-cire-glow), var(--fond-carte)); border: 1px solid var(--mfc-cire); border-left: 4px solid var(--mfc-cire); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.8rem; }
+        .insight-card .insight-title { font-weight: 600; color: var(--mfc-cire); font-size: 0.88rem; }
+        .insight-card .insight-text { font-size: 0.82rem; color: var(--texte); margin-top: 0.3rem; line-height: 1.5; }
+        .tab-nav { display: flex; gap: 0; border-bottom: 2px solid var(--bordure); margin-bottom: 1.5rem; }
+        .tab-btn { padding: 0.7rem 1.3rem; cursor: pointer; border: none; background: none; font-size: 0.9rem; color: var(--texte-secondary); border-bottom: 3px solid transparent; transition: var(--transition); }
+        .tab-btn.active { color: var(--mfc-cire); border-bottom-color: var(--mfc-cire); font-weight: 600; }
+        .tab-btn:hover { color: var(--mfc-cire); background: var(--mfc-cire-glow); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .supplier-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .supplier-table th { background: var(--fond-surface); padding: 0.6rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--bordure); }
+        .supplier-table td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--bordure-legere); }
+        .supplier-table tr:hover { background: var(--mfc-cire-glow); }
+        .bar-inline { display: inline-block; height: 8px; border-radius: 4px; background: var(--mfc-cire); margin-left: 0.4rem; vertical-align: middle; }
+        .no-data { text-align: center; padding: 3rem; color: var(--texte-muted); font-style: italic; }
+        .no-data .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="Maison Française des Cires">
+            <div class="brand-text">
+                <h1>LABORATOIRE</h1>
+                <span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a>
+            <a href="formulateur.html" style="color:#d4a853;font-weight:600;">🧪 Assistant</a>
+            <a href="recherche.html">Recherche</a>
+            <a href="analytics.html" class="active">📊 Analytics</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div style="text-align:center;padding:1.5rem 0 0.5rem;">
+            <h2 style="font-family:var(--font-display);color:var(--mfc-cire);font-weight:300;font-size:1.8rem;letter-spacing:2px;">📊 Analytics R&D</h2>
+            <p class="text-muted" style="margin-top:0.3rem;">Corrélations, tendances et insights de formulation</p>
+        </div>
+
+        <!-- Métriques clés -->
+        <div class="metric-row" id="metrics-row">
+            <div class="metric-card"><div class="metric-value" id="m-formulations">—</div><div class="metric-label">Formulations</div><div class="metric-sub" id="m-form-sub"></div></div>
+            <div class="metric-card"><div class="metric-value" id="m-tests">—</div><div class="metric-label">Tests réalisés</div><div class="metric-sub" id="m-test-sub"></div></div>
+            <div class="metric-card"><div class="metric-value" id="m-validation">—</div><div class="metric-label">Taux validation</div><div class="metric-sub" id="m-val-sub"></div></div>
+            <div class="metric-card"><div class="metric-value" id="m-fds">—</div><div class="metric-label">FDS analysées</div><div class="metric-sub" id="m-fds-sub"></div></div>
+            <div class="metric-card"><div class="metric-value" id="m-kb">—</div><div class="metric-label">Fiches savoir</div><div class="metric-sub" id="m-kb-sub"></div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-nav">
+            <button class="tab-btn active" data-tab="overview">Vue d'ensemble</button>
+            <button class="tab-btn" data-tab="correlations">Corrélations FDS ↔ Tests</button>
+            <button class="tab-btn" data-tab="suppliers">Fournisseurs</button>
+            <button class="tab-btn" data-tab="insights">Insights IA</button>
+        </div>
+
+        <!-- TAB: Vue d'ensemble -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="analytics-grid">
+                <div class="chart-card">
+                    <h3>📊 Base de connaissances par catégorie</h3>
+                    <div class="chart-container"><canvas id="chart-kb-categories"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>🕯️ Cires par type</h3>
+                    <div class="chart-container"><canvas id="chart-wax-types"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>🧵 Mèches par série</h3>
+                    <div class="chart-container"><canvas id="chart-wick-series"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>🎨 Colorants — Classement sécurité</h3>
+                    <div class="chart-container"><canvas id="chart-colorant-safety"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>🌡️ Distribution des points de congélation (cires)</h3>
+                    <div class="chart-container"><canvas id="chart-congealing"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>🔥 Points éclair des parfums FDS</h3>
+                    <div class="chart-container"><canvas id="chart-flash-points"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Corrélations -->
+        <div class="tab-content" id="tab-correlations">
+            <div id="corr-content">
+                <div class="no-data">
+                    <div class="icon">🔬</div>
+                    <p>Les corrélations s'enrichissent avec les données de tests.</p>
+                    <p style="margin-top:0.5rem;font-size:0.82rem;">Plus vous réalisez de tests de combustion, plus les corrélations FDS ↔ résultats seront pertinentes.</p>
+                    <p style="margin-top:0.5rem;font-size:0.78rem;color:var(--texte-muted);">Données disponibles : <span id="corr-count">0</span> formulations avec FDS, <span id="corr-tests">0</span> tests réalisés</p>
+                </div>
+            </div>
+            <div class="analytics-grid" id="corr-charts" style="display:none;">
+                <div class="chart-card">
+                    <h3>% Parfum vs Consommation horaire</h3>
+                    <div class="chart-container"><canvas id="chart-pct-consumption"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Point éclair parfum vs Résultat test</h3>
+                    <div class="chart-container"><canvas id="chart-flash-result"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Fournisseurs -->
+        <div class="tab-content" id="tab-suppliers">
+            <div class="analytics-grid">
+                <div class="chart-card" style="grid-column:1/-1;">
+                    <h3>🏭 Fournisseurs — Inventaire matières</h3>
+                    <table class="supplier-table" id="supplier-table">
+                        <thead><tr><th>Fournisseur</th><th>Pays</th><th>Spécialité</th><th>Cires</th><th>Parfums FDS</th><th>Colorants</th></tr></thead>
+                        <tbody id="supplier-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="chart-card">
+                    <h3>Composants FDS par famille chimique</h3>
+                    <div class="chart-container"><canvas id="chart-component-families"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h3>Répartition parfums par fournisseur</h3>
+                    <div class="chart-container"><canvas id="chart-fragrances-supplier"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Insights -->
+        <div class="tab-content" id="tab-insights">
+            <div id="insights-container">
+                <p class="text-muted" style="margin-bottom:1rem;">Insights automatiques générés à partir de vos données :</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer mt-3">
+        <p><strong>MFC Laboratoire</strong> <span id="mfc-vf" style="background:#a32d03;color:#fff;padding:0.15rem 0.5rem;border-radius:10px;font-size:0.7rem;font-weight:600;"></span> — Maison Française des Cires</p>
+    </div>
+
+    <script src="js/operator-selector.js"></script>
+    <script src="js/cache-buster.js"></script>
+    <script>
+    // ═══ TABS ═══
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        });
+    });
+
+    // ═══ COULEURS CHART.JS ═══
+    const COLORS = ['#a32d03','#d38a41','#2563eb','#7c3aed','#1a7a1a','#dc2626','#0891b2','#d946ef','#ea580c','#4f46e5','#059669','#be185d'];
+    const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+    const textColor = () => isDark() ? '#e8e4de' : '#1a1a1a';
+    const gridColor = () => isDark() ? '#3a3530' : '#e5e7eb';
+
+    Chart.defaults.color = textColor();
+    Chart.defaults.borderColor = gridColor();
+
+    // Observer les changements de thème
+    const observer = new MutationObserver(() => {
+        Chart.defaults.color = textColor();
+        Chart.defaults.borderColor = gridColor();
+        Object.values(Chart.instances).forEach(c => c.update());
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    // ═══ CHARGEMENT DONNÉES ═══
+    async function loadAnalytics() {
+        try {
+            const [analytics, dashboard, stats] = await Promise.all([
+                fetch('/api/analytics').then(r => r.json()),
+                fetch('/api/dashboard').then(r => r.json()),
+                fetch('/api/stats').then(r => r.json())
+            ]);
+
+            // Métriques
+            document.getElementById('m-formulations').textContent = stats.formulations || 0;
+            document.getElementById('m-tests').textContent = stats.tests || 0;
+            document.getElementById('m-validation').textContent = (dashboard.validation_rate || 0) + '%';
+            document.getElementById('m-fds').textContent = analytics.fds_count || 0;
+            document.getElementById('m-kb').textContent = stats.knowledge || 0;
+            document.getElementById('m-kb-sub').textContent = (analytics.kb_categories || []).length + ' catégories';
+
+            // ═══ GRAPHIQUES VUE D'ENSEMBLE ═══
+
+            // KB par catégorie
+            if (analytics.kb_categories && analytics.kb_categories.length) {
+                new Chart(document.getElementById('chart-kb-categories'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: analytics.kb_categories.map(r => r.category),
+                        datasets: [{ data: analytics.kb_categories.map(r => r.count), backgroundColor: COLORS }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 }, padding: 8 } } } }
+                });
+            }
+
+            // Cires par type
+            if (analytics.wax_types && analytics.wax_types.length) {
+                new Chart(document.getElementById('chart-wax-types'), {
+                    type: 'bar',
+                    data: {
+                        labels: analytics.wax_types.map(r => r.type),
+                        datasets: [{ label: 'Nombre', data: analytics.wax_types.map(r => r.count), backgroundColor: '#a32d03cc', borderRadius: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                });
+            }
+
+            // Mèches par série
+            if (analytics.wick_series && analytics.wick_series.length) {
+                new Chart(document.getElementById('chart-wick-series'), {
+                    type: 'polarArea',
+                    data: {
+                        labels: analytics.wick_series.map(r => r.series),
+                        datasets: [{ data: analytics.wick_series.map(r => r.count), backgroundColor: COLORS.map(c => c + '99') }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 11 } } } } }
+                });
+            }
+
+            // Colorants sécurité
+            if (analytics.colorant_safety && analytics.colorant_safety.length) {
+                const safe = analytics.colorant_safety.filter(c => !c.has_hazard).length;
+                const hazard = analytics.colorant_safety.filter(c => c.has_hazard).length;
+                new Chart(document.getElementById('chart-colorant-safety'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Sans danger (' + safe + ')', 'Avec alertes (' + hazard + ')'],
+                        datasets: [{ data: [safe, hazard], backgroundColor: ['#059669', '#dc2626'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            // Distribution points de congélation
+            if (analytics.congealing_distribution && analytics.congealing_distribution.length) {
+                new Chart(document.getElementById('chart-congealing'), {
+                    type: 'bar',
+                    data: {
+                        labels: analytics.congealing_distribution.map(r => r.range),
+                        datasets: [{ label: 'Nb cires', data: analytics.congealing_distribution.map(r => r.count), backgroundColor: '#d38a41cc', borderRadius: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                });
+            }
+
+            // Points éclair parfums
+            if (analytics.flash_points && analytics.flash_points.length) {
+                new Chart(document.getElementById('chart-flash-points'), {
+                    type: 'bar',
+                    data: {
+                        labels: analytics.flash_points.map(r => r.name),
+                        datasets: [{ label: '°C', data: analytics.flash_points.map(r => r.flash_point), backgroundColor: analytics.flash_points.map(r => r.flash_point < 65 ? '#dc2626' : r.flash_point < 80 ? '#d97706' : '#059669'), borderRadius: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { title: { display: true, text: 'Point éclair (°C)' } } } }
+                });
+            }
+
+            // ═══ FOURNISSEURS ═══
+            if (analytics.supplier_matrix && analytics.supplier_matrix.length) {
+                const tbody = document.getElementById('supplier-tbody');
+                tbody.innerHTML = analytics.supplier_matrix.map(s => `<tr>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.country || '—'}</td>
+                    <td style="font-size:0.78rem;">${s.specialty || '—'}</td>
+                    <td>${s.wax_count}<span class="bar-inline" style="width:${s.wax_count*3}px;"></span></td>
+                    <td>${s.fragrance_count}</td>
+                    <td>${s.colorant_count}</td>
+                </tr>`).join('');
+            }
+
+            // Composants par famille
+            if (analytics.component_families && analytics.component_families.length) {
+                new Chart(document.getElementById('chart-component-families'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: analytics.component_families.map(r => r.family),
+                        datasets: [{ data: analytics.component_families.map(r => r.count), backgroundColor: COLORS }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 10 }, padding: 6 } } } }
+                });
+            }
+
+            // Parfums par fournisseur
+            if (analytics.fragrances_by_supplier && analytics.fragrances_by_supplier.length) {
+                new Chart(document.getElementById('chart-fragrances-supplier'), {
+                    type: 'bar',
+                    data: {
+                        labels: analytics.fragrances_by_supplier.map(r => r.supplier),
+                        datasets: [{ label: 'Parfums', data: analytics.fragrances_by_supplier.map(r => r.count), backgroundColor: '#7c3aedcc', borderRadius: 4 }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                });
+            }
+
+            // ═══ CORRÉLATIONS ═══
+            if (analytics.correlations) {
+                document.getElementById('corr-count').textContent = analytics.correlations.formulations_with_fds || 0;
+                document.getElementById('corr-tests').textContent = analytics.correlations.tests_count || 0;
+                if (analytics.correlations.tests_count > 0) {
+                    document.getElementById('corr-content').style.display = 'none';
+                    document.getElementById('corr-charts').style.display = 'grid';
+                }
+            }
+
+            // ═══ INSIGHTS ═══
+            renderInsights(analytics);
+
+        } catch (err) {
+            console.error('Erreur analytics:', err);
+        }
+    }
+
+    function renderInsights(data) {
+        const container = document.getElementById('insights-container');
+        const insights = [];
+
+        // Insights KB
+        if (data.kb_categories) {
+            const total = data.kb_categories.reduce((s, r) => s + r.count, 0);
+            const techPct = Math.round((data.kb_categories.find(r => r.category === 'technique')?.count || 0) / total * 100);
+            insights.push({ icon: '📚', title: 'Base de connaissances solide', text: `${total} fiches dont ${techPct}% technique. La base couvre ${data.kb_categories.length} catégories.` });
+        }
+
+        // Insights cires
+        if (data.wax_types) {
+            const paraffine = data.wax_types.find(r => r.type === 'Paraffine');
+            if (paraffine) insights.push({ icon: '🕯️', title: 'Dominance paraffine', text: `${paraffine.count} références paraffine sur ${data.wax_types.reduce((s,r) => s+r.count, 0)} cires au total. La paraffine reste la base MFC pour le luxe.` });
+        }
+
+        // Insights colorants sécurité
+        if (data.colorant_safety) {
+            const dangerous = data.colorant_safety.filter(c => c.has_hazard);
+            if (dangerous.length > 0) {
+                insights.push({ icon: '⚠️', title: `${dangerous.length} colorant(s) avec alertes sécurité`, text: `${dangerous.map(c => c.name).join(', ')} — vérifier les EPI lors de la manipulation. Alternatives sans danger disponibles dans la gamme Kaiser.` });
+            }
+        }
+
+        // Insights points éclair
+        if (data.flash_points && data.flash_points.length > 0) {
+            const low = data.flash_points.filter(f => f.flash_point < 65);
+            if (low.length > 0) {
+                insights.push({ icon: '🔥', title: `${low.length} parfum(s) avec point éclair bas (<65°C)`, text: `${low.map(f => f.name + ' (' + f.flash_point + '°C)').join(', ')} — incorporation à température réduite obligatoire.` });
+            }
+            const avgFP = Math.round(data.flash_points.reduce((s,f) => s + f.flash_point, 0) / data.flash_points.length);
+            insights.push({ icon: '🌡️', title: 'Point éclair moyen des parfums', text: `${avgFP}°C — température d'incorporation recommandée : ${avgFP - 10}°C.` });
+        }
+
+        // Insights composants
+        if (data.dpg_alert) {
+            insights.push({ icon: '🚫', title: 'Alerte DPG', text: data.dpg_alert });
+        }
+
+        if (insights.length === 0) {
+            insights.push({ icon: '📋', title: 'Collecte en cours', text: 'Plus vous ajoutez de formulations et de tests, plus les insights seront pertinents et personnalisés.' });
+        }
+
+        container.innerHTML += insights.map(i => `
+            <div class="insight-card">
+                <div class="insight-title">${i.icon} ${i.title}</div>
+                <div class="insight-text">${i.text}</div>
+            </div>
+        `).join('');
+    }
+
+    loadAnalytics();
+    </script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

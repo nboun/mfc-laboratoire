@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Tests de combustion - MFC Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC">
+            <div class="brand-text"><h1>LABORATOIRE</h1><span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span></div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html" class="active">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a><a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+                <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <div class="container">
+        <!-- Workflow -->
+        <div class="workflow-bar">
+            <div class="workflow-step completed clickable" onclick="location.href='echantillons.html'"><span class="step-num">✓</span><span class="step-label">Échantillon</span></div>
+            <div class="workflow-connector" style="background:var(--vert);"></div>
+            <div class="workflow-step completed clickable" onclick="location.href='formulations.html'"><span class="step-num">✓</span><span class="step-label">Formulation</span></div>
+            <div class="workflow-connector" style="background:var(--vert);"></div>
+            <div class="workflow-step active"><span class="step-num">3</span><span class="step-label">Test combustion</span></div>
+            <div class="workflow-connector"></div>
+            <div class="workflow-step"><span class="step-num">4</span><span class="step-label">Validation</span></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">🔥 Tests de combustion</h3>
+                <button class="btn btn-primary" onclick="openNewTestModal()">+ Nouveau test</button>
+            </div>
+            <div class="filters">
+                <select id="filter-status" class="form-control"><option value="">Tous</option><option value="en_cours">En cours</option><option value="terminé">Terminé</option><option value="validé_client">✓ Validé client</option><option value="refusé_client">✗ Refusé client</option></select>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr>
+                        <th>N° Test</th><th>Échantillon</th><th>Client</th><th>Formulation</th>
+                        <th>Mèche</th><th>Masse initiale</th><th>Masse actuelle</th>
+                        <th>Cycles</th><th>Statut</th><th>Actions</th>
+                    </tr></thead>
+                    <tbody id="tests-table"><tr><td colspan="10" class="loading"><div class="spinner"></div></td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><h3 class="card-title">📋 Protocole de test</h3></div>
+            <p style="color:var(--texte-secondary); line-height:1.9;">
+                <strong style="color:var(--mfc-cire);">Cycles de 4 heures</strong> — La masse initiale est héritée automatiquement de la formulation (elle-même liée à l'échantillon client).
+                La masse après extinction du cycle N devient la masse de départ du cycle N+1.
+                <br><strong style="color:var(--mfc-cire);">4 cycles minimum</strong> pour une évaluation complète. Observations : bassin de fusion, flamme, champignonnage, tunnel, diffusion parfum.
+            </p>
+        </div>
+    </div>
+
+    <!-- ══════════ MODAL NOUVEAU TEST ══════════ -->
+    <div class="modal-overlay" id="new-test-modal">
+        <div class="modal" style="max-width:720px;">
+            <div class="modal-header"><h2>Nouveau test de combustion</h2><button class="modal-close" onclick="closeNewTestModal()">&times;</button></div>
+            <div class="modal-body">
+                <form id="test-form">
+                    <div class="alert alert-info"><strong>N° Test :</strong> <span id="auto-test-number">...</span></div>
+
+                    <div class="form-section">Sélection de la formulation</div>
+                    <div class="form-group">
+                        <label>Formulation *</label>
+                        <select class="form-control" id="formulation_id" required onchange="onFormulationSelect()">
+                            <option value="">Sélectionner une formulation...</option>
+                        </select>
+                    </div>
+
+                    <!-- Traçabilité complète -->
+                    <div id="inherited-data" style="display:none;">
+                        <div class="alert alert-success" style="margin-top:0.75rem;">
+                            ✓ Données héritées automatiquement — Traçabilité complète
+                        </div>
+
+                        <!-- Origine : Client + Échantillon -->
+                        <div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:1rem; margin-top:0.75rem;">
+                            <p style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--texte-muted); margin-bottom:0.5rem; font-weight:600;">Origine de la demande</p>
+                            <div class="grid grid-3">
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">ÉCHANTILLON</label><p id="inh_sample" style="font-weight:600; color:var(--mfc-cire);">—</p></div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">CLIENT</label><p id="inh_client" style="font-weight:500;">—</p></div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">DEMANDE</label><p id="inh_request" style="font-size:0.85rem; color:var(--texte-secondary);">—</p></div>
+                            </div>
+                        </div>
+
+                        <!-- Spécifications héritées -->
+                        <div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:1rem; margin-top:0.5rem;">
+                            <p style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--texte-muted); margin-bottom:0.5rem; font-weight:600;">Spécifications de la formulation</p>
+                            <div class="grid grid-4">
+                                <div>
+                                    <label style="font-size:0.68rem; color:var(--texte-muted);">MASSE INITIALE</label>
+                                    <p id="inh_mass" style="font-size:1.3rem; font-weight:700; color:var(--mfc-cire);">—</p>
+                                </div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">MÈCHE</label><p id="inh_wick" style="font-weight:600;">—</p></div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">TYPE</label><p id="inh_type">—</p></div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">DIMENSIONS</label><p id="inh_dims">—</p></div>
+                            </div>
+                            <div class="grid grid-3" style="margin-top:0.5rem;">
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">PARFUM</label><p id="inh_fragrance">—</p></div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">COULEUR</label>
+                                    <div class="d-flex align-center gap-1"><span class="color-preview" id="inh_color" style="display:none;"></span><span id="inh_pantone">—</span></div>
+                                </div>
+                                <div><label style="font-size:0.68rem; color:var(--texte-muted);">FORMULATION</label><p id="inh_formcode">—</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">Informations du test</div>
+                    <div class="form-group"><label>Date de début</label><input type="date" class="form-control" id="start_date"></div>
+                    <div class="form-group"><label>Notes</label><textarea class="form-control" id="test_notes" rows="2" placeholder="Notes..."></textarea></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNewTestModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="saveNewTest()">🔥 Créer le test</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ MODAL DÉTAIL TEST ══════════ -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal" style="max-width:960px;">
+            <div class="modal-header"><h2 id="detail-title">Test</h2><button class="modal-close" onclick="closeDetailModal()">&times;</button></div>
+            <div class="modal-body" id="detail-body"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailModal()">Fermer</button>
+                <button class="btn btn-primary" id="btn-add-cycle" onclick="openCycleModal()">+ Cycle 1/4</button>
+                <button class="btn btn-success" id="btn-finish" onclick="finishTest()" style="display:none;">✓ Terminer le test</button>
+                <button class="btn" id="btn-report" onclick="generateReport()" style="display:none; background:var(--mfc-cire); color:#fff;">📊 Rapport</button>
+                <button class="btn" id="btn-pdf" onclick="downloadPDF()" style="display:none; background:#1565c0; color:#fff;">📄 PDF</button>
+                <button class="btn" id="btn-photo" onclick="document.getElementById('photo-input').click();" style="background:#7b1fa2; color:#fff;">📷 Photo</button>
+                <input type="file" id="photo-input" accept="image/*" multiple capture="environment" style="display:none;" onchange="uploadPhotos(this.files)">
+                <button class="btn" id="btn-client-val" onclick="openClientModal('validé')" style="display:none; background:#388e3c; color:#fff;">👤 Client valide</button>
+                <button class="btn" id="btn-client-ref" onclick="openClientModal('refusé')" style="display:none; background:#c62828; color:#fff;">👤 Client refuse</button>
+                <button class="btn" id="btn-retry" onclick="retryTest()" style="display:none; background:#e67e22; color:#fff;">🔄 Reprendre essai</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ MODAL CYCLE ══════════ -->
+    <div class="modal-overlay" id="cycle-modal">
+        <div class="modal" style="max-width:660px;">
+            <div class="modal-header"><h2 id="cycle-title">Cycle</h2><button class="modal-close" onclick="closeCycleModal()">&times;</button></div>
+            <div class="modal-body">
+                <form id="cycle-form">
+                    <div class="alert alert-info"><strong>Cycle <span id="cycle-num">1</span></strong> — Durée : 4 heures</div>
+
+                    <!-- Masse de départ auto -->
+                    <div style="background:var(--fond-surface); border:2px solid var(--mfc-cire); border-radius:var(--radius); padding:1rem; margin-bottom:1rem;">
+                        <p style="font-size:0.62rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--mfc-cire); font-weight:700; margin-bottom:0.3rem;">MASSE DE DÉPART DU CYCLE</p>
+                        <div style="display:flex; align-items:center; gap:1rem;">
+                            <p id="mass-before-display" style="font-size:2rem; font-weight:700; color:var(--mfc-cire); font-family:var(--font-display); margin:0;">— g</p>
+                            <div>
+                                <p id="mass-hint" style="font-size:0.78rem; color:var(--texte-secondary); margin:0;"></p>
+                                <p style="font-size:0.68rem; color:var(--texte-muted); margin:0.15rem 0 0;">Valeur reportée automatiquement — non modifiable</p>
+                            </div>
+                        </div>
+                        <input type="hidden" id="c_mass_before">
+                    </div>
+
+                    <div class="form-section">Masse après extinction (4h)</div>
+                    <div class="grid grid-2">
+                        <div class="form-group">
+                            <label>Masse après extinction (g) * <span style="font-size:0.72rem; color:var(--texte-muted);">— peser la bougie</span></label>
+                            <input type="number" class="form-control" id="c_mass_after" step="0.1" required oninput="calcConsumed()" style="font-size:1.1rem; font-weight:700;" placeholder="Entrer la masse pesée...">
+                        </div>
+                        <div class="form-group">
+                            <label>Consommé ce cycle</label>
+                            <input type="text" class="form-control" id="c_consumed" readonly style="background:var(--fond-surface); font-weight:700; font-size:1.1rem; color:var(--rouge);">
+                            <small id="consumed-pct" style="font-size:0.72rem; color:var(--texte-muted);"></small>
+                        </div>
+                    </div>
+
+                    <div class="form-section">Observations</div>
+                    <div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:0.75rem; margin-bottom:0.75rem;">
+                        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem;">
+                            <label style="font-weight:600; font-size:0.82rem; margin:0;">Bassin de fusion</label>
+                            <label style="font-size:0.78rem; cursor:pointer; display:flex; align-items:center; gap:0.3rem; margin:0;">
+                                <input type="checkbox" id="c_pool_visible" checked onchange="togglePoolFields()">
+                                <span>Visible</span>
+                            </label>
+                        </div>
+                        <div id="pool-fields" class="grid grid-2" style="gap:0.5rem;">
+                            <div class="form-group" style="margin-bottom:0;"><label style="font-size:0.72rem;">Diamètre (mm)</label><input type="number" class="form-control" id="c_pool" step="0.1" placeholder="Ex: 60"></div>
+                            <div class="form-group" style="margin-bottom:0;"><label style="font-size:0.72rem;">Profondeur (mm)</label><input type="number" class="form-control" id="c_pool_depth" step="0.1" placeholder="Ex: 8"></div>
+                        </div>
+                        <div id="pool-not-visible" style="display:none;">
+                            <p class="text-muted" style="font-size:0.78rem; font-style:italic; margin:0.3rem 0 0;">Bassin non visible — cire opaque ou non formé</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-2">
+                        <div class="form-group"><label>Hauteur flamme (mm)</label><input type="number" class="form-control" id="c_flame" step="0.1"></div>
+                    </div>
+                    <div class="grid grid-3">
+                        <div class="form-group"><label>Stabilité flamme</label><select class="form-control" id="c_stability"><option value="">—</option><option>stable</option><option>instable</option><option>vacillante</option></select></div>
+                        <div class="form-group"><label>Fumée</label><select class="form-control" id="c_smoke"><option value="">—</option><option>aucune</option><option>légère</option><option>moyenne</option><option>forte</option></select></div>
+                        <div class="form-group"><label>Suie</label><select class="form-control" id="c_soot"><option value="">—</option><option>aucune</option><option>légère</option><option>moyenne</option><option>forte</option></select></div>
+                    </div>
+                    <div class="grid grid-3">
+                        <div class="form-group"><label>Champignonnage</label><select class="form-control" id="c_mushroom"><option value="">—</option><option>aucun</option><option>léger</option><option>modéré</option><option>important</option></select></div>
+                        <div class="form-group"><label>Effet tunnel</label><select class="form-control" id="c_tunnel"><option value="">—</option><option>aucun</option><option>léger</option><option>modéré</option><option>important</option></select></div>
+                        <div class="form-group"><label>Diffusion parfum</label><select class="form-control" id="c_scent"><option value="">—</option><option>faible</option><option>modérée</option><option>bonne</option><option>excellente</option></select></div>
+                    </div>
+                    <div class="form-section">Notes</div>
+                    <div class="form-group"><textarea class="form-control" id="c_notes" rows="2" placeholder="Observations..."></textarea></div>
+
+                    <div class="form-section" style="background:#fff3e0;color:#e65100;padding:0.4rem 0.75rem;border-radius:var(--radius);margin:0.75rem 0 0.5rem;">🔧 Modifications matières (si changement par rapport à la formulation)</div>
+                    <div style="background:#fff8f0;border:1px solid #ffe0b2;border-radius:var(--radius);padding:0.75rem;margin-bottom:0.5rem;">
+                        <p style="font-size:0.72rem;color:#e65100;margin:0 0 0.5rem;">Remplir uniquement si vous avez modifié un paramètre pendant ce cycle</p>
+                        <div class="grid grid-2" style="gap:0.5rem;">
+                            <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.72rem;">Changement mèche</label><input type="text" class="form-control" id="c_mod_wick" placeholder="Ex: CL-130 → CL-140"></div>
+                            <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.72rem;">Nouveau % parfum</label><input type="number" class="form-control" id="c_mod_frag" step="0.5" placeholder="Ex: 10"></div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.72rem;">Modification cires</label><input type="text" class="form-control" id="c_mod_wax" placeholder="Ex: ajout 10% C48 paraffine, réduction Kerasoy"></div>
+                        <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.72rem;">Modification colorant</label><input type="text" class="form-control" id="c_mod_color" placeholder="Ex: changé pour Pantone 485C, dosage 0.25%"></div>
+                        <div class="form-group" style="margin-bottom:0.4rem;"><label style="font-size:0.72rem;">Autre modification</label><input type="text" class="form-control" id="c_mod_other" placeholder="Ex: ajout additif, changement contenant..."></div>
+                        <div class="form-group" style="margin-bottom:0;"><label style="font-size:0.72rem;">Raison du changement</label><textarea class="form-control" id="c_mod_notes" rows="2" placeholder="Ex: le parfum ne se mélangeait pas bien avec la cire, j'ai augmenté à 10%..."></textarea></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeCycleModal()">Annuler</button>
+                <button class="btn btn-primary" onclick="saveCycle()">💾 Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tests = [], formulations = [], currentTest = null;
+
+        function toast(m, t='success') {
+            const c = document.getElementById('toast-container'), d = document.createElement('div');
+            d.className = `toast toast-${t}`; d.textContent = m; c.appendChild(d);
+            setTimeout(() => d.remove(), 3500);
+        }
+        function fmtTime(m) { return m ? Math.floor(m/60) + 'h' + (m%60 ? String(m%60).padStart(2,'0') : '') : '—'; }
+
+        // ═══════ LOAD ═══════
+        async function loadFormulations() {
+            const r = await fetch('/api/formulations'); formulations = await r.json();
+            const s = document.getElementById('formulation_id');
+            s.innerHTML = '<option value="">Sélectionner une formulation...</option>';
+            formulations.forEach(f => { const o = document.createElement('option'); o.value = f.id; o.textContent = `${f.code} — ${f.name} (${f.total_mass}g)`; s.appendChild(o); });
+        }
+
+        async function loadTests() {
+            const st = document.getElementById('filter-status').value;
+            let url = '/api/burn-tests'; 
+            if (st === 'validé_client' || st === 'refusé_client') url += '?status=terminé';
+            else if (st) url += '?status=' + st;
+            const r = await fetch(url); let allTests = await r.json();
+            // Filter by client_status if needed
+            if (st === 'validé_client') allTests = allTests.filter(t => t.client_status === 'validé');
+            else if (st === 'refusé_client') allTests = allTests.filter(t => t.client_status === 'refusé');
+            tests = allTests; renderTests();
+        }
+
+        function renderTests() {
+            const tb = document.getElementById('tests-table');
+            if (!tests.length) { tb.innerHTML = '<tr><td colspan="10"><div class="empty-state"><div class="icon">🔥</div><p>Aucun test</p><button class="btn btn-primary" onclick="openNewTestModal()">Créer le premier test</button></div></td></tr>'; return; }
+            tb.innerHTML = tests.map(t => `
+                <tr onclick="viewTest(${t.id})" style="cursor:pointer;">
+                    <td><strong style="color:var(--mfc-cire);">${t.test_number}</strong>${t.version > 1 ? '<br><span style="font-size:0.62rem;color:#1565c0;font-weight:600;">V'+t.version+'</span>' : ''}</td>
+                    <td>${t.sample_number || '—'}</td>
+                    <td>${t.client_name || '—'} ${t.client_company ? '<span class="text-muted">('+t.client_company+')</span>' : ''}</td>
+                    <td>${t.formulation_code || '—'}</td>
+                    <td><strong>${t.wick_reference || '—'}</strong></td>
+                    <td>${t.initial_mass ? t.initial_mass + ' g' : '—'}</td>
+                    <td id="cmass-${t.id}">—</td>
+                    <td id="ccycles-${t.id}">—</td>
+                    <td><span class="badge badge-${t.status}">${t.status}</span>${t.client_status ? '<br><span class="badge" style="margin-top:2px;font-size:0.62rem;background:'+(t.client_status==='validé'?'#e8f5e9;color:#2e7d32':'#fbe9e7;color:#c62828')+';">👤 '+(t.client_status==='validé'?'Validé':'Refusé')+'</span>' : ''}</td>
+                    <td class="actions" onclick="event.stopPropagation()">
+                        <button class="btn btn-sm" onclick="window.open('/print.html?type=test&id='+${t.id},'_blank')" style="background:#666;color:#fff;" title="Imprimer fiche test">🖨️</button>
+                        <button class="btn btn-secondary btn-sm" onclick="viewTest(${t.id})">Détails</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteTest(${t.id})">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+            // Fetch cycle info for each test
+            tests.forEach(async t => {
+                try {
+                    const r = await fetch('/api/burn-tests/' + t.id); const d = await r.json();
+                    const cy = d.cycles || [];
+                    const massEl = document.getElementById('cmass-' + t.id);
+                    const cycEl = document.getElementById('ccycles-' + t.id);
+                    if (cy.length > 0) {
+                        const last = cy[cy.length-1];
+                        if (massEl) massEl.innerHTML = last.mass_after ? '<strong>' + last.mass_after + ' g</strong>' : '—';
+                        if (cycEl) cycEl.textContent = cy.length + ' / 4';
+                    } else {
+                        if (massEl) massEl.textContent = t.initial_mass ? t.initial_mass + ' g' : '—';
+                        if (cycEl) cycEl.textContent = '0 / 4';
+                    }
+                } catch(e) {}
+            });
+        }
+
+        // ═══════ NEW TEST ═══════
+        async function openNewTestModal() {
+            document.getElementById('test-form').reset();
+            document.getElementById('inherited-data').style.display = 'none';
+            document.getElementById('auto-test-number').textContent = 'Sélectionnez une formulation...';
+            const d = new Date();
+            document.getElementById('start_date').value = d.toISOString().slice(0,10);
+            const p = new URLSearchParams(location.search);
+            if (p.get('formulation')) { document.getElementById('formulation_id').value = p.get('formulation'); await onFormulationSelect(); }
+            document.getElementById('new-test-modal').classList.add('active');
+        }
+        function closeNewTestModal() { document.getElementById('new-test-modal').classList.remove('active'); }
+
+        async function onFormulationSelect() {
+            const fid = document.getElementById('formulation_id').value;
+            const div = document.getElementById('inherited-data');
+            if (!fid) { div.style.display = 'none'; document.getElementById('auto-test-number').textContent = 'Sélectionnez une formulation...'; return; }
+            const r = await fetch('/api/formulations/' + fid); const f = await r.json();
+            if (f.error) { div.style.display = 'none'; return; }
+            div.style.display = 'block';
+
+            // Auto-generate test number from formulation code: ECH-0206-001-F1 → ECH-0206-001-F1-T1
+            try {
+                const tr = await fetch('/api/burn-tests?formulation_id=' + fid);
+                const existingTests = await tr.json();
+                const num = (existingTests.length || 0) + 1;
+                document.getElementById('auto-test-number').textContent = f.code + '-T' + num;
+            } catch(e) {
+                document.getElementById('auto-test-number').textContent = f.code + '-T1';
+            }
+            document.getElementById('inh_sample').textContent = f.sample_number || '—';
+            document.getElementById('inh_client').textContent = (f.client_name || '—') + (f.client_company ? ' (' + f.client_company + ')' : '');
+            document.getElementById('inh_request').textContent = f.client_request || '—';
+            document.getElementById('inh_mass').textContent = f.total_mass ? f.total_mass + ' g' : '—';
+            document.getElementById('inh_wick').textContent = f.wick_reference || '—';
+            document.getElementById('inh_type').textContent = f.container_type || f.sample_type || '—';
+            document.getElementById('inh_dims').textContent = (f.diameter||f.sample_diameter) && (f.height||f.sample_height) ? (f.diameter||f.sample_diameter) + ' × ' + (f.height||f.sample_height) + ' mm' : '—';
+            document.getElementById('inh_fragrance').textContent = (f.fragrance_name||f.sample_fragrance) ? (f.fragrance_name||f.sample_fragrance) + (f.fragrance_ref ? ' ['+f.fragrance_ref+']' : '') + ' (' + (f.fragrance_percentage||f.sample_fragrance_pct) + '%)' + (f.fragrance_supplier ? ' — '+f.fragrance_supplier : '') : '—';
+            document.getElementById('inh_formcode').textContent = f.code || '—';
+            const cp = document.getElementById('inh_color');
+            const hex = f.pantone_hex || f.sample_pantone_hex;
+            if (hex) { cp.style.backgroundColor = hex; cp.style.display = 'inline-block'; } else { cp.style.display = 'none'; }
+            document.getElementById('inh_pantone').textContent = f.pantone_code || f.sample_pantone_code || '—';
+        }
+
+        async function saveNewTest() {
+            const fid = document.getElementById('formulation_id').value;
+            if (!fid) { toast('Sélectionnez une formulation','error'); return; }
+            const f = formulations.find(x => x.id == fid);
+            const data = {
+                test_number: document.getElementById('auto-test-number').textContent,
+                formulation_id: parseInt(fid),
+                sample_id: f ? f.sample_id : null,
+                initial_mass: f ? f.total_mass : null,
+                wick_reference: f ? f.wick_reference : null,
+                start_date: document.getElementById('start_date').value,
+                notes: document.getElementById('test_notes').value
+            };
+            const r = await fetch('/api/burn-tests', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const res = await r.json();
+            if (res.error) { toast(res.error,'error'); return; }
+            mfcLogActivity('test_lancé', 'test', res.id, data.test_number || '', data.notes || '');
+            closeNewTestModal(); loadTests(); toast('Test créé');
+        }
+
+        // ═══════ VIEW TEST DETAIL ═══════
+        async function viewTest(id) {
+            const r = await fetch('/api/burn-tests/' + id); currentTest = await r.json();
+            if (currentTest.error) { toast('Test non trouvé','error'); return; }
+            document.getElementById('detail-title').textContent = 'Test ' + currentTest.test_number + (currentTest.version > 1 ? ' (V' + currentTest.version + ')' : '');
+
+            const cy = currentTest.cycles || [];
+            const lastMass = cy.length ? cy[cy.length-1].mass_after : currentTest.initial_mass;
+            const totalConsumed = cy.reduce((s,c) => s + (c.mass_consumed||0), 0);
+            const pctConsumed = currentTest.initial_mass ? ((currentTest.initial_mass - (lastMass||currentTest.initial_mass)) / currentTest.initial_mass * 100) : 0;
+
+            let html = `
+                <!-- Traçabilité complète -->
+                <div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:1rem; margin-bottom:1rem;">
+                    <p style="font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:var(--texte-muted); font-weight:600; margin-bottom:0.5rem;">Traçabilité complète</p>
+                    <div class="grid grid-4" style="gap:0.75rem;">
+                        <div><span class="text-muted" style="font-size:0.7rem;">Client</span><br><strong>${currentTest.client_name||'—'}</strong> ${currentTest.client_company?'<span class="text-muted">('+currentTest.client_company+')</span>':''}</div>
+                        <div><span class="text-muted" style="font-size:0.7rem;">Échantillon</span><br><strong style="color:var(--mfc-cire);">${currentTest.sample_number||'—'}</strong></div>
+                        <div><span class="text-muted" style="font-size:0.7rem;">Formulation</span><br><strong>${currentTest.formulation_code||'—'}</strong> ${currentTest.formulation_name||''}</div>
+                        <div><span class="text-muted" style="font-size:0.7rem;">Statut</span><br><span class="badge badge-${currentTest.status}">${currentTest.status}</span>${currentTest.version > 1 ? '<br><span class="badge" style="margin-top:2px;font-size:0.62rem;background:#e3f2fd;color:#1565c0;">V'+currentTest.version+'</span>' : ''}</div>
+                    </div>
+                </div>
+
+                <!-- CHAÎNE DE VERSIONS (si reprise) -->
+                ${currentTest.retry_from_test_id || currentTest.version > 1 ? '<div id="version-chain" style="background:#e3f2fd;border:1px solid #90caf9;border-radius:var(--radius);padding:0.8rem;margin-bottom:1rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:#1565c0;font-weight:600;margin:0 0 0.4rem;">🔗 Chaîne de versions</p><div id="version-chain-body" style="font-size:0.82rem;">Chargement...</div></div>' : ''}
+
+                <!-- SUIVI DE MASSE PRINCIPAL -->
+                <div style="background:linear-gradient(135deg, var(--fond-surface) 0%, #fff 100%); border:2px solid var(--mfc-cire); border-radius:var(--radius); padding:1.25rem; margin-bottom:1rem;">
+                    <p style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1.5px; color:var(--mfc-cire); font-weight:700; margin-bottom:0.75rem;">📊 Suivi de masse de l'échantillon</p>
+                    
+                    <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap; margin-bottom:1rem;">
+                        <div style="background:var(--mfc-cire); color:#fff; padding:0.5rem 0.75rem; border-radius:var(--radius); text-align:center; min-width:90px;">
+                            <p style="font-size:0.6rem; text-transform:uppercase; opacity:0.8;">Initiale</p>
+                            <p style="font-size:1.3rem; font-weight:700;">${currentTest.initial_mass} g</p>
+                        </div>`;
+            
+            cy.forEach((c, i) => {
+                const consumed = c.mass_consumed ? c.mass_consumed.toFixed(1) : (c.mass_before - c.mass_after).toFixed(1);
+                html += `
+                        <div style="text-align:center; color:var(--mfc-cire);">
+                            <span style="font-size:0.65rem; display:block;">C${c.cycle_number}</span>
+                            <span style="font-size:1.1rem;">→</span>
+                            <span style="font-size:0.6rem; display:block; color:var(--rouge);">-${consumed}g</span>
+                        </div>
+                        <div style="background:${i===cy.length-1?'var(--mfc-cire)':'var(--fond-surface)'}; color:${i===cy.length-1?'#fff':'var(--texte)'}; padding:0.5rem 0.75rem; border-radius:var(--radius); text-align:center; min-width:90px; border:1px solid ${i===cy.length-1?'var(--mfc-cire)':'var(--bordure-legere)'};">
+                            <p style="font-size:0.6rem; text-transform:uppercase; opacity:0.8;">Après C${c.cycle_number}</p>
+                            <p style="font-size:1.3rem; font-weight:700;">${c.mass_after} g</p>
+                        </div>`;
+            });
+            
+            if (cy.length < 4) {
+                for (let i = cy.length; i < 4; i++) {
+                    html += `
+                        <div style="text-align:center; color:var(--bordure-legere);"><span style="font-size:1.1rem;">→</span></div>
+                        <div style="background:var(--fond-page); padding:0.5rem 0.75rem; border-radius:var(--radius); text-align:center; min-width:90px; border:1px dashed var(--bordure-legere);">
+                            <p style="font-size:0.6rem; text-transform:uppercase; color:var(--texte-muted);">C${i+1}</p>
+                            <p style="font-size:1.3rem; font-weight:700; color:var(--bordure-legere);">? g</p>
+                        </div>`;
+                }
+            }
+            
+            html += `</div>
+
+                    <!-- Stats résumé -->
+                    <div class="grid grid-4" style="gap:0.5rem; text-align:center;">
+                        <div><p style="font-size:0.62rem; text-transform:uppercase; color:var(--texte-muted);">Masse actuelle</p><p style="font-size:1.1rem; font-weight:700;">${lastMass ? lastMass + ' g' : '—'}</p></div>
+                        <div><p style="font-size:0.62rem; text-transform:uppercase; color:var(--texte-muted);">Total consommé</p><p style="font-size:1.1rem; font-weight:700; color:var(--rouge);">${totalConsumed ? totalConsumed.toFixed(1) + ' g' : '—'}</p></div>
+                        <div><p style="font-size:0.62rem; text-transform:uppercase; color:var(--texte-muted);">% consommé</p><p style="font-size:1.1rem; font-weight:700;">${pctConsumed.toFixed(1)}%</p></div>
+                        <div><p style="font-size:0.62rem; text-transform:uppercase; color:var(--texte-muted);">Mèche</p><p style="font-size:1.1rem; font-weight:700; color:var(--mfc-cire);">${currentTest.wick_reference||'—'}</p></div>
+                    </div>
+                </div>
+
+                <!-- Barre progression -->
+                <div style="background:var(--bordure-legere); border-radius:6px; height:12px; overflow:hidden; margin-bottom:0.5rem; position:relative;">
+                    <div style="height:100%; border-radius:6px; background:var(--mfc-cire); width:${pctConsumed}%; transition:width 0.5s;"></div>`;
+            // Markers for each cycle
+            cy.forEach(c => {
+                const cycPct = currentTest.initial_mass ? ((currentTest.initial_mass - c.mass_after) / currentTest.initial_mass * 100) : 0;
+                html += `<div style="position:absolute; top:-2px; left:${cycPct}%; width:2px; height:16px; background:var(--texte-secondary); opacity:0.5;" title="Après C${c.cycle_number}: ${c.mass_after}g"></div>`;
+            });
+            html += `</div>
+                <p class="text-muted text-center" style="font-size:0.75rem; margin-bottom:1rem;">
+                    <strong style="color:var(--mfc-cire);">${cy.length} / 4 cycles</strong> effectués — 
+                    ${cy.length < 4 ? `<span style="color:var(--rouge);">${4 - cy.length} cycle${4-cy.length>1?'s':''} restant${4-cy.length>1?'s':''}</span>` : '<span style="color:var(--vert);">✓ Test complet</span>'}
+                    — ${pctConsumed.toFixed(1)}% de masse consommée
+                </p>
+            `;
+
+            // Cycles
+            if (cy.length) {
+                html += `<div style="margin-bottom:0.8rem;padding:0.5rem;background:#f3e5f5;border-radius:6px;"><strong style="font-size:0.78rem;">📷 Photos du test</strong><div id="photos-grid" style="margin-top:0.4rem;min-height:30px;"></div></div>`;
+                html += `<h4 style="font-family:var(--font-display); font-weight:500; margin-bottom:0.75rem;">Cycles de combustion (${cy.length} / 4)</h4>
+                <div class="table-container"><table><thead><tr>
+                    <th>Cycle</th><th>Masse avant</th><th>Masse après</th><th>Consommé</th>
+                    <th>Bain fusion ⌀</th><th>Profondeur</th><th>Hauteur flamme</th><th>Stabilité</th><th>Qualité</th><th>Diffusion</th>
+                </tr></thead><tbody>`;
+                cy.forEach((c,i) => {
+                    const isAuto = i > 0;
+                    const poolInfo = c.pool_visible === 0 ? '<span class="text-muted" style="font-size:0.72rem;">non visible</span>' : (c.pool_diameter ? c.pool_diameter + ' mm' : '—');
+                    const depthInfo = c.pool_visible === 0 ? '' : (c.pool_depth ? c.pool_depth + ' mm' : '—');
+                    html += `<tr>
+                        <td><strong style="color:var(--mfc-cire);">Cycle ${c.cycle_number}</strong></td>
+                        <td>${c.mass_before} g ${isAuto ? '<span style="font-size:0.7rem; color:var(--vert-texte);" title="Reporté automatiquement du cycle précédent">← auto</span>' : '<span style="font-size:0.7rem; color:var(--mfc-cire);" title="Masse initiale de la formulation">← formulation</span>'}</td>
+                        <td><strong>${c.mass_after} g</strong></td>
+                        <td style="color:var(--rouge); font-weight:600;">${c.mass_consumed ? c.mass_consumed.toFixed(1) + ' g' : '—'}</td>
+                        <td>${poolInfo}</td>
+                        <td>${depthInfo}</td>
+                        <td>${c.flame_height ? (isNaN(parseFloat(c.flame_height)) ? c.flame_height : c.flame_height + ' mm') : '—'}</td>
+                        <td>${c.flame_stability || '—'}</td>
+                        <td>
+                            ${c.mushrooming && c.mushrooming!=='aucun' ? '🍄 '+c.mushrooming+' ' : ''}
+                            ${c.tunneling && c.tunneling!=='aucun' ? '🕳️ '+c.tunneling+' ' : ''}
+                            ${c.smoke_level && c.smoke_level!=='aucune' ? '💨 '+c.smoke_level : ''}
+                            ${(!c.mushrooming||c.mushrooming==='aucun')&&(!c.tunneling||c.tunneling==='aucun')&&(!c.smoke_level||c.smoke_level==='aucune') ? '<span class="text-success">✓ OK</span>' : ''}
+                        </td>
+                        <td>${c.scent_throw ? '👃 '+c.scent_throw : '—'}</td>
+                    </tr>`;
+                    if (c.notes) html += `<tr><td colspan="9" class="text-muted" style="padding:0.25rem 0.85rem 0.6rem; font-size:0.8rem; font-style:italic;">📝 ${c.notes}</td></tr>`;
+                    // Show modifications if any
+                    if (c.mod_wick || c.mod_fragrance_pct || c.mod_wax_changes || c.mod_colorant || c.mod_other) {
+                        html += `<tr><td colspan="9" style="padding:0.25rem 0.85rem 0.6rem; font-size:0.78rem; background:#fff3e0; border-left:3px solid #e65100;">
+                            <strong style="color:#e65100;">🔧 Modifications :</strong>
+                            ${c.mod_wick ? ' <span style="background:#fff;padding:1px 5px;border-radius:4px;margin:0 2px;">Mèche → <strong>'+c.mod_wick+'</strong></span>' : ''}
+                            ${c.mod_fragrance_pct ? ' <span style="background:#fff;padding:1px 5px;border-radius:4px;margin:0 2px;">Parfum → <strong>'+c.mod_fragrance_pct+'%</strong></span>' : ''}
+                            ${c.mod_wax_changes ? ' <span style="background:#fff;padding:1px 5px;border-radius:4px;margin:0 2px;">Cires: <strong>'+c.mod_wax_changes+'</strong></span>' : ''}
+                            ${c.mod_colorant ? ' <span style="background:#fff;padding:1px 5px;border-radius:4px;margin:0 2px;">Colorant: <strong>'+c.mod_colorant+'</strong></span>' : ''}
+                            ${c.mod_other ? ' <span style="background:#fff;padding:1px 5px;border-radius:4px;margin:0 2px;">'+c.mod_other+'</span>' : ''}
+                            ${c.mod_notes ? '<br><span style="font-style:italic;color:#e65100;">Raison : '+c.mod_notes+'</span>' : ''}
+                        </td></tr>`;
+                    }
+                });
+                html += '</tbody></table></div>';
+
+                // Résumé de la chaîne de masse
+                html += `<div style="background:var(--fond-surface); border:1px solid var(--bordure-legere); border-radius:var(--radius); padding:0.75rem 1rem; margin-top:1rem;">
+                    <p style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--texte-muted); font-weight:600; margin-bottom:0.4rem;">Chaîne de masse automatique</p>
+                    <p style="font-size:0.85rem; color:var(--texte-secondary);">`;
+                html += `<strong style="color:var(--mfc-cire);">${currentTest.initial_mass}g</strong> <span class="text-muted">(formulation)</span>`;
+                cy.forEach(c => { html += ` → <strong>${c.mass_after}g</strong> <span class="text-muted">(après C${c.cycle_number})</span>`; });
+                html += `</p></div>`;
+            } else {
+                html += '<div class="empty-state" style="padding:2rem;"><div class="icon">⏱️</div><p>Aucun cycle — Cliquez « Ajouter un cycle » pour commencer</p></div>';
+            }
+
+            if (currentTest.conclusion) html += `<div class="divider"></div><p class="text-muted" style="font-size:0.68rem; text-transform:uppercase;">Conclusion</p><p>${currentTest.conclusion}</p>`;
+
+            // Client validation status banner
+            if (currentTest.client_status) {
+                const isVal = currentTest.client_status === 'validé';
+                html += `<div class="divider"></div>
+                    <div style="background:${isVal?'#e8f5e9':'#fbe9e7'};border:1px solid ${isVal?'#a5d6a7':'#ef9a9a'};border-radius:var(--radius);padding:1rem;margin-top:0.5rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+                            <strong style="color:${isVal?'#2e7d32':'#c62828'};">${isVal?'✓ Validé par le client':'✗ Refusé par le client'}</strong>
+                            <span class="text-muted" style="font-size:0.7rem;">${currentTest.client_decision_date||''}</span>
+                        </div>
+                        <p style="font-size:0.85rem;line-height:1.5;margin:0;font-style:italic;">« ${currentTest.client_feedback||''} »</p>
+                        ${currentTest.retry_from_test_id ? '<p style="font-size:0.72rem;color:var(--texte-muted);margin:0.3rem 0 0;">🔄 Reprise du test précédent</p>' : ''}
+                    </div>`;
+            }
+
+            document.getElementById('detail-body').innerHTML = html;
+            const cyclesDone = cy.length;
+            const remaining = 4 - cyclesDone;
+            const isTerminé = currentTest.status === 'terminé';
+            const hasClientDecision = !!currentTest.client_status;
+            const isRefusé = currentTest.client_status === 'refusé';
+
+            // Cycle add button: hide if 4 cycles done or test finished
+            document.getElementById('btn-add-cycle').style.display = (currentTest.status === 'en_cours' && cyclesDone < 4) ? '' : 'none';
+            document.getElementById('btn-add-cycle').innerHTML = remaining > 0 ? `+ Cycle ${cyclesDone+1}/4` : '';
+            // Finish button: only after at least 1 cycle
+            document.getElementById('btn-finish').style.display = (currentTest.status === 'en_cours' && cyclesDone > 0) ? '' : 'none';
+            // Report button: visible when 4 cycles done or test terminated
+            document.getElementById('btn-report').style.display = (cyclesDone === 4 || isTerminé) ? '' : 'none';
+            document.getElementById('btn-pdf').style.display = (cyclesDone === 4 || isTerminé) ? '' : 'none';
+            loadPhotos();
+            // Client validation buttons: when terminé and no decision yet, OR to change decision
+            document.getElementById('btn-client-val').style.display = (isTerminé && (!hasClientDecision || isRefusé)) ? '' : 'none';
+            document.getElementById('btn-client-ref').style.display = (isTerminé && (!hasClientDecision || currentTest.client_status === 'validé')) ? '' : 'none';
+            // Change label if already has decision
+            if (hasClientDecision) {
+                document.getElementById('btn-client-val').innerHTML = isRefusé ? '🔄 Finalement validé' : '👤 Client valide';
+                document.getElementById('btn-client-ref').innerHTML = currentTest.client_status === 'validé' ? '🔄 Finalement refusé' : '👤 Client refuse';
+            } else {
+                document.getElementById('btn-client-val').innerHTML = '👤 Client valide';
+                document.getElementById('btn-client-ref').innerHTML = '👤 Client refuse';
+            }
+            // Retry button: when client refused
+            document.getElementById('btn-retry').style.display = isRefusé ? '' : 'none';
+
+            document.getElementById('detail-modal').classList.add('active');
+            
+            // Load version chain if needed
+            if (currentTest.retry_from_test_id || currentTest.version > 1) {
+                loadVersionChain(currentTest.id);
+            }
+        }
+
+        function closeDetailModal() { document.getElementById('detail-modal').classList.remove('active'); currentTest = null; }
+
+        // ═══════ CYCLE — MASSE AUTO ═══════
+        function openCycleModal() {
+            if (!currentTest) return;
+            document.getElementById('cycle-form').reset();
+            document.getElementById('c_consumed').value = '';
+            document.getElementById('consumed-pct').textContent = '';
+            const cy = currentTest.cycles || [];
+            const n = cy.length + 1;
+            
+            if (n > 4) { toast('4 cycles maximum atteints', 'error'); return; }
+            
+            document.getElementById('cycle-title').textContent = `Cycle ${n} — ${currentTest.test_number}`;
+            document.getElementById('cycle-num').textContent = n;
+
+            // MASSE AUTOMATIQUE
+            let autoMass;
+            if (cy.length === 0) {
+                autoMass = currentTest.initial_mass;
+                document.getElementById('mass-hint').innerHTML = '← <strong>Masse initiale</strong> de la formulation';
+            } else {
+                autoMass = cy[cy.length-1].mass_after;
+                document.getElementById('mass-hint').innerHTML = `← <strong>Masse après cycle ${cy.length}</strong> (report automatique)`;
+            }
+            document.getElementById('c_pool_visible').checked = true;
+            togglePoolFields();
+            document.getElementById('c_mass_before').value = autoMass || '';
+            document.getElementById('mass-before-display').textContent = (autoMass || '—') + ' g';
+            document.getElementById('cycle-modal').classList.add('active');
+            // Focus on mass_after
+            setTimeout(() => document.getElementById('c_mass_after').focus(), 200);
+        }
+        function closeCycleModal() { document.getElementById('cycle-modal').classList.remove('active'); }
+
+        function togglePoolFields() {
+            const visible = document.getElementById('c_pool_visible').checked;
+            document.getElementById('pool-fields').style.display = visible ? '' : 'none';
+            document.getElementById('pool-not-visible').style.display = visible ? 'none' : '';
+            if (!visible) {
+                document.getElementById('c_pool').value = '';
+                document.getElementById('c_pool_depth').value = '';
+            }
+        }
+
+        function calcConsumed() {
+            const b = parseFloat(document.getElementById('c_mass_before').value);
+            const a = parseFloat(document.getElementById('c_mass_after').value);
+            if (!isNaN(b) && !isNaN(a) && a < b) {
+                const consumed = b - a;
+                document.getElementById('c_consumed').value = consumed.toFixed(1) + ' g';
+                const pct = currentTest.initial_mass ? (consumed / currentTest.initial_mass * 100).toFixed(1) : '?';
+                document.getElementById('consumed-pct').textContent = `soit ${pct}% de la masse initiale (${currentTest.initial_mass}g)`;
+            } else {
+                document.getElementById('c_consumed').value = '';
+                document.getElementById('consumed-pct').textContent = '';
+            }
+        }
+
+        async function saveCycle() {
+            if (!currentTest) return;
+            const mb = parseFloat(document.getElementById('c_mass_before').value);
+            const ma = parseFloat(document.getElementById('c_mass_after').value);
+            if (isNaN(mb)||isNaN(ma)) { toast('Masses obligatoires','error'); return; }
+            if (ma >= mb) { toast('Masse après doit être < masse avant','error'); return; }
+            const cy = currentTest.cycles || [];
+            const data = {
+                cycle_number: cy.length + 1, duration_minutes: 240,
+                mass_before: mb, mass_after: ma,
+                pool_diameter: parseFloat(document.getElementById('c_pool').value) || null,
+                pool_depth: parseFloat(document.getElementById('c_pool_depth').value) || null,
+                pool_visible: document.getElementById('c_pool_visible').checked ? 1 : 0,
+                flame_height: parseFloat(document.getElementById('c_flame').value) || null,
+                flame_stability: document.getElementById('c_stability').value || null,
+                smoke_level: document.getElementById('c_smoke').value || null,
+                soot_level: document.getElementById('c_soot').value || null,
+                mushrooming: document.getElementById('c_mushroom').value || null,
+                tunneling: document.getElementById('c_tunnel').value || null,
+                scent_throw: document.getElementById('c_scent').value || null,
+                notes: document.getElementById('c_notes').value || null,
+                mod_wick: document.getElementById('c_mod_wick').value || null,
+                mod_fragrance_pct: parseFloat(document.getElementById('c_mod_frag').value) || null,
+                mod_wax_changes: document.getElementById('c_mod_wax').value || null,
+                mod_colorant: document.getElementById('c_mod_color').value || null,
+                mod_other: document.getElementById('c_mod_other').value || null,
+                mod_notes: document.getElementById('c_mod_notes').value || null
+            };
+            const r = await fetch(`/api/burn-tests/${currentTest.id}/cycles`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            const res = await r.json();
+            if (res.error) { toast(res.error,'error'); return; }
+            closeCycleModal();
+            const modMsg = res.has_modifications ? ' — Modifications enregistrées en base IA' : '';
+            mfcLogActivity('cycle_enregistré', 'cycle', currentTest.id, currentTest.test_number, 'Cycle ' + data.cycle_number + ' — ' + ma + 'g');
+            toast(`Cycle ${data.cycle_number} enregistré — ${ma}g${modMsg}`);
+            await viewTest(currentTest.id); loadTests();
+        }
+
+        // ═══════ FINISH ═══════
+        async function finishTest() {
+            if (!currentTest) return;
+            const conc = prompt('Conclusion du test (optionnel) :');
+            await fetch(`/api/burn-tests/${currentTest.id}`, { method:'PUT', headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({ status:'terminé', end_date:new Date().toISOString().slice(0,10), conclusion:conc||null, notes:currentTest.notes }) });
+            toast('Test terminé'); closeDetailModal(); loadTests();
+        }
+
+        async function deleteTest(id) {
+            if (confirm('Supprimer ce test et ses cycles ?')) { await fetch('/api/burn-tests/'+id,{method:'DELETE'}); loadTests(); toast('Supprimé'); }
+        }
+
+        // ═══════ RAPPORT IA ═══════
+        function closeReportModal() { document.getElementById('report-modal').classList.remove('active'); }
+
+        function downloadPDF() {
+            const testId = currentTestId;
+            if (!testId) return;
+            window.open('/api/burn-tests/' + testId + '/pdf', '_blank');
+        }
+
+        async function uploadPhotos(files) {
+            if (!files.length || !currentTestId) return;
+            const formData = new FormData();
+            for (const f of files) formData.append('photos', f);
+            try {
+                const r = await fetch('/api/photos/cycle/' + currentTestId, { method: 'POST', body: formData });
+                const d = await r.json();
+                if (d.success) { toast(d.files.length + ' photo(s) ajoutée(s)'); loadPhotos(); }
+                else toast(d.error || 'Erreur upload', 'error');
+            } catch(e) { toast('Erreur upload: ' + e.message, 'error'); }
+            document.getElementById('photo-input').value = '';
+        }
+
+        async function loadPhotos() {
+            if (!currentTestId) return;
+            try {
+                const r = await fetch('/api/photos/cycle/' + currentTestId);
+                const photos = await r.json();
+                const container = document.getElementById('photos-grid');
+                if (!container) return;
+                if (!photos.length) { container.innerHTML = '<em style="color:#999;font-size:0.8rem;">Aucune photo</em>'; return; }
+                container.innerHTML = photos.map(p => `
+                    <div style="display:inline-block;margin:4px;position:relative;">
+                        <img src="${p.filepath}" style="width:80px;height:80px;object-fit:cover;border-radius:6px;border:1px solid #ddd;cursor:pointer;" onclick="window.open('${p.filepath}','_blank')">
+                        <button onclick="deletePhoto(${p.id})" style="position:absolute;top:-4px;right:-4px;background:#c62828;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:18px;">×</button>
+                    </div>
+                `).join('');
+            } catch(e) {}
+        }
+
+        async function deletePhoto(id) {
+            if (!confirm('Supprimer cette photo ?')) return;
+            await fetch('/api/photos/' + id, { method: 'DELETE' });
+            loadPhotos();
+        }
+
+        async function generateReport() {
+            if (!currentTest) return;
+            const t = currentTest;
+            const cy = t.cycles || [];
+            if (cy.length === 0) { toast('Aucun cycle à analyser', 'error'); return; }
+            const clientMode = document.getElementById('client-mode').checked;
+
+            let form = null, waxes = [];
+            if (t.formulation_id) {
+                try { const r = await fetch('/api/formulations/' + t.formulation_id); form = await r.json(); waxes = form.waxes || []; } catch(e) {}
+            }
+
+            // ── ANALYSE ──
+            const avgPool = cy.reduce((s,c) => s + (c.pool_diameter||0), 0) / cy.length;
+            const depthVals = cy.filter(c => c.pool_depth && c.pool_visible !== 0);
+            const avgDepth = depthVals.length ? depthVals.reduce((s,c) => s + c.pool_depth, 0) / depthVals.length : 0;
+            const avgFlame = cy.reduce((s,c) => s + (c.flame_height||0), 0) / cy.length;
+            const consumptions = cy.map(c => c.mass_before - c.mass_after);
+            const avgConsumed = consumptions.reduce((a,b) => a+b, 0) / consumptions.length;
+            const totalConsumed = t.initial_mass - (cy[cy.length-1]?.mass_after || t.initial_mass);
+            const pctConsumed = (totalConsumed / t.initial_mass * 100);
+            const avgC = consumptions.reduce((a,b) => a+b, 0) / consumptions.length;
+            const variance = consumptions.reduce((s,c) => s + Math.pow(c - avgC, 2), 0) / consumptions.length;
+            const stdDev = Math.sqrt(variance);
+            const stabilityScore = Math.max(0, 10 - stdDev * 2);
+            const flameScores = cy.map(c => { let s=5; if(c.flame_stability==='stable')s+=3;else if(c.flame_stability==='instable')s-=2; if(c.flame_height&&c.flame_height>=15&&c.flame_height<=30)s+=2;else if(c.flame_height)s-=1; return Math.min(10,Math.max(0,s)); });
+            const flameScore = flameScores.reduce((a,b)=>a+b,0)/flameScores.length;
+            const qualityScores = cy.map(c => { let s=10; if(c.mushrooming==='léger')s-=1;else if(c.mushrooming==='modéré')s-=3;else if(c.mushrooming==='important')s-=5; if(c.tunneling==='léger')s-=1;else if(c.tunneling==='modéré')s-=3;else if(c.tunneling==='important')s-=5; if(c.smoke_level==='légère')s-=1;else if(c.smoke_level==='moyenne')s-=2;else if(c.smoke_level==='forte')s-=4; if(c.soot_level==='légère')s-=1;else if(c.soot_level==='moyenne')s-=2;else if(c.soot_level==='forte')s-=4; return Math.max(0,s); });
+            const qualityScore = qualityScores.reduce((a,b)=>a+b,0)/qualityScores.length;
+            const scentMap={'faible':3,'modérée':5,'bonne':8,'excellente':10};
+            const scentScores=cy.map(c=>scentMap[c.scent_throw]||5);
+            const scentScore=scentScores.reduce((a,b)=>a+b,0)/scentScores.length;
+            const diam=form?(form.diameter||form.sample_diameter):null;
+            let poolScore=5;
+            if(diam){const ratio=avgPool/diam;if(ratio>=0.9)poolScore=10;else if(ratio>=0.8)poolScore=8;else if(ratio>=0.7)poolScore=6;else poolScore=4;}else if(avgPool>50)poolScore=7;
+            const weights={stability:0.20,flame:0.15,quality:0.25,scent:0.20,pool:0.20};
+            const globalScore=(stabilityScore*weights.stability+flameScore*weights.flame+qualityScore*weights.quality+scentScore*weights.scent+poolScore*weights.pool);
+
+            // ── DURÉE DE COMBUSTION THÉORIQUE ──
+            const consumPerHour = avgConsumed / 4;
+            const totalBurnableInitial = t.initial_mass * 0.92;
+            const theoreticalHours = consumPerHour > 0 ? totalBurnableInitial / consumPerHour : 0;
+            const hoursCompleted = cy.length * 4;
+            const regularityCoeff = avgConsumed > 0 ? Math.max(0, 1 - (stdDev / avgConsumed)) : 0;
+
+            // Wax data (internal)
+            let waxAnalysis='',congealInfo='',penetrationInfo='',oilInfo='',waxDetailRows='';
+            if(waxes.length&&!clientMode){
+                waxAnalysis=waxes.map(w=>'<strong>'+(w.wax_name||w.reference||'?')+'</strong> — '+w.percentage+'%'+(w.supplier_name?' ('+w.supplier_name+')':'')).join('<br>');
+                try{
+                    const wr=await fetch('/api/waxes');const allW=await wr.json();
+                    const wd=waxes.map(fw=>({...fw,...(allW.find(w=>w.id===fw.wax_id)||{})}));
+                    let cpW=0,cpT=0,pnW=0,pnT=0,olW=0,olT=0;
+                    wd.forEach((w,i)=>{
+                        // Moyennes pondérées
+                        if(w.congealing_point_min&&w.congealing_point_max){cpW+=((w.congealing_point_min+w.congealing_point_max)/2)*(w.percentage/100);cpT+=w.percentage;}
+                        else if(w.congealing_point){cpW+=w.congealing_point*(w.percentage/100);cpT+=w.percentage;}
+                        if(w.penetration_min&&w.penetration_max){pnW+=((w.penetration_min+w.penetration_max)/2)*(w.percentage/100);pnT+=w.percentage;}
+                        else if(w.penetration){pnW+=w.penetration*(w.percentage/100);pnT+=w.percentage;}
+                        if(w.oil_content_min!=null&&w.oil_content_max!=null){olW+=((w.oil_content_min+w.oil_content_max)/2)*(w.percentage/100);olT+=w.percentage;}
+                        else if(w.oil_content!=null){olW+=w.oil_content*(w.percentage/100);olT+=w.percentage;}
+                        // Tableau détaillé
+                        const bg=i%2===0?'#fff':'#f8f5f0';
+                        const cpRange=(w.congealing_point_min&&w.congealing_point_max)?w.congealing_point_min+'–'+w.congealing_point_max+'°C':(w.congealing_point?w.congealing_point+'°C':'—');
+                        const pnRange=(w.penetration_min&&w.penetration_max)?w.penetration_min+'–'+w.penetration_max:(w.penetration?''+w.penetration:'—');
+                        const olRange=(w.oil_content_min!=null&&w.oil_content_max!=null)?w.oil_content_min+'–'+w.oil_content_max+'%':(w.oil_content!=null?w.oil_content+'%':'—');
+                        const mp=w.melting_point?w.melting_point+'°C':'—';
+                        waxDetailRows+='<tr style="background:'+bg+';"><td style="padding:4px 8px;border-bottom:1px solid #eee;font-weight:600;">'+(w.wax_name||w.reference||'?')+'<br><span style="font-size:0.68rem;color:#888;">Réf: '+(w.reference||'—')+'</span></td><td style="border-bottom:1px solid #eee;text-align:center;">'+(w.type||'—')+'</td><td style="border-bottom:1px solid #eee;text-align:center;font-weight:700;">'+w.percentage+'%</td><td style="border-bottom:1px solid #eee;text-align:center;">'+cpRange+'</td><td style="border-bottom:1px solid #eee;text-align:center;">'+pnRange+'</td><td style="border-bottom:1px solid #eee;text-align:center;">'+olRange+'</td><td style="border-bottom:1px solid #eee;text-align:center;">'+mp+'</td></tr>';
+                    });
+                    if(cpT>0)congealInfo=cpW.toFixed(1)+'°C';
+                    if(pnT>0)penetrationInfo=pnW.toFixed(1)+' (0.1mm)';
+                    if(olT>0)oilInfo=olW.toFixed(2)+'%';
+                }catch(e){console.error('Erreur détails cires:',e);}
+            }
+
+            // Avis
+            let avis='';
+            if(globalScore>=8)avis=clientMode?'Excellente performance. Cette bougie offre une combustion régulière, un bassin de fusion homogène et une diffusion olfactive remarquable. Formulation prête pour production.':'Excellent résultat. Formulation validée pour production.';
+            else if(globalScore>=6.5)avis=clientMode?'Bonne performance globale. La bougie brûle de manière satisfaisante avec quelques optimisations mineures possibles.':'Bon résultat avec points d\'amélioration mineurs.';
+            else if(globalScore>=5)avis=clientMode?'Performance correcte. Des ajustements sont en cours pour améliorer la combustion et la restitution olfactive.':'Résultat moyen. Ajustements nécessaires.';
+            else avis=clientMode?'Cette formulation nécessite des modifications complémentaires. Notre laboratoire travaille activement à son optimisation.':'Résultat insuffisant. Révision nécessaire.';
+
+            let recos=[];
+            if(qualityScore<7&&cy.some(c=>c.tunneling&&c.tunneling!=='aucun'))recos.push(clientMode?'Effet tunnel détecté — des ajustements techniques sont prévus.':'Effet tunnel — mèche calibre supérieur ou dureté cire.');
+            if(qualityScore<7&&cy.some(c=>c.mushrooming&&c.mushrooming!=='aucun'))recos.push(clientMode?'Champignonnage observé — ajustement en cours.':'Champignonnage — vérifier mèche et charge parfum.');
+            if(scentScore<6)recos.push(clientMode?'Diffusion parfum à optimiser.':'Diffusion insuffisante — augmenter % ou meilleur diffusion à chaud.');
+            if(stabilityScore<7)recos.push(clientMode?'Régularité de combustion à améliorer.':'Consommation irrégulière — homogénéité mélange.');
+            if(poolScore<6)recos.push(clientMode?'Bassin de fusion à optimiser.':'Bassin incomplet — mèche plus large.');
+            if(flameScore<6)recos.push(clientMode?'Flamme à stabiliser.':'Flamme instable — ajuster mèche ou point éclair.');
+            if(!recos.length)recos.push(clientMode?'Aucun défaut majeur. Formulation validée.':'Aucun défaut. Validée pour production.');
+
+            const sc=(s)=>s>=8?'#388e3c':s>=6.5?'#e67e22':s>=4?'#d84315':'#c62828';
+            const scoreBar=(s,label)=>'<div style="margin-bottom:0.5rem;"><div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span style="font-size:0.75rem;">'+label+'</span><strong style="color:'+sc(s)+';font-size:0.85rem;">'+s.toFixed(1)+'/10</strong></div><div style="background:#e8e4de;border-radius:4px;height:7px;overflow:hidden;"><div style="height:100%;width:'+(s*10)+'%;background:'+sc(s)+';border-radius:4px;"></div></div></div>';
+            const clientName=form?(form.client_name||''):(t.client_name||'');
+            const candleDiam=diam||'—';
+            const candleHeight=form?(form.height||form.sample_height||'—'):'—';
+            const candleType=form?(form.container_type||form.sample_type||''):'';
+
+            let rhtml='<div style="font-family:Open Sans,sans-serif;color:#2c2c2c;line-height:1.5;">';
+
+            // ── EN-TÊTE ──
+            if(clientMode){
+                rhtml+='<div style="background:linear-gradient(135deg,#1a1a1a,#333);color:#fff;padding:1.2rem 1.5rem;border-radius:8px;margin-bottom:1.5rem;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:3px;color:#c9a96e;margin:0;">Maison Française des Cires — Maître Cirier depuis 1904</p><h2 style="font-family:Playfair Display,serif;margin:0.3rem 0 0;font-size:1.5rem;color:#f0e6d3;">Rapport d\'essai</h2></div><div style="text-align:right;"><p style="font-size:0.7rem;color:#999;margin:0;">Réf. '+t.test_number.replace(/-F\d+(-T\d+)?$/,'')+'</p><p style="font-size:0.7rem;color:#999;margin:0;">'+new Date().toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})+'</p></div></div></div>';
+                if(clientName)rhtml+='<p style="font-size:0.82rem;color:#666;margin-bottom:1rem;">Client : <strong>'+clientName+'</strong></p>';
+                rhtml+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;"><div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:1rem;text-align:center;"><p style="font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;color:#999;margin:0 0 0.3rem;">Type</p><p style="font-size:1rem;font-weight:600;margin:0;">'+(candleType||'Container')+'</p></div><div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:1rem;text-align:center;"><p style="font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;color:#999;margin:0 0 0.3rem;">Dimensions</p><p style="font-size:1rem;font-weight:600;margin:0;">'+candleDiam+' × '+candleHeight+' mm</p></div><div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:1rem;text-align:center;"><p style="font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;color:#999;margin:0 0 0.3rem;">Masse</p><p style="font-size:1rem;font-weight:600;margin:0;">'+t.initial_mass+' g</p></div></div>';
+            } else {
+                rhtml+='<div style="background:#c62828;color:#fff;text-align:center;padding:0.5rem;border-radius:6px;margin-bottom:1rem;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;">⚠ Document interne — Données confidentielles</div>';
+                rhtml+='<div style="text-align:center;margin-bottom:1rem;"><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;">MFC Laboratoire — Rapport de test</p><h2 style="color:#a32d03;margin:0.3rem 0;">'+t.test_number+'</h2><p style="font-size:0.8rem;color:#666;">'+(form?form.name||'':'')+' — '+(t.wick_reference||'')+'</p><p style="font-size:0.7rem;color:#999;">Généré le '+new Date().toLocaleDateString('fr-FR')+' — '+cy.length+' cycles</p></div>';
+            }
+
+            // ── SCORE GLOBAL ──
+            rhtml+='<div style="text-align:center;margin-bottom:1.5rem;"><div style="display:inline-block;width:130px;height:130px;border-radius:50%;border:6px solid '+sc(globalScore)+';position:relative;"><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;"><p style="font-size:2.4rem;font-weight:700;color:'+sc(globalScore)+';line-height:1;margin:0;">'+globalScore.toFixed(1)+'</p><p style="font-size:0.55rem;text-transform:uppercase;color:#999;margin:0;">/10</p></div></div><p style="font-size:0.9rem;font-weight:600;margin-top:0.5rem;color:'+sc(globalScore)+';">'+(globalScore>=8?'EXCELLENT':globalScore>=6.5?'BON':globalScore>=5?'MOYEN':'INSUFFISANT')+'</p></div>';
+
+            // ── DURÉE DE COMBUSTION THÉORIQUE ──
+            rhtml+='<div style="background:linear-gradient(135deg,#faf8f5,#f0ece5);border:1px solid #d4cfc6;border-radius:8px;padding:1.2rem;margin-bottom:1.5rem;">';
+            rhtml+='<p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin:0 0 0.8rem;font-weight:600;">⏱ Estimation de la durée de combustion</p>';
+            rhtml+='<div style="display:grid;grid-template-columns:repeat('+(clientMode?3:4)+',1fr);gap:1rem;text-align:center;">';
+            rhtml+='<div><p style="font-size:1.6rem;font-weight:700;color:#1a1a1a;margin:0;">'+theoreticalHours.toFixed(0)+'<span style="font-size:0.8rem;font-weight:400;color:#666;">h</span></p><p style="font-size:0.62rem;color:#888;margin:0;">Durée totale estimée</p></div>';
+            rhtml+='<div><p style="font-size:1.6rem;font-weight:700;color:#a32d03;margin:0;">'+consumPerHour.toFixed(1)+'<span style="font-size:0.8rem;font-weight:400;color:#666;">g/h</span></p><p style="font-size:0.62rem;color:#888;margin:0;">Consommation horaire</p></div>';
+            rhtml+='<div><p style="font-size:1.6rem;font-weight:700;color:'+(regularityCoeff>=0.8?'#388e3c':'#e67e22')+';margin:0;">'+(regularityCoeff*100).toFixed(0)+'<span style="font-size:0.8rem;font-weight:400;color:#666;">%</span></p><p style="font-size:0.62rem;color:#888;margin:0;">Indice de régularité</p></div>';
+            if(!clientMode)rhtml+='<div><p style="font-size:1.6rem;font-weight:700;color:#555;margin:0;">'+hoursCompleted+'<span style="font-size:0.8rem;font-weight:400;color:#666;">h</span> / '+theoreticalHours.toFixed(0)+'h</p><p style="font-size:0.62rem;color:#888;margin:0;">Testées / total</p></div>';
+            rhtml+='</div>';
+            rhtml+='<div style="margin-top:0.8rem;background:#e8e4de;border-radius:4px;height:8px;overflow:hidden;"><div style="height:100%;width:'+Math.min(100,(theoreticalHours>0?hoursCompleted/theoreticalHours*100:0))+'%;background:linear-gradient(90deg,#a32d03,#c9a96e);border-radius:4px;"></div></div>';
+            rhtml+='<p style="font-size:0.65rem;color:#999;margin:0.3rem 0 0;text-align:center;">Protocole : cycles de 4h — '+cy.length+' cycles réalisés ('+hoursCompleted+'h) — '+pctConsumed.toFixed(1)+'% de masse consommée</p></div>';
+
+            // ── SCORES DÉTAILLÉS ──
+            rhtml+='<div style="margin-bottom:1.5rem;"><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin:0 0 0.8rem;font-weight:600;border-bottom:2px solid #e8e4de;padding-bottom:0.3rem;">Analyse détaillée</p><div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:1rem;">';
+            rhtml+=scoreBar(stabilityScore,'🔄 Régularité de combustion ('+weights.stability*100+'%)');
+            rhtml+=scoreBar(flameScore,'🔥 Comportement de flamme ('+weights.flame*100+'%)');
+            rhtml+=scoreBar(qualityScore,'✨ Qualité — absence de défauts ('+weights.quality*100+'%)');
+            rhtml+=scoreBar(scentScore,'👃 Restitution olfactive ('+weights.scent*100+'%)');
+            rhtml+=scoreBar(poolScore,'🫠 Bassin de fusion ('+weights.pool*100+'%)');
+            rhtml+='</div></div>';
+
+            // ── MATIÈRES (interne) ──
+            if(!clientMode&&(congealInfo||penetrationInfo||oilInfo||waxAnalysis)){
+                rhtml+='<div style="margin-bottom:1.5rem;"><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin:0 0 0.8rem;font-weight:600;border-bottom:2px solid #e8e4de;padding-bottom:0.3rem;">Caractéristiques matières</p><div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:1rem;">';
+                
+                // Moyennes pondérées du mélange
+                rhtml+='<p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:#888;margin:0 0 0.5rem;font-weight:600;">Moyennes pondérées du mélange</p>';
+                rhtml+='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;margin-bottom:1rem;">';
+                rhtml+='<div><p style="font-size:0.55rem;text-transform:uppercase;color:#999;">Point de congélation</p><p style="font-size:1.1rem;font-weight:700;color:#a32d03;">'+(congealInfo||'—')+'</p></div>';
+                rhtml+='<div><p style="font-size:0.55rem;text-transform:uppercase;color:#999;">Pénétration</p><p style="font-size:1.1rem;font-weight:700;color:#a32d03;">'+(penetrationInfo||'—')+'</p></div>';
+                rhtml+='<div><p style="font-size:0.55rem;text-transform:uppercase;color:#999;">Teneur en huile</p><p style="font-size:1.1rem;font-weight:700;color:#a32d03;">'+(oilInfo||'—')+'</p></div></div>';
+                
+                // Tableau détaillé par cire
+                if(waxDetailRows){
+                    rhtml+='<p style="font-size:0.65rem;text-transform:uppercase;letter-spacing:1px;color:#888;margin:0.5rem 0;font-weight:600;border-top:1px solid #e8e4de;padding-top:0.75rem;">Détail par cire</p>';
+                    rhtml+='<table style="font-size:0.76rem;border-collapse:collapse;width:100%;"><thead><tr style="background:#e8e2d8;"><th style="padding:5px 8px;text-align:left;">Cire</th><th>Type</th><th>%</th><th>Pt congélation</th><th>Pénétration</th><th>Teneur huile</th><th>Pt fusion</th></tr></thead><tbody>';
+                    rhtml+=waxDetailRows;
+                    rhtml+='</tbody></table>';
+                }
+                
+                rhtml+='</div></div>';
+            }
+
+            // ── CYCLES ──
+            rhtml+='<div style="margin-bottom:1.5rem;"><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin:0 0 0.8rem;font-weight:600;border-bottom:2px solid #e8e4de;padding-bottom:0.3rem;">Résultats par cycle</p><div class="table-container"><table style="font-size:0.78rem;border-collapse:collapse;width:100%;"><thead><tr style="background:#1a1a1a;color:#f0e6d3;"><th style="padding:6px 8px;border:none;">Cycle</th><th style="border:none;">Masse av.</th><th style="border:none;">Masse ap.</th><th style="border:none;">Consommé</th><th style="border:none;">Bain fusion ⌀</th>'+(clientMode?'':'<th style="border:none;">Profondeur</th>')+'<th style="border:none;">Hauteur flamme</th><th style="border:none;">Stabilité</th><th style="border:none;">Diffusion</th><th style="border:none;">Score</th></tr></thead><tbody>';
+            cy.forEach((c,i)=>{
+                const cons=c.mass_before-c.mass_after;
+                const cycleScore=(qualityScores[i]*0.4+flameScores[i]*0.2+scentScores[i]*0.3+stabilityScore*0.1);
+                const poolCell=c.pool_visible===0?'<span style="color:#bbb;">n/v</span>':(c.pool_diameter?c.pool_diameter+' mm':'—');
+                const depthCell=c.pool_visible===0?'':(c.pool_depth?c.pool_depth+' mm':'—');
+                const isNumFlame=c.flame_height&&!isNaN(parseFloat(c.flame_height));
+                const flameCell=c.flame_height?(isNumFlame?c.flame_height+' mm':c.flame_height):'—';
+                const stabilityCell=c.flame_stability||'—';
+                const bg=i%2===0?'#fff':'#faf8f5';
+                rhtml+='<tr style="background:'+bg+';"><td style="padding:5px 8px;border-bottom:1px solid #eee;font-weight:700;">C'+c.cycle_number+'</td><td style="border-bottom:1px solid #eee;">'+c.mass_before+'g</td><td style="border-bottom:1px solid #eee;font-weight:600;">'+c.mass_after+'g</td><td style="border-bottom:1px solid #eee;color:#c62828;font-weight:600;">-'+cons.toFixed(1)+'g</td><td style="border-bottom:1px solid #eee;">'+poolCell+'</td>'+(clientMode?'':'<td style="border-bottom:1px solid #eee;">'+depthCell+'</td>')+'<td style="border-bottom:1px solid #eee;">'+flameCell+'</td><td style="border-bottom:1px solid #eee;color:#666;">'+stabilityCell+'</td><td style="border-bottom:1px solid #eee;">'+(c.scent_throw||'—')+'</td><td style="border-bottom:1px solid #eee;font-weight:700;color:'+sc(cycleScore)+';">'+cycleScore.toFixed(1)+'</td></tr>';
+            });
+            const avgPoolDisp=isNaN(avgPool)?'—':avgPool.toFixed(0)+' mm';
+            const avgFlameDisp=isNaN(avgFlame)||avgFlame===0?'—':avgFlame.toFixed(0)+' mm';
+            rhtml+='<tr style="background:#f0ece5;font-weight:700;"><td style="padding:6px 8px;">MOY.</td><td>'+t.initial_mass+'g</td><td>'+cy[cy.length-1].mass_after+'g</td><td style="color:#c62828;">-'+avgConsumed.toFixed(1)+'g/cyc</td><td>'+avgPoolDisp+'</td>'+(clientMode?'':'<td>'+(avgDepth>0?avgDepth.toFixed(1)+' mm':'—')+'</td>')+'<td>'+avgFlameDisp+'</td><td>—</td><td>—</td><td style="color:'+sc(globalScore)+';">'+globalScore.toFixed(1)+'</td></tr></tbody></table></div></div>';
+
+            // ── CHAÎNE DE MASSE ──
+            rhtml+='<div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:0.8rem;margin-bottom:1.5rem;"><p style="font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;color:#999;margin:0 0 0.3rem;">Évolution de la masse</p><p style="font-size:0.88rem;margin:0;"><strong style="color:#a32d03;">'+t.initial_mass+'g</strong>';
+            cy.forEach(c => { rhtml += ' → <strong>' + c.mass_after + 'g</strong>'; });
+            rhtml+=' = <strong style="color:#c62828;">-'+totalConsumed.toFixed(1)+'g ('+pctConsumed.toFixed(1)+'%)</strong></p></div>';
+
+            // ── AVIS ──
+            rhtml+='<div style="margin-bottom:1.5rem;"><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin:0 0 0.8rem;font-weight:600;border-bottom:2px solid #e8e4de;padding-bottom:0.3rem;">'+(clientMode?'Notre analyse':'Avis IA')+'</p><div style="background:'+(globalScore>=6.5?'rgba(56,142,60,0.06)':'rgba(198,40,40,0.06)')+';border-left:4px solid '+sc(globalScore)+';border-radius:4px;padding:1rem;"><p style="font-size:0.85rem;line-height:1.6;margin:0;">'+avis+'</p></div></div>';
+
+            // ── RECOMMANDATIONS ──
+            if(recos.length){
+                rhtml+='<div style="margin-bottom:1rem;"><p style="font-size:0.6rem;text-transform:uppercase;letter-spacing:2px;color:#888;margin:0 0 0.8rem;font-weight:600;border-bottom:2px solid #e8e4de;padding-bottom:0.3rem;">'+(clientMode?'Points d\'attention':'Recommandations techniques')+'</p><div style="background:#faf8f5;border:1px solid #e8e4de;border-radius:8px;padding:1rem;">';
+                recos.forEach(r=>{rhtml+='<p style="font-size:0.8rem;margin:0 0 0.4rem;padding-left:1.2rem;position:relative;"><span style="position:absolute;left:0;color:#a32d03;">›</span> '+r+'</p>';});
+                rhtml+='</div></div>';
+            }
+
+            // ── FOOTER ──
+            rhtml+='<div style="text-align:center;padding-top:1rem;border-top:1px solid #e8e4de;margin-top:1rem;"><p style="font-size:0.6rem;color:#bbb;letter-spacing:1px;">'+(clientMode?'MAISON FRANÇAISE DES CIRES — LABORATOIRE D\'ESSAIS — Maître Cirier depuis 1904':'MFC Laboratoire — Document interne')+'</p>';
+            if(clientMode)rhtml+='<p style="font-size:0.55rem;color:#ccc;margin-top:0.2rem;">Ce rapport est établi sur la base de tests normalisés en cycles de 4 heures. Les résultats sont indicatifs et peuvent varier selon les conditions d\'utilisation.</p>';
+            rhtml+='</div></div>';
+
+            document.getElementById('report-body').innerHTML = rhtml;
+            document.getElementById('report-modal').classList.add('active');
+        }
+
+        async function printReport() {
+            const content = document.getElementById('report-body').innerHTML;
+            const w = window.open('', '_blank');
+            w.document.write(`<html><head><title>Rapport MFC</title>
+                <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <style>body{font-family:'Open Sans',sans-serif;max-width:800px;margin:2rem auto;color:#2c2c2c;font-size:13px;line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+                table{width:100%;border-collapse:collapse;margin:0.5rem 0;page-break-inside:avoid;}th,td{border:1px solid #eee;padding:5px 8px;text-align:left;}
+                th{background:#1a1a1a !important;color:#f0e6d3 !important;border:none !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+                strong{font-weight:700;}.grid{display:grid;gap:1rem;}.grid-3{grid-template-columns:repeat(3,1fr);}
+                @media print{body{margin:1cm;}@page{margin:1.5cm;}}</style></head><body>${content}<scr` + `ipt src="/js/cache-buster.js"></scr` + `ipt><scr` + `ipt>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</scr` + `ipt>
+</body></html>`);
+            w.document.close();
+            setTimeout(() => w.print(), 500);
+        }
+
+        // ═══════ VALIDATION CLIENT ═══════
+        function openClientModal(decision) {
+            document.getElementById('client-decision-type').value = decision;
+            document.getElementById('client-feedback').value = '';
+            const banner = document.getElementById('client-decision-banner');
+            if (decision === 'validé') {
+                document.getElementById('client-modal-title').textContent = '✓ Validation client';
+                banner.style.background = '#e8f5e9'; banner.style.color = '#2e7d32';
+                banner.textContent = 'Le client valide cette formulation';
+                document.getElementById('btn-save-client-decision').style.background = '#388e3c';
+            } else {
+                document.getElementById('client-modal-title').textContent = '✗ Refus client';
+                banner.style.background = '#fbe9e7'; banner.style.color = '#c62828';
+                banner.textContent = 'Le client refuse cette formulation';
+                document.getElementById('btn-save-client-decision').style.background = '#c62828';
+            }
+            document.getElementById('client-modal').classList.add('active');
+        }
+
+        async function saveClientDecision() {
+            if (!currentTest) return;
+            const decision = document.getElementById('client-decision-type').value;
+            const feedback = document.getElementById('client-feedback').value.trim();
+            if (!feedback) { toast('Commentaire client obligatoire', 'error'); return; }
+            const r = await fetch('/api/burn-tests/' + currentTest.id + '/client-decision', {
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ client_status: decision, client_feedback: feedback })
+            });
+            const res = await r.json();
+            if (res.error) { toast(res.error, 'error'); return; }
+            document.getElementById('client-modal').classList.remove('active');
+            toast(decision === 'validé' ? 'Validé — commentaire ajouté en base de connaissances' : 'Refus enregistré — commentaire ajouté en base de connaissances');
+            closeDetailModal(); loadTests();
+        }
+
+        async function retryTest() {
+            if (!currentTest) return;
+            const adjustNotes = prompt('Quels ajustements prévoyez-vous pour cette reprise ?\n(mèche, % parfum, composition cires, etc.)\n\nLaissez vide si non défini.');
+            if (adjustNotes === null) return; // cancelled
+            const r = await fetch('/api/burn-tests/' + currentTest.id + '/retry', { 
+                method: 'POST', headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ adjust_notes: adjustNotes || '' })
+            });
+            const res = await r.json();
+            if (res.error) { toast(res.error, 'error'); return; }
+            toast('Reprise V' + res.version + ' créée : ' + res.test_number);
+            closeDetailModal(); loadTests();
+            setTimeout(() => viewTest(res.id), 500);
+        }
+
+        async function loadVersionChain(testId) {
+            try {
+                const r = await fetch('/api/burn-tests/' + testId + '/history');
+                const data = await r.json();
+                const el = document.getElementById('version-chain-body');
+                if (!el) return;
+                let html = '';
+                // Previous test
+                if (data.previous) {
+                    html += '<p style="margin:0 0 0.3rem;"><span style="color:#1565c0;cursor:pointer;text-decoration:underline;" onclick="closeDetailModal();setTimeout(()=>viewTest('+data.previous.id+'),200);">← ' + data.previous.test_number + '</span>';
+                    html += data.previous.client_status ? ' <span style="font-size:0.7rem;color:'+(data.previous.client_status==='validé'?'#2e7d32':'#c62828')+';">('+data.previous.client_status+')</span>' : '';
+                    if (data.previous.client_feedback) html += '<br><span style="font-size:0.72rem;color:#666;font-style:italic;">« ' + data.previous.client_feedback.substring(0,80) + (data.previous.client_feedback.length>80?'...':'') + ' »</span>';
+                    html += '</p>';
+                }
+                // Current
+                html += '<p style="margin:0.3rem 0;font-weight:700;color:#1565c0;">▸ ' + currentTest.test_number + ' (actuel)</p>';
+                // Next versions
+                if (data.next_versions && data.next_versions.length) {
+                    data.next_versions.forEach(nv => {
+                        html += '<p style="margin:0.2rem 0 0;"><span style="color:#1565c0;cursor:pointer;text-decoration:underline;" onclick="closeDetailModal();setTimeout(()=>viewTest('+nv.id+'),200);">→ ' + nv.test_number + '</span>';
+                        html += ' <span class="badge badge-'+nv.status+'" style="font-size:0.6rem;">'+nv.status+'</span>';
+                        if (nv.client_status) html += ' <span style="font-size:0.65rem;color:'+(nv.client_status==='validé'?'#2e7d32':'#c62828')+';">('+nv.client_status+')</span>';
+                        html += '</p>';
+                    });
+                }
+                // History events
+                if (data.history && data.history.length) {
+                    html += '<div style="margin-top:0.5rem;padding-top:0.5rem;border-top:1px solid #90caf9;">';
+                    html += '<p style="font-size:0.62rem;text-transform:uppercase;color:#1565c0;font-weight:600;margin:0 0 0.3rem;">Historique</p>';
+                    data.history.forEach(h => {
+                        const d = h.event_data ? JSON.parse(h.event_data) : {};
+                        const dt = new Date(h.created_at).toLocaleDateString('fr-FR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+                        let icon = '📋';
+                        if (h.event_type === 'client_decision') icon = d.status === 'validé' ? '✓' : '✗';
+                        else if (h.event_type === 'client_changement_avis') icon = '🔄';
+                        else if (h.event_type === 'reprise_lancée') icon = '➡️';
+                        else if (h.event_type === 'créé_depuis_reprise') icon = '🆕';
+                        html += '<p style="font-size:0.72rem;margin:0.15rem 0;color:#555;">' + icon + ' <span style="color:#999;">' + dt + '</span> — ';
+                        if (h.event_type === 'client_decision') html += 'Client ' + (d.status === 'validé' ? 'valide' : 'refuse');
+                        else if (h.event_type === 'client_changement_avis') html += '<strong>Changement avis</strong> : ' + d.previous_status + ' → ' + d.status;
+                        else if (h.event_type === 'reprise_lancée') html += 'Reprise lancée → ' + (d.nouveau_test || d.nouveau_numero || '');
+                        else if (h.event_type === 'créé_depuis_reprise') html += 'Créé depuis ' + (d.original || d.test_original || '');
+                        else html += h.event_type;
+                        html += '</p>';
+                    });
+                    html += '</div>';
+                }
+                el.innerHTML = html;
+            } catch(e) { console.error(e); }
+        }
+
+        // ESCAPE
+        document.addEventListener('keydown', e => { if (e.key==='Escape') { closeNewTestModal(); closeDetailModal(); closeCycleModal(); closeReportModal(); document.getElementById('client-modal').classList.remove('active'); } });
+        document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('active'); }));
+
+        // INIT
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFormulations(); await loadTests();
+            document.getElementById('filter-status').addEventListener('change', loadTests);
+            // Auto-open if coming from formulation
+            const p = new URLSearchParams(location.search);
+            if (p.get('formulation')) { await openNewTestModal(); }
+        });
+    </script>
+
+    <!-- ══════════ MODAL RAPPORT ══════════ -->
+    <div class="modal-overlay" id="report-modal">
+        <div class="modal" style="max-width:900px;">
+            <div class="modal-header">
+                <h2 style="font-family:var(--font-display);">📊 Rapport de test — Analyse IA</h2>
+                <button class="modal-close" onclick="closeReportModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="report-body" style="max-height:75vh; overflow-y:auto;"></div>
+            <div class="modal-footer" style="display:flex; align-items:center; gap:1rem;">
+                <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.82rem; cursor:pointer; margin-right:auto;">
+                    <input type="checkbox" id="client-mode" onchange="generateReport()">
+                    <span>🔒 Mode client</span>
+                    <span style="font-size:0.7rem; color:var(--texte-muted);">(caviarde matières, mèches, fournisseurs)</span>
+                </label>
+                <button class="btn btn-secondary" onclick="closeReportModal()">Fermer</button>
+                <button class="btn btn-primary" onclick="printReport()">🖨️ Imprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ MODAL RETOUR CLIENT ══════════ -->
+    <div class="modal-overlay" id="client-modal">
+        <div class="modal" style="max-width:550px;">
+            <div class="modal-header">
+                <h2 id="client-modal-title">Retour client</h2>
+                <button class="modal-close" onclick="document.getElementById('client-modal').classList.remove('active')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="client-decision-type">
+                <div id="client-decision-banner" style="padding:0.6rem;border-radius:6px;text-align:center;font-weight:600;margin-bottom:1rem;"></div>
+                <div class="form-group">
+                    <label>Commentaire du client *</label>
+                    <textarea class="form-control" id="client-feedback" rows="4" placeholder="Ex: Le parfum manque de puissance, la couleur ne correspond pas, bonne combustion mais souhait de plus de diffusion..."></textarea>
+                </div>
+                <p style="font-size:0.72rem;color:var(--texte-muted);">💡 Ce commentaire sera automatiquement ajouté à la base de connaissances IA pour améliorer les futures formulations.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('client-modal').classList.remove('active')">Annuler</button>
+                <button class="btn btn-primary" id="btn-save-client-decision" onclick="saveClientDecision()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

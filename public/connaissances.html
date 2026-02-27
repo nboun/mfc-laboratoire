@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>IA & Connaissances - MFC Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand"><img src="img/logo-mfc-carre.jpg" alt="MFC"><div class="brand-text"><h1>LABORATOIRE</h1><span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span></div></div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a><a href="echantillons.html">Échantillons</a><a href="formulations.html">Formulations</a><a href="tests.html">Tests</a><a href="matieres.html">Matières</a><a href="recettes.html">Recettes</a>
+            <a href="connaissances.html" class="active">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a><a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+            <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="tabs" style="margin-bottom:0;">
+            <button class="tab active" data-tab="assistant">🤖 Assistant IA</button>
+            <button class="tab" data-tab="knowledge">📚 Base de connaissances</button>
+            <button class="tab" data-tab="rules">⚙️ Règles apprises</button>
+            <button class="tab" data-tab="import">📥 Import intelligent</button>
+            <button class="tab" data-tab="rnd" style="color:#d4a853;font-weight:600;">🔬 Import R&D Claude</button>
+        </div>
+        <div id="tab-assistant" class="tab-content active" style="display:block;">
+            <div class="grid grid-4" style="gap:0.75rem;margin:1rem 0;">
+                <div class="stat-card" id="stat-tests"><div class="stat-value">—</div><div class="stat-label">Tests réalisés</div></div>
+                <div class="stat-card" id="stat-success"><div class="stat-value">—</div><div class="stat-label">Taux validation</div></div>
+                <div class="stat-card" id="stat-kb"><div class="stat-value">—</div><div class="stat-label">Connaissances</div></div>
+                <div class="stat-card" id="stat-rules"><div class="stat-value">—</div><div class="stat-label">Règles apprises</div></div>
+            </div>
+            <div class="card" style="margin-bottom:1rem;">
+                <div class="card-header" style="border:0;padding-bottom:0;"><h3 class="card-title" style="font-size:0.85rem;">💡 Questions rapides</h3></div>
+                <div style="padding:0.5rem 1.5rem 1rem;display:flex;flex-wrap:wrap;gap:0.4rem;">
+                    <button class="btn btn-sm" onclick="quickAsk('pourcentage parfum dosage')" style="font-size:0.72rem;">% Parfum</button>
+                    <button class="btn btn-sm" onclick="quickAsk('mèche choisir diamètre')" style="font-size:0.72rem;">Choix mèche</button>
+                    <button class="btn btn-sm" onclick="quickAsk('champignonnage mushrooming')" style="font-size:0.72rem;">Champignonnage</button>
+                    <button class="btn btn-sm" onclick="quickAsk('tunnel tunneling')" style="font-size:0.72rem;">Effet tunnel</button>
+                    <button class="btn btn-sm" onclick="quickAsk('dosage colorant')" style="font-size:0.72rem;">Dosage colorant</button>
+                    <button class="btn btn-sm" onclick="quickAsk('diffusion parfum throw')" style="font-size:0.72rem;">Diffusion</button>
+                    <button class="btn btn-sm" onclick="quickAsk('retour client refus')" style="font-size:0.72rem;">Retours clients</button>
+                    <button class="btn btn-sm" style="font-size:0.72rem;background:var(--mfc-cire);color:#fff;" onclick="analyzeAll()">📊 Analyse complète</button>
+                    <button class="btn btn-sm" style="font-size:0.72rem;background:#388e3c;color:#fff;" onclick="autoLearn()">🧠 Auto-apprentissage</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header" style="border:0;padding-bottom:0;"><h3 class="card-title" style="font-size:0.85rem;">💬 Posez votre question</h3></div>
+                <div style="padding:0 1.5rem;"><div style="display:flex;gap:0.5rem;"><input type="text" id="ai-question" class="form-control" placeholder="Ex: Quelle mèche pour 80mm ? Retours clients sur le jasmin ?" onkeydown="if(event.key==='Enter')askAI()" style="flex:1;"><button class="btn btn-primary" onclick="askAI()">Rechercher</button></div></div>
+                <div id="ai-results" style="padding:1rem 1.5rem;"><div class="empty-state" style="padding:1.5rem;"><div class="icon">🤖</div><p>Posez une question ou utilisez les raccourcis.</p><p class="text-muted" style="font-size:0.75rem;">L'assistant cherche dans la base de connaissances, les retours clients et les tests validés.</p></div></div>
+            </div>
+            <div class="grid grid-2" style="gap:1rem;margin-top:1rem;">
+                <div class="card"><div class="card-header" style="border:0;padding-bottom:0;"><h3 class="card-title" style="font-size:0.82rem;">🕯️ Recommandation mèche</h3></div>
+                    <div style="padding:0.5rem 1.5rem 1rem;"><div style="display:flex;gap:0.5rem;align-items:end;"><div><label style="font-size:0.7rem;color:var(--texte-muted);">Diamètre (mm)</label><input type="number" id="wick-diameter" class="form-control" placeholder="80" style="width:80px;"></div><button class="btn btn-sm btn-primary" onclick="recommendWick()">Chercher</button></div><div id="wick-results" style="margin-top:0.75rem;"></div></div>
+                </div>
+                <div class="card"><div class="card-header" style="border:0;padding-bottom:0;"><h3 class="card-title" style="font-size:0.82rem;">🧪 Formulations similaires</h3></div>
+                    <div style="padding:0.5rem 1.5rem 1rem;"><div style="display:flex;gap:0.5rem;align-items:end;flex-wrap:wrap;"><div><label style="font-size:0.7rem;color:var(--texte-muted);">Type</label><select id="rec-type" class="form-control" style="width:120px;"><option value="">Tous</option><option value="container">Container</option><option value="pillar">Pilier</option></select></div><div><label style="font-size:0.7rem;color:var(--texte-muted);">Ø mm</label><input type="number" id="rec-diameter" class="form-control" placeholder="80" style="width:70px;"></div><button class="btn btn-sm btn-primary" onclick="recommendForm()">Chercher</button></div><div id="form-results" style="margin-top:0.75rem;"></div></div>
+                </div>
+            </div>
+        </div>
+        <div id="tab-knowledge" class="tab-content" style="display:none;">
+            <div class="card" style="margin-top:1rem;"><div class="card-header"><h3 class="card-title">📚 Base de connaissances</h3><div style="display:flex;gap:0.5rem;flex-wrap:wrap;"><select id="filter-category" class="form-control"><option value="">Toutes catégories</option></select><button class="btn btn-primary btn-sm" onclick="openKBModal()">+ Ajouter</button><button class="btn btn-secondary btn-sm" onclick="exportKB()" title="Exporter la KB en JSON">📤 Exporter</button><button class="btn btn-secondary btn-sm" onclick="document.getElementById('import-file').click()" title="Importer des fiches depuis un JSON">📥 Importer</button><input type="file" id="import-file" accept=".json" style="display:none" onchange="importKB(this)"></div></div><div class="table-container"><table class="table"><thead><tr><th>Titre</th><th>Catégorie</th><th>Contenu</th><th>Source</th><th>Prio</th><th>Act.</th></tr></thead><tbody id="kb-tbody"></tbody></table></div></div>
+        </div>
+        <div id="tab-rules" class="tab-content" style="display:none;">
+            <div class="card" style="margin-top:1rem;"><div class="card-header"><h3 class="card-title">⚙️ Règles apprises</h3><button class="btn btn-sm" style="background:#388e3c;color:#fff;" onclick="autoLearn()">🧠 Auto-apprentissage</button></div><div id="rules-list" style="padding:1rem;"></div></div>
+        </div>
+        <div id="tab-import" class="tab-content" style="display:none;">
+            <div class="card" style="margin-top:1rem;">
+                <div class="card-header"><h3 class="card-title">📥 Import intelligent</h3><span class="text-muted" style="font-size:0.72rem;">Collez un texte (FDS, article, notes) → extraction automatique</span></div>
+                <div style="padding:1rem 1.5rem;">
+                    <div class="grid grid-2" style="gap:0.75rem;margin-bottom:0.75rem;">
+                        <div class="form-group"><label style="font-size:0.75rem;">Titre / Source</label><input type="text" id="import-title" class="form-control" placeholder="Ex: FDS Givaudan Ambre Oriental, Article CandleScience..."></div>
+                        <div class="form-group"><label style="font-size:0.75rem;">URL source (optionnel)</label><input type="text" id="import-url" class="form-control" placeholder="https://..."></div>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:0.75rem;">Texte à analyser</label>
+                        <textarea id="import-text" class="form-control" rows="12" style="font-family:monospace;font-size:0.8rem;line-height:1.4;" placeholder="Collez ici le contenu d'une FDS (section 3 en priorité), un article scientifique, des notes de recherche, une page web...&#10;&#10;Le système détectera automatiquement :&#10;• Numéros CAS (ex: 78-70-6)&#10;• Noms de molécules connues (linalool, limonene, DPG...)&#10;• Points d'ébullition et flash points&#10;• Masses moléculaires&#10;• Pourcentages de composition&#10;• Allergènes IFRA&#10;• Solvants insolubles (DPG/PG)"></textarea>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        <button class="btn btn-primary" onclick="analyzeImport(false)">🔬 Analyser</button>
+                        <button class="btn" style="background:#388e3c;color:#fff;" onclick="analyzeImport(true)">🔬 Analyser + Créer fiches KB</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('import-text').value='';document.getElementById('import-results').innerHTML='';">Effacer</button>
+                        <span id="import-status" class="text-muted" style="font-size:0.72rem;align-self:center;"></span>
+                    </div>
+                </div>
+            </div>
+            <div id="import-results" style="margin-top:1rem;"></div>
+        </div>
+
+        <!-- ═══ TAB R&D CLAUDE ═══ -->
+        <div id="tab-rnd" class="tab-content" style="display:none;">
+            <div class="card">
+                <div class="card-header"><h3 class="card-title">🔬 Import R&D depuis Claude</h3></div>
+                <div style="padding:1rem 1.5rem;">
+                    <div style="background:linear-gradient(135deg,#fdfbf6,#f5f0e8);border-radius:8px;padding:1rem;margin-bottom:1rem;border-left:3px solid #d4a853;">
+                        <p style="font-size:0.82rem;margin:0 0 0.5rem;"><strong>Comment ça marche :</strong></p>
+                        <p style="font-size:0.78rem;color:#666;margin:0;line-height:1.5;">
+                            1. Faites votre recherche R&D avec Claude (nouvelles cires, mèches, techniques...)<br>
+                            2. Demandez à Claude de générer le JSON d'import<br>
+                            3. Collez le JSON ci-dessous et cliquez "Importer"<br>
+                            4. Les fiches sont ajoutées directement au patrimoine numérique
+                        </p>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-size:0.78rem;font-weight:600;">Collez le JSON généré par Claude :</label>
+                        <textarea id="rnd-json" class="form-control" rows="14" style="font-family:'Courier New',monospace;font-size:0.78rem;line-height:1.4;background:#1a1a1a;color:#c9a96e;border-color:#333;" placeholder='Collez ici le JSON. Format attendu :
+
+[
+  {
+    "category": "technique",
+    "subcategory": "cire",
+    "title": "Titre de la découverte",
+    "content": "Contenu détaillé...",
+    "source": "R&D Claude — 2026-02-11",
+    "priority": 3,
+    "tags": "mot-clé1,mot-clé2"
+  }
+]
+
+Ou demandez simplement à Claude :
+"Génère le JSON d import R&D pour MFC Laboratoire"'></textarea>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                        <button class="btn btn-primary" onclick="importRnD()">📥 Importer dans le patrimoine</button>
+                        <button class="btn btn-secondary" onclick="previewRnD()">👁️ Prévisualiser</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('rnd-json').value='';document.getElementById('rnd-preview').innerHTML='';">Effacer</button>
+                        <span id="rnd-status" class="text-muted" style="font-size:0.72rem;margin-left:auto;"></span>
+                    </div>
+                    <div id="rnd-preview" style="margin-top:1rem;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
+    <div class="modal-overlay" id="kb-modal"><div class="modal" style="max-width:750px;"><div class="modal-header"><h2 id="kb-modal-title">Ajouter une connaissance</h2><button class="modal-close" onclick="document.getElementById('kb-modal').classList.remove('active')">&times;</button></div><div class="modal-body"><input type="hidden" id="kb_id"><div class="grid grid-2" style="gap:0.75rem;"><div class="form-group"><label>Catégorie *</label><select id="kb_category" class="form-control" onchange="updateSubcategories()"><option value="technique">🔧 Technique</option><option value="process">🌡️ Process / Production</option><option value="terminologie">📖 Terminologie</option><option value="Retours clients">👤 Retours clients</option><option value="procédure">📋 Procédure</option><option value="sécurité">⚠️ Sécurité</option><option value="astuce">💡 Astuce labo</option><option value="Science">🔬 Science</option><option value="fournisseur">📦 Fournisseur</option></select></div><div class="form-group"><label>Sous-catégorie</label><input type="text" id="kb_subcategory" class="form-control" list="subcategory-list" placeholder="Ex: cire, mèche, process..."><datalist id="subcategory-list"><option value="cire"><option value="mèche"><option value="parfum"><option value="process"><option value="additif"><option value="container"><option value="colorant"><option value="combustion"><option value="cire végétale"><option value="cire paraffine"></datalist></div></div><div class="form-group"><label>Titre *</label><input type="text" id="kb_title" class="form-control" placeholder="Ex: Température de coulage optimale"></div><div class="form-group"><label>Contenu *</label><textarea id="kb_content" class="form-control" rows="10" style="font-family:monospace;font-size:0.82rem;line-height:1.5;" placeholder="Décrivez le savoir-faire en détail...&#10;&#10;Utilisez des retours à la ligne pour structurer.&#10;Ex:&#10;RÈGLE : toujours couler à 70-75°C&#10;POURQUOI : un coulage trop froid crée des striures&#10;SOLUTION : chauffer les verres si atelier froid"></textarea></div><div class="grid grid-3" style="gap:0.75rem;"><div class="form-group"><label>Source</label><input type="text" id="kb_source" class="form-control" value="MFC — Savoir-faire production"></div><div class="form-group"><label>Tags (séparés par virgule)</label><input type="text" id="kb_tags" class="form-control" placeholder="température,coulage,verre"></div><div class="form-group"><label>Priorité</label><select id="kb_priority" class="form-control"><option value="1">★★★★★ Essentielle</option><option value="2">★★★★ Importante</option><option value="3" selected>★★★ Normale</option><option value="4">★★ Complémentaire</option><option value="5">★ Référence</option></select></div></div></div><div class="modal-footer"><button class="btn btn-secondary" onclick="document.getElementById('kb-modal').classList.remove('active')">Annuler</button><button class="btn btn-primary" onclick="saveKB()">💾 Enregistrer</button></div></div></div>
+    <script>
+        function toast(m,t='success'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;c.appendChild(e);setTimeout(()=>e.remove(),3500);}
+        function formatKBContent(raw, maxLen){
+            if(!raw) return '';
+            try {
+                const obj = JSON.parse(raw);
+                if(typeof obj !== 'object' || Array.isArray(obj)) throw 0;
+                let lines = [];
+                function flatten(o, prefix){
+                    for(const [k,v] of Object.entries(o)){
+                        const label = prefix ? prefix+'.'+k : k;
+                        const nice = label.replace(/_/g,' ').replace(/^\w/,c=>c.toUpperCase());
+                        if(v && typeof v === 'object' && !Array.isArray(v)){
+                            flatten(v, label);
+                        } else {
+                            lines.push('<b style="color:var(--mfc-cire);">'+nice+'</b> : '+(Array.isArray(v)?v.join(', '):String(v)));
+                        }
+                    }
+                }
+                flatten(obj, '');
+                const html = lines.join('<br>');
+                return maxLen ? html.substring(0, maxLen*3)+(html.length>maxLen*3?'...':'') : html;
+            } catch(e){
+                const txt = raw.replace(/</g,'&lt;');
+                return maxLen ? txt.substring(0,maxLen)+(txt.length>maxLen?'...':'') : txt;
+            }
+        }
+        document.querySelectorAll('.tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.style.display='none');document.getElementById('tab-'+tab.dataset.tab).style.display='block';if(tab.dataset.tab==='knowledge')loadKnowledgeTable();if(tab.dataset.tab==='rules')loadRules();});});
+        async function analyzeImport(autoCreate){
+            const text=document.getElementById('import-text').value.trim();
+            if(!text||text.length<20){toast('Collez au moins 20 caractères','error');return;}
+            const title=document.getElementById('import-title').value.trim();
+            const url=document.getElementById('import-url').value.trim();
+            const status=document.getElementById('import-status');
+            status.textContent='Analyse en cours...';
+            try{
+                const r=await fetch('/api/knowledge/import-text',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,source_title:title,source_url:url,auto_create_kb:autoCreate})});
+                const d=await r.json();
+                if(d.error){toast(d.error,'error');status.textContent='';return;}
+                status.textContent=`✓ Analysé — ${d.summary.cas_found} CAS, ${d.summary.boiling_points} Bp, ${d.summary.allergens} allergènes`;
+                if(autoCreate&&d.summary.created_entries>0)toast(d.summary.created_entries+' fiche(s) créée(s) dans la KB');
+                renderImportResults(d);
+            }catch(e){toast('Erreur: '+e.message,'error');status.textContent='';}
+        }
+        function renderImportResults(d){
+            const el=document.getElementById('import-results');
+            let h='';
+            // Summary cards
+            h+='<div class="grid grid-4" style="gap:0.5rem;margin-bottom:1rem;">';
+            h+=statCard('🧪',d.summary.cas_found,'CAS trouvés',d.summary.known_molecules+' connues');
+            h+=statCard('🌡️',d.summary.boiling_points,'Bp extraits','');
+            h+=statCard('⚠️',d.summary.allergens,'Allergènes IFRA','');
+            const solClr=d.summary.has_dpg?'#c62828':d.summary.has_ipm?'#388e3c':'#666';
+            h+=statCard(d.summary.has_dpg?'🔴':'🟢',d.summary.insolubles,'Insolubles',d.summary.has_dpg?'DPG détecté!':d.summary.has_ipm?'IPM ✓':'');
+            h+='</div>';
+            // Warnings
+            if(d.warnings&&d.warnings.length){h+='<div class="card" style="border-left:4px solid #c62828;margin-bottom:1rem;"><div style="padding:0.8rem 1rem;">';d.warnings.forEach(w=>{h+='<p style="font-size:0.82rem;margin:0.2rem 0;color:#c62828;">'+w+'</p>';});h+='</div></div>';}
+            // Molecules table
+            const allMols=[...d.cas_numbers,...d.molecules.filter(m=>!d.cas_numbers.find(c=>c.cas===m.cas))];
+            if(allMols.length){
+                h+='<div class="card" style="margin-bottom:1rem;"><div class="card-header"><h3 class="card-title" style="font-size:0.82rem;">🧪 Molécules détectées ('+allMols.length+')</h3></div>';
+                h+='<div class="table-container"><table class="table"><thead><tr><th>Molécule</th><th>CAS</th><th>Bp</th><th>MW</th><th>Volatilité</th><th>Sol. cire</th><th>Note</th><th>Allergène</th></tr></thead><tbody>';
+                allMols.forEach(m=>{
+                    const solClr=m.solubility_wax==='insoluble'?'#c62828':m.solubility_wax==='soluble'?'#388e3c':m.solubility_wax==='partiel'?'#e67e22':'#999';
+                    h+='<tr style="font-size:0.78rem;">';
+                    h+='<td><strong>'+(m.name||'Inconnu')+'</strong>'+(m.known===false?' <span style="font-size:0.65rem;color:#e67e22;">nouveau</span>':'')+'</td>';
+                    h+='<td style="font-family:monospace;font-size:0.72rem;">'+m.cas+'</td>';
+                    h+='<td>'+(m.bp?m.bp+'°C':'—')+'</td>';
+                    h+='<td>'+(m.mw?m.mw:'—')+'</td>';
+                    h+='<td>'+(m.volatility||'—')+'</td>';
+                    h+='<td><span style="color:'+solClr+';font-weight:600;">'+(m.solubility_wax||'?')+'</span></td>';
+                    h+='<td>'+(m.notes_type||'—')+'</td>';
+                    h+='<td>'+(m.allergen?'⚠️ OUI':'—')+'</td>';
+                    h+='</tr>';
+                });
+                h+='</tbody></table></div></div>';
+            }
+            // Boiling points found in text
+            if(d.boiling_points&&d.boiling_points.length){
+                h+='<div class="card" style="margin-bottom:1rem;"><div class="card-header"><h3 class="card-title" style="font-size:0.82rem;">🌡️ Points d\'ébullition extraits</h3></div><div style="padding:0.8rem 1rem;">';
+                d.boiling_points.forEach(bp=>{h+='<div style="font-size:0.78rem;padding:0.3rem 0;border-bottom:1px solid var(--bordure-legere);"><strong>'+bp.value+'°C</strong> <span class="text-muted">— "...'+bp.context+'..."</span></div>';});
+                h+='</div></div>';
+            }
+            // Allergens
+            if(d.allergens&&d.allergens.length){
+                h+='<div class="card" style="border-left:4px solid #e67e22;margin-bottom:1rem;"><div class="card-header"><h3 class="card-title" style="font-size:0.82rem;">⚠️ Allergènes IFRA ('+d.allergens.length+')</h3></div><div style="padding:0.5rem 1rem;display:flex;flex-wrap:wrap;gap:0.3rem;">';
+                d.allergens.forEach(a=>{h+='<span style="background:rgba(230,126,34,0.12);color:#e67e22;padding:2px 8px;border-radius:8px;font-size:0.75rem;">'+a.name+' ('+a.cas+')</span>';});
+                h+='</div></div>';
+            }
+            // Enrichment cross-reference
+            if(d.enrichment_data&&d.enrichment_data.length){
+                h+='<div class="card" style="border-left:4px solid #1565c0;margin-bottom:1rem;"><div class="card-header"><h3 class="card-title" style="font-size:0.82rem;">🔗 Croisement avec parfums existants</h3></div><div style="padding:0.8rem 1rem;">';
+                d.enrichment_data.forEach(e=>{h+='<div style="font-size:0.78rem;padding:0.3rem 0;">🕯️ <strong>'+e.fragrance_name+'</strong> — '+e.matched_components+' composant(s) en commun</div>';});
+                h+='</div></div>';
+            }
+            // Suggested KB entries
+            if(d.suggested_kb_entries&&d.suggested_kb_entries.length){
+                h+='<div class="card" style="margin-bottom:1rem;"><div class="card-header"><h3 class="card-title" style="font-size:0.82rem;">📝 Fiches suggérées ('+d.suggested_kb_entries.length+')</h3></div>';
+                d.suggested_kb_entries.forEach((e,i)=>{
+                    h+='<div style="padding:0.6rem 1rem;border-bottom:1px solid var(--bordure-legere);"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong style="font-size:0.8rem;">'+e.title+'</strong> <span style="font-size:0.65rem;background:rgba(163,45,3,0.08);padding:1px 6px;border-radius:8px;">'+e.category+'</span></div>'+(d.summary.created_entries>0?'<span style="font-size:0.7rem;color:#388e3c;font-weight:600;">✓ Créée</span>':'<button class="btn btn-sm btn-primary" onclick="createSuggestedKB('+i+')" style="font-size:0.68rem;">Créer</button>')+'</div><p style="font-size:0.75rem;color:#555;white-space:pre-line;margin:0.3rem 0 0;max-height:120px;overflow-y:auto;">'+formatKBContent(e.content,300)+'</p></div>';
+                });
+                h+='</div>';
+            }
+            el.innerHTML=h;
+            window._lastImportData=d;
+        }
+        function statCard(icon,val,label,sub){return '<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.6rem;text-align:center;"><div style="font-size:1.1rem;">'+icon+'</div><div style="font-size:1.3rem;font-weight:700;">'+val+'</div><div style="font-size:0.68rem;color:var(--texte-muted);">'+label+'</div>'+(sub?'<div style="font-size:0.65rem;color:#e67e22;">'+sub+'</div>':'')+'</div>';}
+        async function createSuggestedKB(idx){
+            const e=window._lastImportData?.suggested_kb_entries?.[idx];
+            if(!e)return;
+            const r=await fetch('/api/knowledge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(e)});
+            const d=await r.json();
+            if(d.success||d.id)toast('Fiche créée #'+d.id);else toast('Erreur','error');
+        }
+        async function loadDashboard(){try{const r=await fetch('/api/assistant/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({context:'global'})});const d=await r.json();document.querySelector('#stat-tests .stat-value').textContent=d.tests?.total||0;document.querySelector('#stat-success .stat-value').textContent=(d.tests?.success_rate||0)+'%';document.querySelector('#stat-success .stat-value').style.color=(d.tests?.success_rate||0)>=50?'#388e3c':'var(--texte-muted)';const kbT=d.knowledge?.categories?.reduce((s,c)=>s+c.count,0)||0;document.querySelector('#stat-kb .stat-value').textContent=kbT;document.querySelector('#stat-rules .stat-value').textContent=d.knowledge?.rules_count||0;}catch(e){}}
+        function quickAsk(q){document.getElementById('ai-question').value=q;askAI();}
+        async function askAI(){const q=document.getElementById('ai-question').value.trim();if(!q)return;const container=document.getElementById('ai-results');container.innerHTML='<div class="loading"><div class="spinner"></div><p class="text-muted">Recherche...</p></div>';const r=await fetch('/api/assistant/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})});const data=await r.json();if(!data.results||!data.results.length){container.innerHTML='<div class="empty-state"><p>Aucun résultat pour « '+q+' »</p></div>';return;}let html='<p style="font-size:0.72rem;color:var(--texte-muted);margin-bottom:0.75rem;">'+data.results.length+' résultat(s) — mots-clés : <strong>'+data.keywords.join(', ')+'</strong></p>';data.results.forEach(k=>{const cc=k.category==='Retours clients'?'#e67e22':k.category==='technique'?'#1565c0':'#388e3c';html+='<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-left:3px solid '+cc+';border-radius:var(--radius);padding:0.8rem 1rem;margin-bottom:0.5rem;"><div style="display:flex;justify-content:space-between;"><div><strong>'+k.title+'</strong> <span style="font-size:0.65rem;background:'+cc+'15;color:'+cc+';padding:1px 6px;border-radius:8px;">'+k.category+(k.subcategory?' › '+k.subcategory:'')+'</span></div></div><p style="font-size:0.82rem;margin:0.4rem 0 0;line-height:1.5;">'+formatKBContent(k.content)+'</p>'+(k.source?'<p style="font-size:0.68rem;color:var(--texte-muted);margin:0.3rem 0 0;">Source: '+k.source+'</p>':'')+'</div>';});container.innerHTML=html;}
+        async function analyzeAll(){const container=document.getElementById('ai-results');container.innerHTML='<div class="loading"><div class="spinner"></div><p class="text-muted">Analyse complète...</p></div>';const r=await fetch('/api/assistant/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({context:'global'})});const d=await r.json();let html='<div style="font-size:0.85rem;">';if(d.tests){html+='<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0 0 0.5rem;">📊 Synthèse des tests</p><div class="grid grid-4" style="gap:0.5rem;text-align:center;"><div><span style="font-size:1.3rem;font-weight:700;">'+d.tests.total+'</span><br><span class="text-muted" style="font-size:0.68rem;">Total</span></div><div><span style="font-size:1.3rem;font-weight:700;">'+d.tests.finished+'</span><br><span class="text-muted" style="font-size:0.68rem;">Terminés</span></div><div><span style="font-size:1.3rem;font-weight:700;color:#388e3c;">'+d.tests.validated+'</span><br><span class="text-muted" style="font-size:0.68rem;">Validés</span></div><div><span style="font-size:1.3rem;font-weight:700;color:#c62828;">'+d.tests.refused+'</span><br><span class="text-muted" style="font-size:0.68rem;">Refusés</span></div></div>';if(d.tests.success_rate>0){const clr=d.tests.success_rate>=60?'#388e3c':'#e67e22';html+='<div style="margin-top:0.5rem;"><div style="background:#eee;border-radius:4px;height:8px;"><div style="background:'+clr+';height:100%;border-radius:4px;width:'+d.tests.success_rate+'%;"></div></div><p style="text-align:center;font-size:0.72rem;color:'+clr+';font-weight:600;">Taux validation : '+d.tests.success_rate+'%</p></div>';}if(d.tests.validated_details&&d.tests.validated_details.length){html+='<div style="margin-top:0.75rem;padding-top:0.5rem;border-top:1px solid var(--bordure-legere);"><p style="font-size:0.68rem;text-transform:uppercase;color:#388e3c;font-weight:600;">✓ Combinaisons validées</p>';d.tests.validated_details.forEach(v=>{html+='<div style="background:#e8f5e9;border-radius:var(--radius);padding:0.5rem;margin-bottom:0.3rem;font-size:0.78rem;"><strong>'+v.test+'</strong> — '+(v.form||'')+' — '+(v.fragrance||'')+' '+(v.pct||0)+'% — Mèche: '+(v.wick||'?')+' — Conso: '+v.avg_consumption+'g/cycle</div>';});html+='</div>';}html+='</div>';}
+        if(d.feedbacks&&d.feedbacks.total>0){html+='<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:1rem;margin-bottom:0.75rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:#e67e22;font-weight:600;margin:0 0 0.5rem;">👤 Retours clients ('+d.feedbacks.total+')</p>';if(d.feedbacks.top_keywords&&d.feedbacks.top_keywords.length){html+='<p style="margin:0 0 0.5rem;">';d.feedbacks.top_keywords.forEach(([w,c])=>{html+='<span style="display:inline-block;padding:1px 6px;margin:2px;border-radius:8px;background:rgba(230,126,34,0.12);color:#e67e22;font-size:'+Math.min(1,0.7+c*0.08)+'rem;">'+w+'('+c+')</span>';});html+='</p>';}d.feedbacks.items.slice(-5).reverse().forEach(f=>{const iv=f.client_status==='validé';html+='<div style="border-left:3px solid '+(iv?'#388e3c':'#c62828')+';padding:0.4rem 0.7rem;margin-bottom:0.3rem;font-size:0.78rem;"><strong>'+(f.test_number||'')+'</strong> — '+(f.client_name||'')+' <span style="color:'+(iv?'#388e3c':'#c62828')+';">'+(iv?'✓':'✗')+'</span><br><em style="color:#666;">« '+f.client_feedback.substring(0,120)+' »</em></div>';});html+='</div>';}
+        if(d.knowledge){html+='<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:1rem;"><p style="font-size:0.68rem;text-transform:uppercase;color:#1565c0;font-weight:600;">📚 Base de connaissances</p><div style="display:flex;gap:0.5rem;flex-wrap:wrap;">';d.knowledge.categories.forEach(c=>{html+='<span style="background:rgba(21,101,192,0.08);color:#1565c0;padding:3px 8px;border-radius:8px;font-size:0.75rem;">'+c.category+' ('+c.count+')</span>';});html+='</div><p style="font-size:0.75rem;margin:0.4rem 0 0;color:var(--texte-muted);">'+d.knowledge.rules_count+' règles apprises</p></div>';}html+='</div>';container.innerHTML=html;}
+        async function autoLearn(){const r=await fetch('/api/assistant/auto-learn',{method:'POST'});const d=await r.json();toast(d.rules_created>0?d.rules_created+' nouvelle(s) règle(s) — Total: '+d.total_rules:'Déjà à jour');loadDashboard();}
+        async function recommendWick(){const diam=parseInt(document.getElementById('wick-diameter').value);if(!diam){toast('Diamètre requis','error');return;}const r=await fetch('/api/assistant/recommend-wick',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({diameter:diam})});const d=await r.json();const el=document.getElementById('wick-results');let h='';
+if(d.recommendations&&d.recommendations.length){h+='<p style="font-size:0.68rem;text-transform:uppercase;color:#388e3c;font-weight:600;margin:0 0 0.3rem;">🏆 Recommandations basées sur l\'expérience</p>';d.recommendations.forEach((rec,i)=>{const best=rec.tests.find(t=>t.status==='validé');const clr=rec.avgScore>=70?'#388e3c':rec.avgScore>=40?'#e67e22':'#c62828';h+='<div style="background:'+(rec.avgScore>=70?'#e8f5e9':rec.avgScore>=40?'#fff8e1':'#fbe9e7')+';border-left:3px solid '+clr+';border-radius:var(--radius);padding:0.5rem 0.7rem;margin-bottom:0.3rem;font-size:0.78rem;"><div style="display:flex;justify-content:space-between;"><strong>'+rec.wick+'</strong><span style="font-size:0.65rem;color:'+clr+';font-weight:600;">Score: '+rec.avgScore+'/100</span></div>';h+='<span style="font-size:0.72rem;color:#666;">'+rec.tests.length+' test(s)';if(best)h+=' — ✓ validé ('+best.test_number+', conso '+best.avg_consumption+'g/cycle)';h+='</span>';const refused=rec.tests.filter(t=>t.status==='refusé');if(refused.length)h+='<br><span style="font-size:0.7rem;color:#c62828;">✗ '+refused.length+' refus : '+refused[0].feedback?.substring(0,60)+'...</span>';h+='</div>';});}
+if(d.catalog_wicks&&d.catalog_wicks.length){h+='<p style="font-size:0.68rem;text-transform:uppercase;color:var(--mfc-cire);font-weight:600;margin:0.5rem 0 0.3rem;">📋 Catalogue Ø'+diam+'mm ('+d.catalog_wicks.length+' mèches)</p>';d.catalog_wicks.slice(0,6).forEach(w=>{h+='<div style="background:var(--fond-surface);border-radius:var(--radius);padding:0.3rem 0.6rem;margin-bottom:0.2rem;font-size:0.75rem;"><strong>'+w.reference+'</strong> <span style="font-size:0.6rem;background:var(--mfc-or-pale);padding:1px 4px;border-radius:4px;">'+w.series+'</span> '+(w.type||'')+' '+(w.core?'('+w.core+')':'')+' — '+(w.application||'')+'</div>';});}
+if(d.tips&&d.tips.length){h+='<p style="font-size:0.68rem;text-transform:uppercase;color:#1565c0;font-weight:600;margin:0.5rem 0 0.3rem;">💡 Conseils MFC</p>';d.tips.forEach(t=>{h+='<details style="font-size:0.75rem;margin-bottom:0.2rem;"><summary style="cursor:pointer;color:#1565c0;">'+t.title+'</summary><p style="font-size:0.72rem;padding:0.3rem 0.5rem;white-space:pre-line;color:#555;">'+t.content.substring(0,300)+'...</p></details>';});}
+if(!h)h='<p class="text-muted" style="font-size:0.78rem;">Aucune donnée pour Ø'+diam+'mm</p>';el.innerHTML=h;}
+        async function recommendForm(){const type=document.getElementById('rec-type').value;const diam=parseInt(document.getElementById('rec-diameter').value)||null;const r=await fetch('/api/assistant/recommend-formulation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({candle_type:type,diameter:diam})});const d=await r.json();const el=document.getElementById('form-results');let html='';if(d.similar_formulations&&d.similar_formulations.length){d.similar_formulations.slice(0,5).forEach(f=>{const iv=f.client_status==='validé';const ir=f.client_status==='refusé';const bg=iv?'#e8f5e9':ir?'#fbe9e7':'var(--fond-surface)';html+='<div style="background:'+bg+';border-radius:var(--radius);padding:0.5rem 0.7rem;margin-bottom:0.3rem;font-size:0.78rem;">'+(iv?'✓ ':ir?'✗ ':'')+'<strong>'+f.code+'</strong> — '+(f.name||'')+'<br><span class="text-muted">'+(f.fragrance_name||'')+' '+(f.fragrance_percentage||0)+'% — '+(f.container_type||'')+' '+(f.diameter||'?')+'×'+(f.height||'?')+'mm</span>';if(f.waxes&&f.waxes.length)html+='<br><span style="font-size:0.7rem;">Cires: '+f.waxes.map(w=>w.reference+' '+w.percentage+'%').join(', ')+'</span>';if(f.client_feedback)html+='<br><em style="font-size:0.7rem;color:#666;">« '+f.client_feedback.substring(0,80)+' »</em>';html+='</div>';});}else html='<p class="text-muted" style="font-size:0.78rem;">Aucune formulation similaire</p>';el.innerHTML=html;}
+        let allKB=[];
+        async function loadKnowledgeTable(){const cat=document.getElementById('filter-category').value;let url='/api/knowledge';if(cat)url+='?category='+encodeURIComponent(cat);const r=await fetch(url);allKB=await r.json();const cats=[...new Set(allKB.map(k=>k.category))].sort();const sel=document.getElementById('filter-category');const cv=sel.value;sel.innerHTML='<option value="">Toutes catégories</option>'+cats.map(c=>'<option value="'+c+'"'+(c===cv?' selected':'')+'>'+c+'</option>').join('');const tb=document.getElementById('kb-tbody');if(!allKB.length){tb.innerHTML='<tr><td colspan="6" class="text-muted text-center">Aucune entrée</td></tr>';return;}tb.innerHTML=allKB.map(k=>'<tr><td><strong>'+k.title+'</strong></td><td><span style="font-size:0.7rem;background:rgba(163,45,3,0.08);padding:1px 6px;border-radius:8px;">'+k.category+'</span>'+(k.subcategory?'<br><span class="text-muted" style="font-size:0.68rem;">'+k.subcategory+'</span>':'')+'</td><td style="font-size:0.78rem;max-width:250px;white-space:pre-line;">'+formatKBContent(k.content||'',100)+'</td><td class="text-muted" style="font-size:0.72rem;">'+(k.source||'—')+'</td><td>'+('★'.repeat(Math.max(1,6-k.priority)))+'</td><td class="actions"><button class="btn btn-secondary btn-sm" onclick="editKB('+k.id+')">✎</button><button class="btn btn-danger btn-sm" onclick="deleteKB('+k.id+')">✕</button></td></tr>').join('');}
+        function openKBModal(k){document.getElementById('kb_id').value='';document.getElementById('kb_category').value='technique';document.getElementById('kb_subcategory').value='';document.getElementById('kb_title').value='';document.getElementById('kb_content').value='';document.getElementById('kb_source').value='MFC — Savoir-faire production';document.getElementById('kb_tags').value='';document.getElementById('kb_priority').value='3';document.getElementById('kb-modal-title').textContent='Ajouter une connaissance';if(k){document.getElementById('kb_id').value=k.id;document.getElementById('kb_category').value=k.category||'technique';document.getElementById('kb_subcategory').value=k.subcategory||'';document.getElementById('kb_title').value=k.title||'';document.getElementById('kb_content').value=k.content||'';document.getElementById('kb_source').value=k.source||'';document.getElementById('kb_tags').value=k.tags||'';document.getElementById('kb_priority').value=k.priority||3;document.getElementById('kb-modal-title').textContent='Modifier la fiche';}document.getElementById('kb-modal').classList.add('active');}
+        function updateSubcategories(){const cat=document.getElementById('kb_category').value;const dl=document.getElementById('subcategory-list');const subs={'technique':['cire','mèche','parfum','additif','container','colorant','combustion','cire végétale','cire paraffine'],'process':['température','coulage','fonte','refroidissement','pesée','mélange','démoulage'],'Science':['chimie','physique','thermodynamique','brevet'],'fournisseur':['Hywax','Dubois','Wedoo','Kaiser','Givaudan','IFF'],'astuce':['production','qualité','gain de temps']};dl.innerHTML=(subs[cat]||['général']).map(s=>'<option value="'+s+'">').join('');}
+        function editKB(id){const k=allKB.find(x=>x.id===id);if(k)openKBModal(k);}
+        async function saveKB(){const id=document.getElementById('kb_id').value;const d={category:document.getElementById('kb_category').value,subcategory:document.getElementById('kb_subcategory').value,title:document.getElementById('kb_title').value,content:document.getElementById('kb_content').value,source:document.getElementById('kb_source').value,tags:document.getElementById('kb_tags').value,priority:parseInt(document.getElementById('kb_priority').value)};if(!d.title||!d.content){toast('Titre et contenu requis','error');return;}await fetch(id?'/api/knowledge/'+id:'/api/knowledge',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});document.getElementById('kb-modal').classList.remove('active');toast(id?'Modifié':'Ajouté');loadKnowledgeTable();}
+        async function deleteKB(id){if(!confirm('Supprimer ?'))return;await fetch('/api/knowledge/'+id,{method:'DELETE'});loadKnowledgeTable();toast('Supprimé');}
+        async function loadRules(){const r1=await fetch('/api/assistant/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'validated_combination'})});const v=await r1.json();const r2=await fetch('/api/assistant/recommend',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'refused_combination'})});const rf=await r2.json();const el=document.getElementById('rules-list');let html='';if(v.recommendations&&v.recommendations.length){html+='<p style="font-size:0.68rem;text-transform:uppercase;color:#388e3c;font-weight:600;margin:0 0 0.5rem;">✓ Combinaisons validées (à reproduire)</p>';v.recommendations.forEach(rule=>{try{const cond=JSON.parse(rule.condition);const rec=JSON.parse(rule.recommendation);html+='<div style="background:#e8f5e9;border-left:3px solid #388e3c;border-radius:var(--radius);padding:0.6rem 0.8rem;margin-bottom:0.4rem;font-size:0.8rem;"><strong>'+(rec.test_number||'')+'</strong> — '+(rec.form_name||'')+'<br>'+(cond.container_type||'')+' '+(cond.diameter||'?')+'×'+(cond.height||'?')+'mm — '+(cond.fragrance_name||'?')+' '+(cond.fragrance_percentage||0)+'%<br>Mèche: <strong>'+(rec.wick||'?')+'</strong> — Conso: '+(rec.avg_consumption||'?')+'g/cycle<br><span style="font-size:0.7rem;color:#666;">Confiance: '+Math.round(rule.confidence*100)+'%</span></div>';}catch(e){}});}if(rf.recommendations&&rf.recommendations.length){html+='<p style="font-size:0.68rem;text-transform:uppercase;color:#c62828;font-weight:600;margin:0.75rem 0 0.5rem;">✗ Combinaisons refusées (à éviter)</p>';rf.recommendations.forEach(rule=>{try{const cond=JSON.parse(rule.condition);const rec=JSON.parse(rule.recommendation);html+='<div style="background:#fbe9e7;border-left:3px solid #c62828;border-radius:var(--radius);padding:0.6rem 0.8rem;margin-bottom:0.4rem;font-size:0.8rem;">'+(cond.container_type||'')+' '+(cond.diameter||'?')+'mm — '+(cond.fragrance_name||'?')+' '+(cond.fragrance_percentage||0)+'%<br>Mèche: '+(rec.wick||'?');if(rec.reason)html+='<br><em style="color:#c62828;">« '+rec.reason.substring(0,100)+' »</em>';html+='</div>';}catch(e){}});}if(!html)html='<div class="empty-state"><div class="icon">🧠</div><p>Aucune règle apprise</p><p class="text-muted" style="font-size:0.75rem;">Lancez l\'auto-apprentissage après avoir validé/refusé des tests.</p></div>';el.innerHTML=html;}
+        document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));});
+        document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');}));
+
+        // ═══ IMPORT R&D CLAUDE ═══
+        function parseRnDJSON() {
+            const raw = document.getElementById('rnd-json').value.trim();
+            if (!raw) { toast('Collez le JSON d\'abord','error'); return null; }
+            try {
+                let data = JSON.parse(raw);
+                // Support multiple formats
+                if (data.entries) data = data.entries;
+                if (!Array.isArray(data)) data = [data];
+                return data;
+            } catch(e) {
+                toast('JSON invalide : ' + e.message, 'error');
+                return null;
+            }
+        }
+
+        let rndParsedData = [];
+
+        function previewRnD() {
+            const data = parseRnDJSON();
+            if (!data) return;
+            rndParsedData = data;
+            const el = document.getElementById('rnd-preview');
+            el.innerHTML = '<p style="font-size:0.78rem;font-weight:600;margin-bottom:0.5rem;">📋 ' + data.length + ' fiche(s) trouvée(s) — cochez celles à importer :</p>' +
+                '<div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;"><button class="btn btn-sm btn-secondary" onclick="toggleAllRnD(true)">✅ Tout cocher</button><button class="btn btn-sm btn-secondary" onclick="toggleAllRnD(false)">☐ Tout décocher</button></div>' +
+                data.map((d, i) => `
+                    <div id="rnd-card-${i}" style="background:var(--fond-surface);border-radius:8px;padding:0.7rem 0.8rem;margin-bottom:0.5rem;border-left:3px solid #d4a853;cursor:pointer;" onclick="toggleRnDCard(${i})">
+                        <div style="display:flex;align-items:flex-start;gap:0.5rem;">
+                            <input type="checkbox" id="rnd-check-${i}" checked style="margin-top:3px;cursor:pointer;accent-color:#a32d03;" onclick="event.stopPropagation()">
+                            <div style="flex:1;">
+                                <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+                                    <strong style="font-size:0.85rem;">${d.title || '(sans titre)'}</strong>
+                                    <span style="font-size:0.68rem;background:rgba(163,45,3,0.1);padding:1px 6px;border-radius:8px;">${d.category || 'technique'}</span>
+                                    ${d.subcategory ? '<span style="font-size:0.65rem;color:#888;">' + d.subcategory + '</span>' : ''}
+                                    <span style="font-size:0.65rem;color:#999;">Prio ${'★'.repeat(Math.max(1, 6 - (d.priority || 3)))}</span>
+                                </div>
+                                <p style="font-size:0.78rem;color:#555;margin:0.3rem 0 0;white-space:pre-line;max-height:120px;overflow-y:auto;line-height:1.4;">${(d.content || '').substring(0, 400)}${(d.content || '').length > 400 ? '...' : ''}</p>
+                                ${d.tags ? '<div style="font-size:0.65rem;color:#999;margin-top:0.3rem;">🏷️ ' + d.tags + '</div>' : ''}
+                                ${d.source ? '<div style="font-size:0.65rem;color:#999;">📎 ' + d.source + '</div>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            updateRnDCount();
+            document.getElementById('rnd-status').textContent = data.length + ' fiche(s) détectée(s)';
+        }
+
+        function toggleRnDCard(i) {
+            const cb = document.getElementById('rnd-check-' + i);
+            cb.checked = !cb.checked;
+            updateRnDCount();
+        }
+
+        function toggleAllRnD(state) {
+            rndParsedData.forEach((_, i) => { document.getElementById('rnd-check-' + i).checked = state; });
+            updateRnDCount();
+        }
+
+        function updateRnDCount() {
+            const selected = rndParsedData.filter((_, i) => document.getElementById('rnd-check-' + i)?.checked).length;
+            document.getElementById('rnd-status').textContent = selected + '/' + rndParsedData.length + ' sélectionnée(s)';
+        }
+
+        async function importRnD() {
+            if (!rndParsedData.length) { toast('Prévisualisez d\'abord', 'error'); return; }
+            const selected = rndParsedData.filter((_, i) => document.getElementById('rnd-check-' + i)?.checked);
+            if (!selected.length) { toast('Aucune fiche sélectionnée', 'error'); return; }
+            if (!confirm('Importer ' + selected.length + ' fiche(s) sélectionnée(s) dans le patrimoine numérique ?')) return;
+
+            const payload = { entries: selected.map(d => ({
+                category: d.category || 'R&D',
+                subcategory: d.subcategory || '',
+                title: d.title || 'Import R&D',
+                content: d.content || '',
+                source: d.source || 'R&D Claude — ' + new Date().toISOString().split('T')[0],
+                priority: d.priority || 3,
+                tags: d.tags || 'R&D'
+            }))};
+
+            try {
+                const r = await fetch('/api/knowledge/import', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const result = await r.json();
+                if (result.success) {
+                    toast('✅ ' + result.summary.imported + ' fiche(s) importée(s)', 'success');
+                    document.getElementById('rnd-json').value = '';
+                    document.getElementById('rnd-preview').innerHTML = '<div style="padding:1rem;text-align:center;color:#27ae60;font-size:0.85rem;">✅ ' + result.summary.imported + ' fiche(s) intégrée(s) au patrimoine</div>';
+                    rndParsedData = [];
+                    document.getElementById('rnd-status').textContent = '✅ Importé !';
+                    mfcLogActivity('import_rnd', 'connaissances', null, null, result.summary.imported + '/' + selected.length + ' fiches R&D importées');
+                } else {
+                    alert('❌ Erreur : ' + (result.error || 'inconnue'));
+                }
+            } catch(e) { alert('❌ Erreur : ' + e.message); }
+        }
+        // ═══ EXPORT / IMPORT KB ═══
+        function exportKB(){window.location.href='/api/knowledge/export';}
+        async function importKB(input){
+            const file=input.files[0];if(!file)return;
+            try{
+                const text=await file.text();
+                const data=JSON.parse(text);
+                // Support both formats: {entries:[...]} or [{...},...]
+                const payload=Array.isArray(data)?{entries:data}:(data.entries?data:{entries:[data]});
+                const preview=payload.entries.length;
+                if(!confirm('Importer '+preview+' fiche(s) dans la base de connaissances ?'))return input.value='';
+                const r=await fetch('/api/knowledge/import',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                const result=await r.json();
+                if(result.success){
+                    let msg='✅ Import terminé :\n\n';
+                    msg+='• '+result.summary.imported+' fiche(s) importée(s)\n';
+                    if(result.summary.skipped)msg+='• '+result.summary.skipped+' ignorée(s) (déjà existantes)\n';
+                    if(result.summary.errors)msg+='• '+result.summary.errors+' erreur(s)\n';
+                    alert(msg);
+                    loadKnowledgeTable();loadDashboard();
+                }else{alert('❌ Erreur : '+(result.error||'inconnue'));}
+            }catch(e){alert('❌ Fichier JSON invalide : '+e.message);}
+            input.value='';
+        }
+        document.addEventListener('DOMContentLoaded',()=>{loadDashboard();document.getElementById('filter-category').addEventListener('change',loadKnowledgeTable);});
+    </script>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

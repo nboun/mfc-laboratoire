@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant Formulateur — MFC Laboratoire</title>
+    <link rel="icon" href="/icons/icon-192.png">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',system-ui,sans-serif; background:#f5f0eb; color:#1a1a1a; }
+        .header { background:linear-gradient(135deg,#1a1a1a,#2c2c2c); color:#f5f0eb; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; }
+        .header h1 { font-size:1.4rem; font-weight:600; }
+        .header h1 span { color:#d4a853; }
+        .header nav a { color:#d4a853; text-decoration:none; margin-left:1.5rem; font-size:0.85rem; }
+        .container { max-width:1200px; margin:0 auto; padding:1.5rem; }
+        
+        /* Layout 2 colonnes */
+        .layout { display:grid; grid-template-columns:380px 1fr; gap:1.5rem; }
+        @media(max-width:900px) { .layout { grid-template-columns:1fr; } }
+        
+        /* Panneau gauche */
+        .panel { background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+        .panel h2 { font-size:1rem; margin-bottom:1rem; color:#1a1a1a; border-bottom:2px solid #d4a853; padding-bottom:0.5rem; }
+        
+        /* Form */
+        .form-group { margin-bottom:1rem; }
+        .form-group label { display:block; font-size:0.78rem; color:#666; margin-bottom:0.3rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+        .form-group input, .form-group select { width:100%; padding:0.55rem 0.7rem; border:1px solid #ddd; border-radius:8px; font-size:0.9rem; background:#fafafa; }
+        .form-group input:focus, .form-group select:focus { outline:none; border-color:#d4a853; background:#fff; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+        
+        /* Drop zone FDS */
+        .fds-drop { border:2px dashed #d4a853; border-radius:12px; padding:1.2rem; text-align:center; cursor:pointer; transition:all 0.2s; margin-bottom:1rem; background:#fdfbf6; }
+        .fds-drop:hover, .fds-drop.dragover { background:#f5eedd; border-color:#b8942e; }
+        .fds-drop .icon { font-size:2rem; margin-bottom:0.3rem; }
+        .fds-drop .label { font-size:0.82rem; color:#888; }
+        .fds-drop .loaded { color:#27ae60; font-weight:600; font-size:0.85rem; }
+        .fds-drop input { display:none; }
+        .fds-optional { font-size:0.7rem; color:#bbb; text-align:center; margin-top:0.3rem; }
+        
+        /* Bouton */
+        .btn-generate { width:100%; padding:0.8rem; background:linear-gradient(135deg,#d4a853,#b8942e); color:#fff; border:none; border-radius:10px; font-size:1rem; font-weight:600; cursor:pointer; transition:all 0.2s; margin-top:0.5rem; }
+        .btn-generate:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(212,168,83,0.4); }
+        .btn-generate:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+        
+        /* Résultats */
+        .results-area { min-height:400px; }
+        .results-empty { text-align:center; padding:4rem 2rem; color:#ccc; }
+        .results-empty .icon { font-size:4rem; margin-bottom:1rem; }
+        
+        /* Alertes */
+        .alerts { margin-bottom:1.5rem; }
+        .alert { padding:0.7rem 1rem; border-radius:8px; margin-bottom:0.5rem; font-size:0.82rem; display:flex; gap:0.6rem; align-items:flex-start; }
+        .alert.danger { background:#fde8e8; border-left:4px solid #e74c3c; }
+        .alert.warning { background:#fef9e7; border-left:4px solid #f39c12; }
+        .alert.info { background:#eaf2f8; border-left:4px solid #3498db; }
+        .alert .alert-icon { font-size:1.1rem; flex-shrink:0; }
+        .alert .alert-body { flex:1; }
+        .alert .alert-title { font-weight:600; }
+        .alert .alert-detail { color:#666; font-size:0.78rem; margin-top:0.2rem; }
+        
+        /* Propositions */
+        .proposition { background:#fff; border-radius:12px; padding:1.2rem; margin-bottom:1rem; box-shadow:0 2px 12px rgba(0,0,0,0.06); border:2px solid transparent; transition:all 0.2s; }
+        .proposition:first-child { border-color:#d4a853; }
+        .proposition:first-child .prop-badge { background:#d4a853; }
+        .prop-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .prop-title { font-size:1rem; font-weight:700; }
+        .prop-badge { display:inline-block; padding:0.2rem 0.6rem; border-radius:20px; font-size:0.7rem; font-weight:700; color:#fff; background:#888; }
+        .prop-reasons { display:flex; flex-wrap:wrap; gap:0.3rem; margin-bottom:0.8rem; }
+        .prop-reasons span { background:#f0ebe3; color:#8b7355; padding:0.15rem 0.5rem; border-radius:12px; font-size:0.72rem; }
+        
+        /* Tableau formulation */
+        .form-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+        .form-table th { background:#fdfbf6; text-align:left; padding:0.5rem 0.7rem; color:#888; font-weight:600; font-size:0.72rem; text-transform:uppercase; }
+        .form-table td { padding:0.45rem 0.7rem; border-bottom:1px solid #f0f0f0; }
+        .form-table .mass { font-weight:700; color:#d4a853; }
+        
+        /* Paramètres secondaires */
+        .params-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.8rem; margin-top:0.8rem; }
+        .param-card { background:#fdfbf6; border-radius:8px; padding:0.6rem; text-align:center; }
+        .param-card .val { font-size:1.2rem; font-weight:700; color:#1a1a1a; }
+        .param-card .lbl { font-size:0.68rem; color:#999; text-transform:uppercase; }
+        
+        /* Notes */
+        .notes-box { background:#fdfbf6; border-radius:8px; padding:0.8rem; margin-top:0.8rem; font-size:0.78rem; color:#666; line-height:1.5; white-space:pre-line; max-height:150px; overflow-y:auto; }
+        
+        /* FDS Summary */
+        .fds-summary { background:#fff; border-radius:12px; padding:1.2rem; margin-bottom:1rem; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+        .fds-summary h3 { font-size:0.9rem; margin-bottom:0.5rem; }
+        .fds-summary .mol-count { color:#d4a853; font-weight:700; }
+        .mol-mini { display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.5rem; }
+        .mol-mini span { background:#f0ebe3; padding:0.15rem 0.5rem; border-radius:12px; font-size:0.7rem; color:#555; }
+    </style>
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 Assistant <span>Formulateur</span></h1>
+        <nav>
+            <a href="/">Accueil</a>
+            <a href="/echantillons.html">Échantillons</a>
+            <a href="/formulations.html">Formulations</a>
+            <a href="/tests.html">Tests</a>
+            <a href="/matieres.html">Matières</a>
+            <a href="/recettes.html">Recettes</a>
+            <a href="/connaissances.html">Connaissances</a>
+            <a href="/fds.html">FDS Parfums</a>
+            <a href="/recherche.html">Recherche</a>
+            <a href="/clients.html">Clients</a>
+            <a href="/operateurs.html">Opérateurs</a>
+        </nav>
+    </div>
+    
+    <div class="container">
+        <div class="layout">
+            <!-- Panneau gauche : Paramètres -->
+            <div>
+                <div class="panel">
+                    <h2>📋 Paramètres du projet</h2>
+                    
+                    <!-- Drop FDS -->
+                    <div class="fds-drop" id="fdsDrop" onclick="document.getElementById('fdsFile').click()">
+                        <div class="icon">📄</div>
+                        <div class="label" id="fdsLabel">Glisser la FDS du parfum ici</div>
+                        <input type="file" id="fdsFile" accept=".pdf">
+                    </div>
+                    <div class="fds-optional">Optionnel — l'assistant fonctionne aussi sans FDS</div>
+                    
+                    <div class="form-group">
+                        <label>Nom du parfum</label>
+                        <input type="text" id="fragranceName" placeholder="Ex: Da Rosa 10, Blue Away...">
+                    </div>
+                    <div style="display:flex;gap:0.5rem;">
+                        <div class="form-group" style="flex:1;">
+                            <label>Référence</label>
+                            <input type="text" id="fragranceRef" placeholder="Ex: DR-30364971">
+                        </div>
+                        <div class="form-group" style="flex:1;">
+                            <label>Fournisseur</label>
+                            <input type="text" id="fragranceSupplier" placeholder="Ex: Givaudan">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Type de bougie</label>
+                        <select id="candleType">
+                            <option value="container" selected>Container (verre)</option>
+                            <option value="container végétal">Container végétal</option>
+                            <option value="pilier">Pilier</option>
+                            <option value="chandelle">Chandelle</option>
+                            <option value="taper">Bougie fine</option>
+                            <option value="votive">Votive</option>
+                            <option value="tealight">Chauffe-plat</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Diamètre (mm)</label>
+                            <input type="number" id="diameter" placeholder="80" value="80">
+                        </div>
+                        <div class="form-group">
+                            <label>Hauteur (mm)</label>
+                            <input type="number" id="height" placeholder="100" value="100">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Masse totale (g)</label>
+                            <input type="number" id="totalMass" placeholder="200" value="200">
+                        </div>
+                        <div class="form-group">
+                            <label>% Parfum</label>
+                            <input type="number" id="fragrancePct" step="0.5" min="0" max="15" placeholder="12" value="12">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>% Colorant</label>
+                        <input type="number" id="colorantPct" step="0.05" min="0" max="2" placeholder="0.20" value="0.20">
+                    </div>
+                    
+                    <button class="btn-generate" id="btnGenerate" onclick="generate()">
+                        🔬 Proposer une formulation
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Panneau droit : Résultats -->
+            <div class="results-area" id="resultsArea">
+                <div class="results-empty">
+                    <div class="icon">🧪</div>
+                    <div>Renseignez les paramètres et cliquez sur<br><strong>Proposer une formulation</strong></div>
+                    <div style="margin-top:1rem;font-size:0.8rem;color:#bbb;">
+                        L'assistant croise les recettes MFC éprouvées<br>
+                        avec l'analyse FDS du parfum pour proposer<br>
+                        la formulation optimale.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let loadedFDS = null;
+        
+        // ── Check FDS availability ──
+        (async function checkFDS() {
+            try {
+                const r = await fetch('/api/fds/status');
+                const d = await r.json();
+                if (!d.ok) {
+                    document.getElementById('fdsLabel').innerHTML = '⚠️ <strong>Extraction FDS indisponible</strong><br><span style="font-size:0.72rem;color:#e67e22;">' + d.error + '</span>';
+                    document.getElementById('fdsDrop').style.borderColor = '#e67e22';
+                    document.getElementById('fdsDrop').style.opacity = '0.7';
+                    return;
+                }
+            } catch(e) {}
+        })();
+        
+        // ── FDS Drag & Drop ──
+        const fdsDrop = document.getElementById('fdsDrop');
+        const fdsFile = document.getElementById('fdsFile');
+        
+        fdsDrop.addEventListener('dragover', e => { e.preventDefault(); fdsDrop.classList.add('dragover'); });
+        fdsDrop.addEventListener('dragleave', () => fdsDrop.classList.remove('dragover'));
+        fdsDrop.addEventListener('drop', e => { e.preventDefault(); fdsDrop.classList.remove('dragover'); handleFDS(e.dataTransfer.files[0]); });
+        fdsFile.addEventListener('change', e => { if (e.target.files[0]) handleFDS(e.target.files[0]); });
+        
+        async function handleFDS(file) {
+            if (!file || !file.name.toLowerCase().endsWith('.pdf')) return;
+            document.getElementById('fdsLabel').innerHTML = `<span class="loaded">✅ ${file.name}</span><br><span style="font-size:0.75rem;color:#888;">Extraction en cours...</span>`;
+            
+            const form = new FormData();
+            form.append('fds', file);
+            
+            try {
+                const res = await fetch('/api/formulateur/parse-and-analyze', { method: 'POST', body: form });
+                const data = await res.json();
+                if (data.success) {
+                    loadedFDS = data.fds;
+                    const nom = data.fds?.identification?.nom || file.name;
+                    const nbMol = data.fds?.nb_composants || 0;
+                    document.getElementById('fdsLabel').innerHTML = `<span class="loaded">✅ ${nom}</span><br><span style="font-size:0.75rem;color:#27ae60;">${nbMol} molécules extraites</span>`;
+                    
+                    // Auto-fill fragrance name, ref, supplier from FDS (écrase toujours)
+                    const fdsId = data.fds?.identification || {};
+                    if (fdsId.nom) {
+                        document.getElementById('fragranceName').value = fdsId.nom;
+                    }
+                    if (fdsId.code) {
+                        document.getElementById('fragranceRef').value = fdsId.code;
+                    }
+                    if (fdsId.fournisseur) {
+                        document.getElementById('fragranceSupplier').value = fdsId.fournisseur;
+                    }
+                } else {
+                    document.getElementById('fdsLabel').innerHTML = `<span style="color:#e74c3c;">❌ Erreur: ${data.error}</span>`;
+                }
+            } catch (e) {
+                document.getElementById('fdsLabel').innerHTML = `<span style="color:#e74c3c;">❌ ${e.message}</span>`;
+            }
+        }
+        
+        // ── Generate ──
+        async function generate() {
+            const btn = document.getElementById('btnGenerate');
+            btn.disabled = true;
+            btn.textContent = '⏳ Analyse en cours...';
+            
+            const body = {
+                fds_data: loadedFDS || null,
+                candle_type: document.getElementById('candleType').value,
+                diameter: parseInt(document.getElementById('diameter').value) || null,
+                height: parseInt(document.getElementById('height').value) || null,
+                total_mass: parseFloat(document.getElementById('totalMass').value) || 200,
+                fragrance_pct: parseFloat(document.getElementById('fragrancePct').value) || 12,
+                colorant_pct: parseFloat(document.getElementById('colorantPct').value) || 0.2,
+                fragrance_name: document.getElementById('fragranceName').value || '',
+                fragrance_ref: document.getElementById('fragranceRef').value || '',
+                fragrance_supplier: document.getElementById('fragranceSupplier').value || '',
+                vegetal: document.getElementById('candleType').value.includes('végétal'),
+            };
+            
+            try {
+                const res = await fetch('/api/formulateur/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    lastData = data;
+                    currentSessionId = 'sess_' + Date.now(); // New session for each analysis
+                    renderResults(data);
+                } else {
+                    document.getElementById('resultsArea').innerHTML = `<div class="alert danger"><span class="alert-icon">❌</span><div class="alert-body"><div class="alert-title">Erreur</div><div class="alert-detail">${data.error}</div></div></div>`;
+                }
+            } catch (e) {
+                document.getElementById('resultsArea').innerHTML = `<div class="alert danger"><span class="alert-icon">❌</span><div class="alert-body"><div class="alert-title">Erreur</div><div class="alert-detail">${e.message}</div></div></div>`;
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '🔬 Proposer une formulation';
+        }
+        
+        // ── Render ──
+        function renderResults(data) {
+            const el = document.getElementById('resultsArea');
+            let html = '';
+            
+            // FDS Summary
+            if (loadedFDS) {
+                const id = loadedFDS.identification || {};
+                const comp = loadedFDS.composition || [];
+                html += `<div class="fds-summary">
+                    <h3>📄 FDS : ${id.nom || 'Parfum'} ${id.code ? `(${id.code})` : ''} — <span class="mol-count">${comp.length} molécules</span></h3>
+                    <div style="font-size:0.78rem;color:#888;">Fournisseur : ${id.fournisseur || '—'} · Flash point : ${loadedFDS.proprietes_physiques?.flash_point_c || '?'}°C</div>
+                    <div class="mol-mini">${comp.slice(0, 8).map(m => `<span>${m.nom_chimique || m.cas} (${m.concentration}%)</span>`).join('')}${comp.length > 8 ? `<span>+${comp.length - 8} autres</span>` : ''}</div>
+                </div>`;
+            }
+            
+            // Crossref — formulations validées
+            if (data.crossref) {
+                const cr = data.crossref;
+                
+                // Match direct
+                if (cr.validated_matches && cr.validated_matches.length > 0) {
+                    html += '<div style="background:#e8f5e9;border-radius:12px;padding:1rem;margin-bottom:1rem;border-left:4px solid #27ae60;">';
+                    html += '<h3 style="font-size:0.9rem;margin-bottom:0.5rem;color:#27ae60;">✅ Formulations validées en production</h3>';
+                    for (const m of cr.validated_matches.slice(0, 5)) {
+                        html += '<div style="font-size:0.82rem;padding:0.3rem 0;border-bottom:1px solid rgba(0,0,0,0.05);">';
+                        html += '<strong>' + m.parfum + '</strong> — ' + m.recette + ' chez <em>' + m.client + '</em>';
+                        html += ' · ' + m.pct_parfum + '% · mèche ' + m.meche + ' · ' + m.masse + 'g';
+                        if (m.notes) html += '<br><span style="color:#666;font-size:0.75rem;">' + m.notes + '</span>';
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                }
+                
+                // Flash safety (PRIORITÉ 2)
+                if (cr.flash_safety && cr.flash_safety.length > 0) {
+                    for (const fs of cr.flash_safety) {
+                        if (fs.severity === 'ok') continue;
+                        const icons = { danger: '🔴', warning: '🟡', info: '🔵' };
+                        html += '<div class="alert ' + fs.severity + '">';
+                        html += '<span class="alert-icon">' + (icons[fs.severity] || '🔵') + '</span>';
+                        html += '<div class="alert-body"><div class="alert-title">' + fs.message + '</div>';
+                        html += '<div class="alert-detail">' + fs.detail + '</div></div></div>';
+                    }
+                }
+                
+                // Insights appris
+                if (cr.learned_insights && cr.learned_insights.length > 0) {
+                    for (const ins of cr.learned_insights) {
+                        const icons = { danger: '🔴', warning: '🟡', info: '💡' };
+                        html += '<div class="alert ' + ins.severity + '">';
+                        html += '<span class="alert-icon">' + (icons[ins.severity] || '💡') + '</span>';
+                        html += '<div class="alert-body"><div class="alert-title">' + ins.rule + '</div>';
+                        html += '<div class="alert-detail">' + ins.detail + '</div></div></div>';
+                    }
+                }
+                
+                // Recommendation
+                if (cr.recommendation) {
+                    const conf = { haute: '🟢', moyenne: '🟡', basse: '🔴' };
+                    html += '<div style="background:#fff8e1;border-radius:10px;padding:0.8rem;margin-bottom:1rem;border-left:4px solid #d4a853;">';
+                    html += '<strong>' + (conf[cr.recommendation.confidence] || '') + ' Recommandation croisée :</strong> ' + cr.recommendation.message;
+                    html += '</div>';
+                }
+                
+                // Analyse détaillée molécule × cire (bouton dépliable)
+                if (cr.molecule_analysis && cr.molecule_analysis.length > 0) {
+                    html += '<details style="margin-bottom:1rem;">';
+                    html += '<summary style="cursor:pointer;font-size:0.85rem;font-weight:600;color:#d4a853;padding:0.5rem 0;">🔬 Analyse détaillée molécules × combustion (' + cr.molecule_analysis.length + ' molécules à impact)</summary>';
+                    html += '<div style="background:#faf8f4;border-radius:10px;padding:0.8rem;margin-top:0.3rem;">';
+                    for (const mol of cr.molecule_analysis) {
+                        html += '<div style="padding:0.4rem 0;border-bottom:1px solid rgba(0,0,0,0.05);">';
+                        html += '<strong style="font-size:0.82rem;">' + mol.nom + '</strong>';
+                        if (mol.cas) html += ' <span style="color:#999;font-size:0.72rem;">(' + mol.cas + ')</span>';
+                        html += ' — <span style="font-size:0.78rem;">' + mol.concentration + '%</span>';
+                        for (const imp of mol.impact) {
+                            const ic = { danger: '🔴', warning: '🟡', info: '🔵' };
+                            html += '<div style="font-size:0.75rem;color:#555;margin-left:1rem;margin-top:0.15rem;">' + (ic[imp.severity] || '') + ' ' + imp.message + '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    html += '</div></details>';
+                }
+            }
+            
+            // Alerts FDS
+            if (data.fds_analysis?.alerts?.length) {
+                html += '<div class="alerts">';
+                for (const a of data.fds_analysis.alerts) {
+                    const icon = a.level === 'danger' ? '🔴' : a.level === 'warning' ? '🟡' : 'ℹ️';
+                    html += `<div class="alert ${a.level}">
+                        <span class="alert-icon">${icon}</span>
+                        <div class="alert-body">
+                            <div class="alert-title">${a.message}</div>
+                            ${a.detail ? `<div class="alert-detail">${a.detail}</div>` : ''}
+                        </div>
+                    </div>`;
+                }
+                html += '</div>';
+            }
+            
+            // Propositions
+            if (data.propositions?.length) {
+                html += '<h2 style="font-size:1.1rem;margin-bottom:1rem;">📊 Formulations proposées</h2>';
+                if (data.iteration) {
+                    html += `<div style="background:#eaf2f8;border-radius:10px;padding:0.8rem;margin-bottom:1rem;border-left:4px solid #3498db;">
+                        <strong>🔄 Itération</strong> — Propositions ajustées suite à vos observations sur ${data.previous_recipe}
+                        <div style="font-size:0.78rem;color:#555;margin-top:0.3rem;">Problèmes pris en compte : ${(data.problems_addressed||[]).join(', ')}</div>
+                    </div>`;
+                    if (data.adjustments?.length) {
+                        html += '<div style="margin-bottom:1rem;">';
+                        for (const adj of data.adjustments) {
+                            html += `<div style="background:#fef9e7;padding:0.4rem 0.7rem;border-radius:6px;margin-bottom:0.2rem;font-size:0.78rem;border-left:3px solid #f39c12;">
+                                🔧 ${adj.message}</div>`;
+                        }
+                        html += '</div>';
+                    }
+                }
+                data.propositions.forEach((p, idx) => {
+                    const f = p.formulation;
+                    html += `<div class="proposition" id="prop-${idx}">
+                        <div class="prop-header">
+                            <div class="prop-title">${idx === 0 ? '⭐ ' : ''}${f.recipe_name} <span style="color:#999;font-weight:400;font-size:0.85rem;">(${f.recipe_code})</span></div>
+                            <span class="prop-badge">${idx === 0 ? 'Recommandé' : `Option ${idx + 1}`}</span>
+                        </div>
+                        ${p.reasons.length ? `<div class="prop-reasons">${p.reasons.map(r => `<span>${r}</span>`).join('')}</div>` : ''}
+                        
+                        <table class="form-table">
+                            <thead><tr><th>Composant</th><th>Rôle</th><th>%</th><th>Masse</th></tr></thead>
+                            <tbody>
+                                ${f.waxes.map(w => `<tr><td><strong>${w.name}</strong></td><td style="color:#999;font-size:0.78rem;">${w.role || ''}</td><td>${w.percentage}%</td><td class="mass">${w.mass} g</td></tr>`).join('')}
+                                <tr style="border-top:2px solid #e0d8cc;"><td><strong>🌸 Parfum</strong></td><td style="color:#999;font-size:0.78rem;">${document.getElementById('fragranceName').value || '—'}${document.getElementById('fragranceRef').value ? ' <span style="color:#d4a853;">['+document.getElementById('fragranceRef').value+']</span>' : ''}${document.getElementById('fragranceSupplier').value ? '<br><span style="font-size:0.7rem;">'+document.getElementById('fragranceSupplier').value+'</span>' : ''}</td><td>${f.fragrance_pct}%</td><td class="mass">${f.fragrance_mass} g</td></tr>
+                                <tr><td><strong>🎨 Colorant</strong></td><td></td><td>${f.colorant_pct}%</td><td class="mass">${f.colorant_mass} g</td></tr>
+                                <tr style="background:#fdfbf6;font-weight:700;"><td>TOTAL</td><td></td><td>100%</td><td>${f.total_mass} g</td></tr>
+                            </tbody>
+                        </table>
+                        
+                        <div class="params-grid">
+                            <div class="param-card"><div class="val">${f.temp_ajout_parfum}°C</div><div class="lbl">Ajout parfum</div></div>
+                            <div class="param-card"><div class="val">${f.temp_coulage}°C</div><div class="lbl">Coulage</div></div>
+                            <div class="param-card"><div class="val">${f.cure_hours}h</div><div class="lbl">Cure</div></div>
+                        </div>
+                        
+                        ${f.wick_guide ? `<div class="notes-box"><strong>🕯️ Guide mèche (${f.wick_series}) :</strong>\n${f.wick_guide}</div>` : ''}
+                        ${f.pitfalls ? `<div class="notes-box" style="border-left:3px solid #f39c12;"><strong>⚠️ Points d'attention :</strong>\n${f.pitfalls}</div>` : ''}
+                        
+                        <!-- BOUTONS CHOISIR + ENREGISTRER + IMPRIMER -->
+                        <div style="display:flex;gap:8px;margin-top:0.8rem;">
+                            <button onclick="chooseFormulation(${idx}, '${f.recipe_code}')" 
+                                style="flex:1;padding:0.7rem;background:#d4a853;color:#fff;border:none;border-radius:8px;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                                onmouseover="this.style.background='#b8942e'" onmouseout="this.style.background='#d4a853'">
+                                ✅ Choisir cette formulation
+                            </button>
+                            <button onclick="saveFormulationToApp(${idx})" 
+                                style="padding:0.7rem 1rem;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:0.9rem;cursor:pointer;transition:all 0.2s;"
+                                onmouseover="this.style.background='#1e8449'" onmouseout="this.style.background='#27ae60'"
+                                title="Enregistrer dans l'application">
+                                💾
+                            </button>
+                            <button onclick="printFormulation(${idx})" 
+                                style="padding:0.7rem 1rem;background:#666;color:#fff;border:none;border-radius:8px;font-size:0.9rem;cursor:pointer;transition:all 0.2s;"
+                                onmouseover="this.style.background='#444'" onmouseout="this.style.background='#666'"
+                                title="Imprimer la fiche formulation">
+                                🖨️
+                            </button>
+                        </div>
+                    </div>`;
+                });
+            }
+            
+            // Panel de choix (caché par défaut, affiché quand on clique "Choisir")
+            html += `<div id="choicePanel" style="display:none;background:#fdfbf6;border-radius:12px;padding:1.2rem;margin-top:1rem;border:2px solid #d4a853;">
+                <h3 style="font-size:1rem;margin-bottom:0.8rem;">📝 Pourquoi ce choix ?</h3>
+                <div id="choiceRecipeInfo" style="font-size:0.85rem;color:#666;margin-bottom:0.8rem;"></div>
+                
+                <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.8rem;">
+                    <label class="reason-chip"><input type="checkbox" value="habitude_client" hidden><span>Habitude client</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="demande_vegetal" hidden><span>Demande végétal</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="meilleur_score" hidden><span>Meilleur score IA</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="experience_similaire" hidden><span>Expérience similaire</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="budget_cout" hidden><span>Budget / coût</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="disponibilite_matiere" hidden><span>Matière disponible</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="test_exploratoire" hidden><span>Test exploratoire</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="diffusion_prioritaire" hidden><span>Diffusion prioritaire</span></label>
+                    <label class="reason-chip"><input type="checkbox" value="opacite_requise" hidden><span>Opacité requise</span></label>
+                </div>
+                
+                <textarea id="choiceNote" placeholder="Note libre (optionnel)..." 
+                    style="width:100%;padding:0.6rem;border:1px solid #e0d8cc;border-radius:8px;font-size:0.85rem;min-height:50px;resize:vertical;font-family:inherit;"></textarea>
+                
+                <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
+                    <button onclick="confirmChoice()" style="flex:1;padding:0.6rem;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;">
+                        ✅ Confirmer — Lancer l'essai
+                    </button>
+                    <button onclick="document.getElementById('choicePanel').style.display='none'" style="padding:0.6rem 1rem;background:#eee;border:none;border-radius:8px;cursor:pointer;">Annuler</button>
+                </div>
+            </div>`;
+            
+            // Panel d'observation (affiché après confirmation du choix)
+            html += `<div id="observePanel" style="display:none;background:#fff;border-radius:12px;padding:1.2rem;margin-top:1rem;border:2px solid #3498db;">
+                <h3 style="font-size:1rem;margin-bottom:0.5rem;">🔬 Retour d'essai — <span id="observeRecipeName"></span></h3>
+                <p style="font-size:0.78rem;color:#888;margin-bottom:0.8rem;">Cochez les problèmes rencontrés et décrivez vos observations</p>
+                
+                <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.8rem;">
+                    <label class="problem-chip"><input type="checkbox" value="tunneling" hidden><span>🕳️ Tunneling</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="diffusion_faible" hidden><span>👃 Diffusion faible</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="odeur_a_froid_faible" hidden><span>🧊 Odeur à froid faible</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="suie_noire" hidden><span>💨 Suie noire</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="flamme_trop_haute" hidden><span>🔥 Flamme trop haute</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="combustion_bloquee" hidden><span>⛔ Combustion bloquée</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="surface_irrégulière" hidden><span>🌊 Surface irrégulière</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="retrait_decollement" hidden><span>📐 Retrait / décollement</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="translucide" hidden><span>👁️ Translucide</span></label>
+                    <label class="problem-chip"><input type="checkbox" value="trop_mou" hidden><span>🫠 Trop mou</span></label>
+                </div>
+                
+                <textarea id="observeText" placeholder="Décrivez vos observations (taille bain de fusion, comportement mèche, rendu visuel, odeur...)..." 
+                    style="width:100%;padding:0.6rem;border:1px solid #e0d8cc;border-radius:8px;font-size:0.85rem;min-height:80px;resize:vertical;font-family:inherit;"></textarea>
+                
+                <div style="display:flex;gap:0.5rem;margin-top:0.8rem;">
+                    <button onclick="submitObservation()" style="flex:1;padding:0.6rem;background:#3498db;color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;">
+                        🔄 Demander une nouvelle proposition
+                    </button>
+                    <button onclick="validateFormulation()" style="flex:1;padding:0.6rem;background:#27ae60;color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;">
+                        🏆 Valider — Formulation réussie !
+                    </button>
+                </div>
+            </div>`;
+            
+            el.innerHTML = html;
+            
+            // Init chips
+            document.querySelectorAll('.reason-chip, .problem-chip').forEach(label => {
+                label.style.cssText = 'display:inline-flex;align-items:center;padding:0.3rem 0.7rem;background:#f0ebe3;border-radius:20px;font-size:0.78rem;cursor:pointer;transition:all 0.15s;border:1px solid transparent;user-select:none;';
+                const cb = label.querySelector('input');
+                label.onclick = () => {
+                    cb.checked = !cb.checked;
+                    label.style.background = cb.checked ? '#d4a853' : '#f0ebe3';
+                    label.style.color = cb.checked ? '#fff' : '#333';
+                    label.style.borderColor = cb.checked ? '#b8942e' : 'transparent';
+                };
+            });
+        }
+        // ═══ BOUCLE ITÉRATIVE ═══
+        let currentSessionId = 'sess_' + Date.now();
+        let chosenIndex = null;
+        let chosenRecipe = null;
+        let lastData = null;  // Store last API response for re-use
+        
+        function chooseFormulation(idx, recipeCode) {
+            chosenIndex = idx;
+            chosenRecipe = recipeCode;
+            
+            // Highlight chosen, dim others
+            document.querySelectorAll('.proposition').forEach((el, i) => {
+                if (i === idx) {
+                    el.style.border = '2px solid #27ae60';
+                    el.style.opacity = '1';
+                } else {
+                    el.style.opacity = '0.4';
+                    el.style.filter = 'grayscale(0.5)';
+                }
+            });
+            
+            // Show choice panel
+            const panel = document.getElementById('choicePanel');
+            panel.style.display = 'block';
+            document.getElementById('choiceRecipeInfo').textContent = 
+                `Recette sélectionnée : ${recipeCode} — ${lastData?.propositions?.[idx]?.formulation?.recipe_name || ''}`;
+            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        async function confirmChoice() {
+            const reasons = [...document.querySelectorAll('#choicePanel .reason-chip input:checked')].map(cb => cb.value);
+            const note = document.getElementById('choiceNote').value;
+            
+            const formulation = lastData?.propositions?.[chosenIndex]?.formulation;
+            
+            try {
+                await fetch('/api/formulateur/choose', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        chosen_recipe: chosenRecipe,
+                        chosen_index: chosenIndex,
+                        reasons,
+                        custom_note: note,
+                        formulation,
+                        fds_data: loadedFDS,
+                        params: {
+                            fragrance_name: document.getElementById('fragranceName').value,
+                            candle_type: document.getElementById('candleType').value,
+                            diameter: parseInt(document.getElementById('diameter').value) || null,
+                            total_mass: parseFloat(document.getElementById('totalMass').value) || 200,
+                            fragrance_pct: parseFloat(document.getElementById('fragrancePct').value) || 10,
+                        }
+                    })
+                });
+            } catch(e) { console.error(e); }
+            
+            // Hide choice panel, show observe panel
+            document.getElementById('choicePanel').style.display = 'none';
+            document.getElementById('observePanel').style.display = 'block';
+            document.getElementById('observeRecipeName').textContent = chosenRecipe + ' — ' + (formulation?.recipe_name || '');
+            document.getElementById('observePanel').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        
+        async function submitObservation() {
+            const problems = [...document.querySelectorAll('#observePanel .problem-chip input:checked')].map(cb => cb.value);
+            const text = document.getElementById('observeText').value;
+            
+            if (problems.length === 0 && !text.trim()) {
+                alert('Décrivez au moins un problème ou cochez une observation.');
+                return;
+            }
+            
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = '⏳ Analyse en cours...';
+            
+            try {
+                const res = await fetch('/api/formulateur/observe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        problems,
+                        observations_text: text,
+                        severity: problems.length >= 3 ? 'critique' : problems.length >= 1 ? 'moyenne' : 'mineure'
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    lastData = data;
+                    renderResults(data);
+                } else {
+                    alert('Erreur : ' + data.error);
+                }
+            } catch(e) {
+                alert('Erreur : ' + e.message);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '🔄 Demander une nouvelle proposition';
+        }
+        
+        async function validateFormulation() {
+            const notes = document.getElementById('observeText').value;
+            
+            try {
+                const res = await fetch('/api/formulateur/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        final_recipe: chosenRecipe,
+                        final_formulation: lastData?.propositions?.[chosenIndex]?.formulation,
+                        success_notes: notes
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const panel = document.getElementById('observePanel');
+                    panel.innerHTML = `<div style="text-align:center;padding:1.5rem;">
+                        <div style="font-size:2.5rem;">🏆</div>
+                        <h3 style="color:#27ae60;margin:0.5rem 0;">Formulation validée !</h3>
+                        <p style="font-size:0.85rem;color:#666;">${chosenRecipe} — ${data.iterations || 1} itération(s)</p>
+                        <p style="font-size:0.78rem;color:#888;">Auto-apprentissage : résultat sauvegardé dans la base de connaissances</p>
+                        <button onclick="resetFormulateur()" style="margin-top:1rem;padding:0.6rem 1.5rem;background:#d4a853;color:#fff;border:none;border-radius:8px;font-size:0.88rem;cursor:pointer;">
+                            🔬 Nouvelle formulation
+                        </button>
+                        <button onclick="printFormulation(chosenIndex)" style="margin-top:0.5rem;padding:0.6rem 1.5rem;background:#666;color:#fff;border:none;border-radius:8px;font-size:0.88rem;cursor:pointer;">
+                            🖨️ Imprimer la fiche
+                        </button>
+                    </div>`;
+                }
+            } catch(e) {
+                alert('Erreur : ' + e.message);
+            }
+        }
+        
+        function resetFormulateur() {
+            currentSessionId = 'sess_' + Date.now();
+            chosenIndex = null;
+            chosenRecipe = null;
+            lastData = null;
+            document.getElementById('resultsArea').innerHTML = '';
+        }
+        
+        function printFormulation(idx) {
+            const f = lastData?.propositions?.[idx]?.formulation;
+            if (!f) { alert('Aucune formulation à imprimer'); return; }
+            const printData = {
+                formulation: f,
+                fds: loadedFDS,
+                fragrance_name: document.getElementById('fragranceName').value,
+                fragrance_ref: document.getElementById('fragranceRef').value,
+                fragrance_supplier: document.getElementById('fragranceSupplier').value,
+                candle_type: document.getElementById('candleType').value,
+                diameter: document.getElementById('diameter').value,
+            };
+            localStorage.setItem('mfc_print_data', JSON.stringify(printData));
+            window.open('/print.html?formulateur=local', '_blank');
+        }
+
+        async function saveFormulationToApp(idx) {
+            const prop = lastData?.propositions?.[idx];
+            if (!prop) { alert('Aucune formulation à enregistrer'); return; }
+            const f = prop.formulation;
+            
+            const fragranceName = document.getElementById('fragranceName').value || 'Sans nom';
+            const fragranceRef = document.getElementById('fragranceRef').value || '';
+            const fragranceSupplier = document.getElementById('fragranceSupplier').value || '';
+            const candleType = document.getElementById('candleType').value || 'container';
+            const diameter = document.getElementById('diameter').value || '';
+            const height = document.getElementById('height').value || '';
+            const totalMass = document.getElementById('totalMass').value || '';
+            const pctParfum = document.getElementById('fragrancePct').value || f.fragrance_pct || 10;
+            
+            // Construire l'objet formulation pour l'API
+            const timestamp = Date.now().toString(36).toUpperCase();
+            const body = {
+                code: `FORM-${timestamp}`,
+                name: `${fragranceName} — ${f.recipe_code || 'Formulateur'}`,
+                fragrance_name: fragranceName,
+                fragrance_ref: fragranceRef,
+                fragrance_supplier: fragranceSupplier,
+                container_type: candleType,
+                diameter: parseFloat(diameter) || null,
+                height: parseFloat(height) || null,
+                total_mass: parseFloat(totalMass) || 200,
+                fragrance_percentage: parseFloat(pctParfum),
+                wick_reference: f.wick_series || '',
+                notes: `Généré par l'Assistant Formulateur\n` +
+                    `Recette : ${f.recipe_code || ''} — ${f.recipe_name || ''}\n` +
+                    `Mélange cires : ${(f.wax_blend || []).map(w => w.name + ' ' + w.pct + '%').join(', ')}\n` +
+                    (f.flash_point ? `Point éclair estimé : ${f.flash_point}°C\n` : '') +
+                    (prop.reasoning ? `\nRaisonnement : ${prop.reasoning}\n` : '') +
+                    (f.pitfalls ? `\nPoints d'attention : ${f.pitfalls}\n` : '') +
+                    (f.wick_guide ? `\nGuide mèche : ${f.wick_guide}` : '')
+            };
+            
+            try {
+                const res = await fetch('/api/formulations', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                
+                if (res.ok) {
+                    const result = await res.json();
+                    const btn = event.target;
+                    btn.textContent = '✅';
+                    btn.style.background = '#1e8449';
+                    btn.disabled = true;
+                    setTimeout(() => {
+                        btn.textContent = '💾';
+                        btn.style.background = '#27ae60';
+                        btn.disabled = false;
+                    }, 2000);
+                    
+                    if (confirm(`Formulation "${fragranceName}" enregistrée !\n\nVoulez-vous l'ouvrir dans Formulations ?`)) {
+                        window.open('/formulations.html?highlight=' + result.id, '_blank');
+                    }
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    alert('Erreur : ' + (err.error || res.statusText));
+                }
+            } catch(e) {
+                alert('Erreur réseau : ' + e.message);
+            }
+        }
+        
+        // Store lastData when rendering
+        const _origRender = renderResults;
+        // (lastData is set in analyzeFormulation and submitObservation)
+
+        // Auto-fill from URL params (venant de formulations.html)
+        (function() {
+            const p = new URLSearchParams(location.search);
+            if (p.get('type')) document.getElementById('candleType').value = p.get('type');
+            if (p.get('diameter')) document.getElementById('diameter').value = p.get('diameter');
+            if (p.get('height')) document.getElementById('height').value = p.get('height');
+            if (p.get('mass')) document.getElementById('totalMass').value = p.get('mass');
+            if (p.get('fragrance')) document.getElementById('fragranceName').value = p.get('fragrance');
+            if (p.get('ref')) document.getElementById('fragranceRef').value = p.get('ref');
+            if (p.get('supplier')) document.getElementById('fragranceSupplier').value = p.get('supplier');
+            if (p.get('pct')) document.getElementById('fragrancePct').value = p.get('pct');
+        })();
+    </script>
+    <script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+</body>
+</html>

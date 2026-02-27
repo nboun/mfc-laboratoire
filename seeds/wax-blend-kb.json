@@ -1,0 +1,137 @@
+[
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+microcristalline",
+    "title": "Interaction blend — Paraffine raffinée + Cire microcristalline",
+    "content": "Interaction : Paraffine raffinée + Cire microcristalline\nSynergie : 9/10\nDosage recommandé : 3-10% (optimal: 5%)\nCompatible : OUI\n\n── Mécanisme ──\nLa micro (amorphe, ramifiée) remplit les espaces entre les cristaux linéaires de la paraffine. Elle agit comme un mortier entre les briques. Réduit le retrait de 8-15% à 3-6%.\n\n── Pourquoi ça fonctionne ──\nStructures cristallines complémentaires : paraffine = macro-cristaux ordonnés, micro = nano-cristaux désordonnés. Le mélange crée une matrice dense et flexible.\n\n── Effets ──\nretrait : réduit fortement (amorphe comble les espaces intercristallins)\nadhesion verre : améliore +++ (flexible, épouse le verre)\nsurface : lisse les défauts, réduit sinkholes\nthrow : réduit légèrement (piège une fraction du parfum)\ndureté : augmente légèrement\nopacité : augmente\n\n⚠️ Au-delà de 10%, le throw chute significativement. La micro fond à 70-90°C → ne pas surchauffer le blend.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,microcristalline,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+soja",
+    "title": "Interaction blend — Paraffine raffinée + Cire de soja hydrogénée",
+    "content": "Interaction : Paraffine raffinée + Cire de soja hydrogénée\nSynergie : 4/10\nDosage recommandé : 10-30% (optimal: 20%)\nCompatible : OUI\n\n── Mécanisme ──\nLes triglycérides du soja (polaires) et les hydrocarbures de la paraffine (apolaires) sont partiellement miscibles à chaud mais cristallisent séparément → création de micro-domaines hétérogènes.\n\n── Pourquoi ça fonctionne ──\nLa paraffine apporte la structure et le throw, le soja apporte l'adhésion et l'aspect crémeux. Compromis acceptable pour un marketing \"blend naturel\".\n\n── Pourquoi ça ne fonctionne pas ──\nImmiscibilité partielle au refroidissement : les deux phases cristallisent indépendamment → surface irrégulière, wet spots possibles, variabilité entre lots accrue. Le parfum se distribue inégalement entre les deux phases (préférentiellement dans la paraffine apolaire).\n\n── Effets ──\nretrait : réduit modérément\nadhesion verre : améliore (triglycérides plus adhésifs)\nsurface : risque de frosting en surface\nthrow : modifie le profil : cold throw réduit, hot throw maintenu\nopacité : augmente (aspect crémeux)\ncombustion : modifie la vitesse de combustion\n\n⚠️ Mélange instable si >30% soja. Température de coulée critique (trop chaud = séparation, trop froid = grumeaux).",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,soja,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+colza",
+    "title": "Interaction blend — Paraffine raffinée + Cire de colza hydrogénée",
+    "content": "Interaction : Paraffine raffinée + Cire de colza hydrogénée\nSynergie : 5/10\nDosage recommandé : 10-30% (optimal: 20%)\nCompatible : OUI\n\n── Mécanisme ──\nSimilaire au blend paraffine+soja mais les chaînes C22 du colza (acide béhénique) sont plus proches en longueur des C20-C40 de la paraffine → meilleure co-cristallisation.\n\n── Pourquoi ça fonctionne ──\nChaînes longues du colza (C22) plus compatibles avec la paraffine (C20-C40) que le soja (C18). Cristallisation plus ordonnée → moins de frosting.\n\n── Pourquoi ça ne fonctionne pas ──\nMême problème fondamental que le soja : triglycérides ≠ hydrocarbures. La miscibilité reste partielle.\n\n── Effets ──\nretrait : réduit modérément\nadhesion verre : améliore\nsurface : moins de frosting que soja\nthrow : profil similaire au blend paraffine+soja\ndureté : augmente légèrement (chaînes C22 plus longues)\n\n⚠️ Variabilité lots colza plus faible que soja.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,colza,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+stearique",
+    "title": "Interaction blend — Paraffine raffinée + Acide stéarique (triple pressed)",
+    "content": "Interaction : Paraffine raffinée + Acide stéarique (triple pressed)\nSynergie : 7/10\nDosage recommandé : 1-5% (optimal: 3%)\nCompatible : OUI\n\n── Mécanisme ──\nL'acide stéarique (C18:0) co-cristallise avec les n-alcanes C18-C22 de la paraffine. Les groupes -COOH créent des liaisons H → réseau plus rigide.\n\n── Pourquoi ça fonctionne ──\nLongueur de chaîne similaire (C18 vs C20-C40). Excellente co-cristallisation dans la plage C18-C22. Le groupe acide -COOH apporte rigidité et opacité.\n\n── Pourquoi ça ne fonctionne pas ──\nÀ >5%, l'excès de stéarique crée une phase séparée visible (exsudation blanche) et piège le parfum dans les zones acides → throw réduit.\n\n── Effets ──\ndureté : augmente significativement\nopacité : blanchit la cire\nsurface : améliore le démoulage (piliers)\nthrow : réduit légèrement (cristallin dense)\nshrinkage : augmente (cristallisation plus nette)\n\n⚠️ Maximum 5%. Au-delà = exsudation et perte de throw.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,stearique,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+cetyl_stearyl_alcohol",
+    "title": "Interaction blend — Paraffine raffinée + Alcool céto-stéarylique",
+    "content": "Interaction : Paraffine raffinée + Alcool céto-stéarylique\nSynergie : 6/10\nDosage recommandé : 1-5% (optimal: 2%)\nCompatible : OUI\n\n── Mécanisme ──\nLes alcools gras C16-C18 s'intercalent entre les cristaux de paraffine grâce au groupe -OH qui crée des micro-liaisons avec les imperfections cristallines.\n\n── Pourquoi ça fonctionne ──\nLongueur de chaîne idéale (C16-C18) pour s'insérer dans la matrice paraffine. Le -OH est un pont entre la cire apolaire et le parfum polaire.\n\n── Effets ──\nsurface : lisse, anti-sinkholes\nthrow : léger boost cold throw (alcools gras migrent en surface)\ndureté : augmente modérément\nadhesion verre : améliore légèrement\n\n⚠️ À >5%, peut créer un voile gras en surface.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,cetyl_stearyl_alcohol,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+vybar",
+    "title": "Interaction blend — Paraffine raffinée + Vybar (copolymère éthylène-acétate de vinyle)",
+    "content": "Interaction : Paraffine raffinée + Vybar (copolymère éthylène-acétate de vinyle)\nSynergie : 8/10\nDosage recommandé : 0.5-2% (optimal: 1%)\nCompatible : OUI\n\n── Mécanisme ──\nLe Vybar (copolymère cristallin) forme un réseau tridimensionnel microscopique qui piège les micro-gouttelettes de parfum dans la cire. Lors de la chauffe, ces gouttelettes se libèrent progressivement.\n\n── Pourquoi ça fonctionne ──\nLe polymère crée une \"éponge\" invisible à l'échelle nanométrique qui retient le parfum dans la matrice solide (cold throw) et le libère de façon contrôlée à la fonte (hot throw).\n\n── Pourquoi ça ne fonctionne pas ──\nÀ >2%, effet inverse : le réseau polymère devient trop dense et emprisonne le parfum définitivement → throw effondré.\n\n── Effets ──\nthrow : booste le throw significativement\nopacité : augmente fortement\nsurface : lisse, réduit mottling\ncolor : améliore la tenue des colorants\nadhesion verre : améliore\n\n⚠️ Maximum 2%. Très sensible au dosage. Incompatible avec les cires végétales (ne cristallise pas correctement dans les triglycérides).",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,vybar,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+coco",
+    "title": "Interaction blend — Paraffine raffinée + Cire de coco hydrogénée",
+    "content": "Interaction : Paraffine raffinée + Cire de coco hydrogénée\nSynergie : 6/10\nDosage recommandé : 3-10% (optimal: 5%)\nCompatible : OUI\n\n── Mécanisme ──\nLa cire de coco (triglycérides C12) fond à 24°C. En blend, elle reste liquide dans les interstices de la paraffine solide → crée un réservoir de parfum facilement accessible à température ambiante.\n\n── Pourquoi ça fonctionne ──\nLes chaînes courtes C8-C14 de la coco libèrent les notes de tête du parfum à température ambiante → cold throw boosté. L'aspect crémeux améliore l'adhésion au verre.\n\n── Pourquoi ça ne fonctionne pas ──\nÀ >10%, la bougie devient trop molle (cure impossible, verre gras). Le fond de coco instable peut provoquer du suintement en été (>25°C).\n\n── Effets ──\nthrow : booste les notes de tête (chaînes C12 volatiles)\nmelt pool : élargit et abaisse la température du melt pool\nsurface : brillance accrue\ndureté : réduit (coco fond à 24°C)\nadhesion verre : excellente\n\n⚠️ Ne jamais dépasser 10%. Stocker en dessous de 25°C.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,coco,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend paraffine+beeswax",
+    "title": "Interaction blend — Paraffine raffinée + Cire d'abeille",
+    "content": "Interaction : Paraffine raffinée + Cire d'abeille\nSynergie : 5/10\nDosage recommandé : 5-20% (optimal: 10%)\nCompatible : OUI\n\n── Mécanisme ──\nLes esters myricyle (C46) de la cire d'abeille forment un réseau de longues chaînes qui ralentit la combustion. Les hydrocarbures C25-C35 co-cristallisent avec la paraffine.\n\n── Pourquoi ça fonctionne ──\nCo-cristallisation des hydrocarbures C25-C35 avec la paraffine. Le réseau d'esters ralentit la combustion → flamme plus régulière, durée accrue.\n\n── Pourquoi ça ne fonctionne pas ──\nLa cire d'abeille a une odeur propre qui modifie le parfum. À >20%, le throw est très réduit (rétention excessive). Le prix élevé rend le blend non viable pour la production.\n\n── Effets ──\ncombustion : améliore — flamme chaude, stable\nthrow : réduit (cire d'abeille retient le parfum)\nsurface : patine naturelle, aspect artisanal\ndurée : augmente la durée de combustion\n\n⚠️ L'odeur naturelle de la cire d'abeille interfère avec les parfums délicats.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,paraffine,beeswax,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend soja+stearique",
+    "title": "Interaction blend — Cire de soja hydrogénée + Acide stéarique (triple pressed)",
+    "content": "Interaction : Cire de soja hydrogénée + Acide stéarique (triple pressed)\nSynergie : 7/10\nDosage recommandé : 2-5% (optimal: 3%)\nCompatible : OUI\n\n── Mécanisme ──\nLe soja EST principalement de l'acide stéarique (80-88%) sous forme de triglycéride. L'ajout d'acide stéarique libre renforce la cristallinité β en augmentant la concentration de C18:0 libre.\n\n── Pourquoi ça fonctionne ──\nAffinité chimique maximale — l'acide stéarique est le constituant naturel du soja. L'ajout de forme libre accélère la nucléation cristalline → surface plus lisse.\n\n── Pourquoi ça ne fonctionne pas ──\nÀ >5%, le soja perd sa texture crémeuse et devient cassant. La phase acide libre peut provoquer des réactions avec certains aldéhydes du parfum (formation de demi-acétals).\n\n── Effets ──\ndureté : augmente (compense la mollesse du soja)\nsurface : réduit le frosting\nthrow : maintenu — l'acide stéarique est déjà le constituant principal du soja\ndémoulage : facilité (piliers végétaux)\n\n⚠️ Maximum 5%. Surveiller les parfums riches en aldéhydes.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,soja,stearique,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend soja+cetyl_stearyl_alcohol",
+    "title": "Interaction blend — Cire de soja hydrogénée + Alcool céto-stéarylique",
+    "content": "Interaction : Cire de soja hydrogénée + Alcool céto-stéarylique\nSynergie : 8/10\nDosage recommandé : 2-5% (optimal: 3%)\nCompatible : OUI\n\n── Mécanisme ──\nLes alcools gras C16-C18 s'insèrent dans la matrice triglycéride du soja. Le groupe -OH crée des ponts hydrogène avec les oxygènes des esters → réseau plus cohérent, cristallisation plus régulière.\n\n── Pourquoi ça fonctionne ──\nLes alcools gras sont le meilleur anti-défaut pour le soja. Ils comblent les irrégularités cristallines responsables du frosting et des wet spots.\n\n── Pourquoi ça ne fonctionne pas ──\nÀ >5%, voile gras en surface possible. La combinaison alcool gras + parfum très volatil (agrumes) peut créer un effet de \"bouchon\" en surface.\n\n── Effets ──\nsurface : anti-frosting puissant\nthrow : maintenu ou légèrement amélioré\nadhesion verre : améliore\nwet spots : réduit significativement\n",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,soja,cetyl_stearyl_alcohol,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend soja+coco",
+    "title": "Interaction blend — Cire de soja hydrogénée + Cire de coco hydrogénée",
+    "content": "Interaction : Cire de soja hydrogénée + Cire de coco hydrogénée\nSynergie : 7/10\nDosage recommandé : 5-15% (optimal: 10%)\nCompatible : OUI\n\n── Mécanisme ──\nLes triglycérides courts (C12 coco) fluidifient les triglycérides longs (C18 soja). Excellente miscibilité (même famille chimique). La fraction liquide de coco à température ambiante crée des micro-canaux de diffusion.\n\n── Pourquoi ça fonctionne ──\nCompatibilité chimique parfaite (triglycéride + triglycéride). La coco liquéfie partiellement la matrice → le parfum migre plus facilement en surface → meilleur cold throw.\n\n── Pourquoi ça ne fonctionne pas ──\nÀ >15%, le blend devient trop mou pour les containers (flaque en été). Le suintement est inévitable au-dessus de 25°C ambiants.\n\n── Effets ──\nthrow : booste notes de tête +++\nmelt pool : plus fluide, meilleure diffusion\nsurface : brillance crémeuse\ndureté : réduit\n",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,soja,coco,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend soja+colza",
+    "title": "Interaction blend — Cire de soja hydrogénée + Cire de colza hydrogénée",
+    "content": "Interaction : Cire de soja hydrogénée + Cire de colza hydrogénée\nSynergie : 9/10\nDosage recommandé : 20-50% (optimal: 30%)\nCompatible : OUI\n\n── Mécanisme ──\nTriglycéride C18 (soja) + triglycéride C22 (colza) = co-cristallisation idéale. Les chaînes C22 apportent la rigidité manquante au soja sans changer la chimie du système.\n\n── Pourquoi ça fonctionne ──\nMême famille chimique (triglycérides), longueurs de chaîne complémentaires. C'est le blend végétal le plus stable et le plus performant.\n\n── Effets ──\ndureté : augmente (chaînes C22 colza)\nfrosting : réduit (cristallisation plus régulière)\nthrow : maintenu\nvariabilité : réduit la variabilité inter-lots\n",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,soja,colza,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend soja+vybar",
+    "title": "Interaction blend — Cire de soja hydrogénée + Vybar (copolymère éthylène-acétate de vinyle)",
+    "content": "Interaction : Cire de soja hydrogénée + Vybar (copolymère éthylène-acétate de vinyle)\nSynergie : 2/10\nDosage recommandé : 0-1% (optimal: 0%)\nCompatible : NON ⚠️\n\n── Mécanisme ──\nLe Vybar est conçu pour cristalliser dans les n-alcanes (paraffine). Dans les triglycérides (soja), il ne forme pas son réseau tridimensionnel correctement → effet aléatoire ou nul.\n\n── Pourquoi ça ne fonctionne pas ──\nIncompatibilité structurelle : le Vybar a besoin de la matrice cristalline ordonnée de la paraffine pour fonctionner. Dans le soja (cristaux polymorphes), il est distribué de façon chaotique → aucun bénéfice, parfois aggravation du frosting.\n\n── Effets ──\nthrow : effet imprévisible\nsurface : peut empirer le frosting\n\n⚠️ Ne PAS utiliser le Vybar avec les cires végétales. Utiliser plutôt des alcools gras.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,soja,vybar,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend soja+microcristalline",
+    "title": "Interaction blend — Cire de soja hydrogénée + Cire microcristalline",
+    "content": "Interaction : Cire de soja hydrogénée + Cire microcristalline\nSynergie : 3/10\nDosage recommandé : 1-5% (optimal: 3%)\nCompatible : OUI\n\n── Mécanisme ──\nLa microcristalline (hydrocarbures ramifiés) est partiellement immiscible avec le soja (triglycérides). Le mélange crée des micro-domaines hétérogènes.\n\n── Pourquoi ça ne fonctionne pas ──\nPolarités trop différentes. Les hydrocarbures amorphes de la micro ne s'intègrent pas bien dans la matrice triglycéride. Résultat : surface irrégulière, parfum mal distribué.\n\n── Effets ──\nadhesion verre : améliore modérément\nretrait : réduit\nthrow : réduit\n\n⚠️ Utiliser uniquement si problèmes de retrait sévères. Préférer les alcools gras.",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,soja,microcristalline,synergie,mélange"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "blend colza+cetyl_stearyl_alcohol",
+    "title": "Interaction blend — Cire de colza hydrogénée + Alcool céto-stéarylique",
+    "content": "Interaction : Cire de colza hydrogénée + Alcool céto-stéarylique\nSynergie : 7/10\nDosage recommandé : 2-5% (optimal: 3%)\nCompatible : OUI\n\n── Mécanisme ──\nMême mécanisme que soja+alcool gras. Les C16-C18 -OH s'intègrent dans les triglycérides C22 du colza.\n\n── Pourquoi ça fonctionne ──\nCompatibilité chimique similaire au soja. Le colza ayant déjà moins de frosting, l'effet est surtout cosmétique et préventif.\n\n── Effets ──\nsurface : anti-défaut, anti-frosting\nadhesion verre : améliore\nthrow : maintenu\n",
+    "source": "blend-recommender module — matrice interactions cires",
+    "priority": 4,
+    "tags": "blend,interaction,colza,cetyl_stearyl_alcohol,synergie,mélange"
+  }
+]

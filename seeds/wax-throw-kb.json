@@ -1,0 +1,65 @@
+[
+  {
+    "category": "Science — Cires",
+    "subcategory": "thermodynamique paraffine",
+    "title": "Thermodynamique du throw — Paraffine raffinée",
+    "content": "Propriétés thermodynamiques — Paraffine raffinée\n\nTempérature du melt pool : 60°C\nViscosité du melt pool : 4.5 cSt\nType cristallin : macro\nFacteur de libération (channel_factor) : 1\nMigration en surface (cold throw factor) : 0.8\n\nDescription : Cristaux larges → canaux intercristallins → parfum accessible en surface (cold) ET libéré à la fonte (hot)\n\n── Comportement des familles moléculaires dans Paraffine raffinée ──\n\nTerpène type (limonène) (MW 136) :\n  Pvap(20°C) = 1.10e-2 | Pvap(60°C) = 6.72e-2\n  D_relatif = 1.04 | Ratio hot/cold = 8.0×\n\nTerpène-alcool type (linalol) (MW 154) :\n  Pvap(20°C) = 5.33e-4 | Pvap(60°C) = 6.45e-3\n  D_relatif = 1.00 | Ratio hot/cold = 15.1×\n\nEster type (acétate linalyle) (MW 196) :\n  Pvap(20°C) = 1.45e-3 | Pvap(60°C) = 1.13e-2\n  D_relatif = 0.92 | Ratio hot/cold = 9.0×\n\nSesquiterpène type (caryophyllène) (MW 204) :\n  Pvap(20°C) = 3.82e-4 | Pvap(60°C) = 3.50e-3\n  D_relatif = 0.91 | Ratio hot/cold = 10.4×\n\nMusc type (galaxolide) (MW 258) :\n  Pvap(20°C) = 4.64e-5 | Pvap(60°C) = 6.06e-4\n  D_relatif = 0.84 | Ratio hot/cold = 13.8×\n\n",
+    "source": "throw-diagnostic module — modèle Clausius-Clapeyron + Stokes-Einstein",
+    "priority": 5,
+    "tags": "thermodynamique,throw,cold throw,hot throw,Pvap,diffusion,paraffine"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "thermodynamique paraffine_ft",
+    "title": "Thermodynamique du throw — Paraffine Fischer-Tropsch",
+    "content": "Propriétés thermodynamiques — Paraffine Fischer-Tropsch\n\nTempérature du melt pool : 62°C\nViscosité du melt pool : 3.5 cSt\nType cristallin : macro\nFacteur de libération (channel_factor) : 0.9\nMigration en surface (cold throw factor) : 0.75\n\nDescription : Ultra-pure, cristaux très ordonnés → canaux légèrement plus étroits que paraffine standard\n\n── Comportement des familles moléculaires dans Paraffine Fischer-Tropsch ──\n\nTerpène type (limonène) (MW 136) :\n  Pvap(20°C) = 1.10e-2 | Pvap(62°C) = 7.27e-2\n  D_relatif = 1.35 | Ratio hot/cold = 10.7×\n\nTerpène-alcool type (linalol) (MW 154) :\n  Pvap(20°C) = 5.33e-4 | Pvap(62°C) = 7.19e-3\n  D_relatif = 1.29 | Ratio hot/cold = 21.0×\n\nEster type (acétate linalyle) (MW 196) :\n  Pvap(20°C) = 1.45e-3 | Pvap(62°C) = 1.24e-2\n  D_relatif = 1.19 | Ratio hot/cold = 12.2×\n\nSesquiterpène type (caryophyllène) (MW 204) :\n  Pvap(20°C) = 3.82e-4 | Pvap(62°C) = 3.86e-3\n  D_relatif = 1.18 | Ratio hot/cold = 14.3×\n\nMusc type (galaxolide) (MW 258) :\n  Pvap(20°C) = 4.64e-5 | Pvap(62°C) = 6.78e-4\n  D_relatif = 1.09 | Ratio hot/cold = 19.1×\n\n",
+    "source": "throw-diagnostic module — modèle Clausius-Clapeyron + Stokes-Einstein",
+    "priority": 5,
+    "tags": "thermodynamique,throw,cold throw,hot throw,Pvap,diffusion,paraffine_ft"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "thermodynamique soja",
+    "title": "Thermodynamique du throw — Cire de soja hydrogénée",
+    "content": "Propriétés thermodynamiques — Cire de soja hydrogénée\n\nTempérature du melt pool : 48°C\nViscosité du melt pool : 35 cSt\nType cristallin : polymorphe\nFacteur de libération (channel_factor) : 0.3\nMigration en surface (cold throw factor) : 0.4\n\nDescription : Cristaux polymorphes (β'→β) piègent le parfum. Viscosité haute freine la diffusion. Cure libère progressivement.\n\n── Comportement des familles moléculaires dans Cire de soja hydrogénée ──\n\nTerpène type (limonène) (MW 136) :\n  Pvap(20°C) = 1.10e-2 | Pvap(48°C) = 4.09e-2\n  D_relatif = 0.13 | Ratio hot/cold = 0.4×\n\nTerpène-alcool type (linalol) (MW 154) :\n  Pvap(20°C) = 5.33e-4 | Pvap(48°C) = 3.26e-3\n  D_relatif = 0.12 | Ratio hot/cold = 0.6×\n\nEster type (acétate linalyle) (MW 196) :\n  Pvap(20°C) = 1.45e-3 | Pvap(48°C) = 6.46e-3\n  D_relatif = 0.11 | Ratio hot/cold = 0.4×\n\nSesquiterpène type (caryophyllène) (MW 204) :\n  Pvap(20°C) = 3.82e-4 | Pvap(48°C) = 1.91e-3\n  D_relatif = 0.11 | Ratio hot/cold = 0.4×\n\nMusc type (galaxolide) (MW 258) :\n  Pvap(20°C) = 4.64e-5 | Pvap(48°C) = 3.00e-4\n  D_relatif = 0.10 | Ratio hot/cold = 0.5×\n\n",
+    "source": "throw-diagnostic module — modèle Clausius-Clapeyron + Stokes-Einstein",
+    "priority": 5,
+    "tags": "thermodynamique,throw,cold throw,hot throw,Pvap,diffusion,soja"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "thermodynamique colza",
+    "title": "Thermodynamique du throw — Cire de colza hydrogénée",
+    "content": "Propriétés thermodynamiques — Cire de colza hydrogénée\n\nTempérature du melt pool : 52°C\nViscosité du melt pool : 28 cSt\nType cristallin : polymorphe\nFacteur de libération (channel_factor) : 0.4\nMigration en surface (cold throw factor) : 0.45\n\nDescription : Similaire soja mais chaînes C22 cristallisent plus régulièrement → légèrement meilleur que soja\n\n── Comportement des familles moléculaires dans Cire de colza hydrogénée ──\n\nTerpène type (limonène) (MW 136) :\n  Pvap(20°C) = 1.10e-2 | Pvap(52°C) = 4.84e-2\n  D_relatif = 0.16 | Ratio hot/cold = 0.6×\n\nTerpène-alcool type (linalol) (MW 154) :\n  Pvap(20°C) = 5.33e-4 | Pvap(52°C) = 4.11e-3\n  D_relatif = 0.16 | Ratio hot/cold = 1.1×\n\nEster type (acétate linalyle) (MW 196) :\n  Pvap(20°C) = 1.45e-3 | Pvap(52°C) = 7.83e-3\n  D_relatif = 0.14 | Ratio hot/cold = 0.7×\n\nSesquiterpène type (caryophyllène) (MW 204) :\n  Pvap(20°C) = 3.82e-4 | Pvap(52°C) = 2.35e-3\n  D_relatif = 0.14 | Ratio hot/cold = 0.8×\n\nMusc type (galaxolide) (MW 258) :\n  Pvap(20°C) = 4.64e-5 | Pvap(52°C) = 3.81e-4\n  D_relatif = 0.13 | Ratio hot/cold = 1.0×\n\n",
+    "source": "throw-diagnostic module — modèle Clausius-Clapeyron + Stokes-Einstein",
+    "priority": 5,
+    "tags": "thermodynamique,throw,cold throw,hot throw,Pvap,diffusion,colza"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "thermodynamique coco",
+    "title": "Thermodynamique du throw — Cire de coco hydrogénée",
+    "content": "Propriétés thermodynamiques — Cire de coco hydrogénée\n\nTempérature du melt pool : 35°C\nViscosité du melt pool : 8 cSt\nType cristallin : liquide\nFacteur de libération (channel_factor) : 0.9\nMigration en surface (cold throw factor) : 0.95\n\nDescription : Partiellement liquide à 20°C → cold throw spectaculaire mais instable\n\n── Comportement des familles moléculaires dans Cire de coco hydrogénée ──\n\nTerpène type (limonène) (MW 136) :\n  Pvap(20°C) = 1.10e-2 | Pvap(35°C) = 2.29e-2\n  D_relatif = 0.54 | Ratio hot/cold = 1.1×\n\nTerpène-alcool type (linalol) (MW 154) :\n  Pvap(20°C) = 5.33e-4 | Pvap(35°C) = 1.46e-3\n  D_relatif = 0.52 | Ratio hot/cold = 1.4×\n\nEster type (acétate linalyle) (MW 196) :\n  Pvap(20°C) = 1.45e-3 | Pvap(35°C) = 3.34e-3\n  D_relatif = 0.48 | Ratio hot/cold = 1.0×\n\nSesquiterpène type (caryophyllène) (MW 204) :\n  Pvap(20°C) = 3.82e-4 | Pvap(35°C) = 9.37e-4\n  D_relatif = 0.47 | Ratio hot/cold = 1.1×\n\nMusc type (galaxolide) (MW 258) :\n  Pvap(20°C) = 4.64e-5 | Pvap(35°C) = 1.31e-4\n  D_relatif = 0.44 | Ratio hot/cold = 1.2×\n\n",
+    "source": "throw-diagnostic module — modèle Clausius-Clapeyron + Stokes-Einstein",
+    "priority": 5,
+    "tags": "thermodynamique,throw,cold throw,hot throw,Pvap,diffusion,coco"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "thermodynamique microcristalline",
+    "title": "Thermodynamique du throw — Cire microcristalline",
+    "content": "Propriétés thermodynamiques — Cire microcristalline\n\nTempérature du melt pool : 75°C\nViscosité du melt pool : 18 cSt\nType cristallin : amorphe\nFacteur de libération (channel_factor) : 0.05\nMigration en surface (cold throw factor) : 0.05\n\nDescription : Structure amorphe = trou noir à parfum. Aucun canal de diffusion.\n\n── Comportement des familles moléculaires dans Cire microcristalline ──\n\nTerpène type (limonène) (MW 136) :\n  Pvap(20°C) = 1.10e-2 | Pvap(75°C) = 1.19e-1\n  D_relatif = 0.27 | Ratio hot/cold = 3.0×\n\nTerpène-alcool type (linalol) (MW 154) :\n  Pvap(20°C) = 5.33e-4 | Pvap(75°C) = 1.42e-2\n  D_relatif = 0.26 | Ratio hot/cold = 7.0×\n\nEster type (acétate linalyle) (MW 196) :\n  Pvap(20°C) = 1.45e-3 | Pvap(75°C) = 2.17e-2\n  D_relatif = 0.24 | Ratio hot/cold = 3.6×\n\nSesquiterpène type (caryophyllène) (MW 204) :\n  Pvap(20°C) = 3.82e-4 | Pvap(75°C) = 7.04e-3\n  D_relatif = 0.24 | Ratio hot/cold = 4.4×\n\nMusc type (galaxolide) (MW 258) :\n  Pvap(20°C) = 4.64e-5 | Pvap(75°C) = 1.36e-3\n  D_relatif = 0.22 | Ratio hot/cold = 6.5×\n\n",
+    "source": "throw-diagnostic module — modèle Clausius-Clapeyron + Stokes-Einstein",
+    "priority": 5,
+    "tags": "thermodynamique,throw,cold throw,hot throw,Pvap,diffusion,microcristalline"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "diagnostic throw déséquilibre",
+    "title": "Diagnostic — Pourquoi le cold throw est bon mais le hot throw disparaît (et vice versa)",
+    "content": "Comparaison thermodynamique cold/hot throw par type de cire\n\nPourquoi le cold throw est bon mais le hot throw disparaît :\n1. Les terpènes légers (MW < 150) ont une Pvap suffisante à 20°C pour diffuser depuis la surface solide.\n2. À 60°C dans le melt pool, ces mêmes molécules s'évaporent en < 30 min (Pvap trop haute).\n3. Le réservoir de notes de tête est épuisé rapidement. Il ne reste que les notes de fond.\n4. Les notes de fond (MW > 220) n'ont pas assez de Pvap à 60°C pour compenser → le throw \"tombe\".\n\nPourquoi le hot throw est bon mais le cold throw est nul :\n1. Le parfum est dominé par des molécules lourdes (MW > 200, muscs, lactones).\n2. À 20°C, leur Pvap est 1000-10000× trop faible pour franchir le seuil de perception.\n3. À 60°C, la Pvap augmente suffisamment (loi de Clausius-Clapeyron).\n4. Manque de \"porteurs\" légers qui rendraient le parfum perceptible à froid.\n\nSolutions :\n- Cold bon/hot mauvais : ajouter fixateurs (éthylène brassylate) + microcristalline 5%\n- Hot bon/cold mauvais : ajouter terpènes légers + coco 5-8%\n- Faible partout : changer de cire (paraffine) + augmenter la charge\n",
+    "source": "throw-diagnostic module — analyse thermodynamique",
+    "priority": 5,
+    "tags": "diagnostic,throw,cold throw,hot throw,déséquilibre,terpène,musc,solution"
+  }
+]

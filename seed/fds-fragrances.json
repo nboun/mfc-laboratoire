@@ -1,0 +1,1332 @@
+{
+  "fragrances": [
+    {
+      "name": "ARMAGNAC",
+      "reference": "G 117 11061",
+      "supplier_name": "ROBERTET",
+      "flash_point": 35.0,
+      "components": [
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 40.0,
+          "percentage_max": 50.0
+        },
+        {
+          "cas_number": "94333-88-7",
+          "name": "Bulnesia sarmienti, ext., acetate",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "121-33-5",
+          "name": "Vanillin",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5989-27-5",
+          "name": "d-Limonene ((R)-p-mentha-1,8-diène)",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "97-53-0",
+          "name": "Eugenol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "469-61-4",
+          "name": "alpha-Cedrene (super R50)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "77-53-2",
+          "name": "Cedrol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "104-55-2",
+          "name": "Cinnamaldehyde",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "23696-85-7",
+          "name": "DAMASCENONE (1-(2,6,6-Trimethylcyclohexa-1,",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "87-44-5",
+          "name": "beta-Caryophyllene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "127-91-3",
+          "name": "beta-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "3338-55-4",
+          "name": "cis-Ocimene (Z-3,7-Dimethyl-1,3,6-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "546-28-1",
+          "name": "beta cedrene (super R50)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "102-20-5",
+          "name": "Phenethyl phenylacetate",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        },
+        {
+          "cas_number": "104-67-6",
+          "name": "gamma-Undecalactone",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        },
+        {
+          "cas_number": "11028-42-5",
+          "name": "Cedrene",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        }
+      ]
+    },
+    {
+      "name": "ARMAGNAC CASSIS 5 MOD",
+      "reference": "G 118 20556",
+      "supplier_name": "ROBERTET",
+      "flash_point": 82.0,
+      "components": [
+        {
+          "cas_number": "1222-05-5",
+          "name": "GALAXOLIDE (1,3,4,6,7,8-Hexahydro-4,6,6,7,8,",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "18172-67-3",
+          "name": "l-beta-Pinene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-22-9",
+          "name": "dl-Citronellol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "121-33-5",
+          "name": "Vanillin",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5989-27-5",
+          "name": "d-Limonene ((R)-p-mentha-1,8-diène)",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "3658-77-3",
+          "name": "2,5-Dimethyl-4-hydroxy-3-furanone (Furaneol)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "68039-49-6",
+          "name": "Reaction mass of (1R,2R)-2,4-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "65443-14-3",
+          "name": "2,2,5-Trimethyl-5-pentylcyclopentanone",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "469-61-4",
+          "name": "alpha-Cedrene (super R50)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "77-53-2",
+          "name": "Cedrol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "104-55-2",
+          "name": "Cinnamaldehyde",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "104-67-6",
+          "name": "gamma-Undecalactone",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "97-53-0",
+          "name": "Eugenol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "23696-85-7",
+          "name": "DAMASCENONE (1-(2,6,6-Trimethylcyclohexa-1,",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "546-28-1",
+          "name": "beta cedrene (super R50)",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        },
+        {
+          "cas_number": "11028-42-5",
+          "name": "Cedrene",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        }
+      ]
+    },
+    {
+      "name": "ARMAGNAC ENCHANTE",
+      "reference": "G 118 14416",
+      "supplier_name": "ROBERTET",
+      "flash_point": 89.0,
+      "components": [
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 20.0,
+          "percentage_max": 30.0
+        },
+        {
+          "cas_number": "94333-88-7",
+          "name": "Bulnesia sarmienti, ext., acetate",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "81782-77-6",
+          "name": "4-Methyl-3-decen-5-ol",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "1222-05-5",
+          "name": "GALAXOLIDE (1,3,4,6,7,8-Hexahydro-4,6,6,7,8,",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "118-71-8",
+          "name": "Maltol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "121-33-5",
+          "name": "Vanillin",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "104-55-2",
+          "name": "Cinnamaldehyde",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "97-53-0",
+          "name": "Eugenol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "18172-67-3",
+          "name": "l-beta-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "68039-49-6",
+          "name": "Reaction mass of (1R,2R)-2,4-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "469-61-4",
+          "name": "alpha-Cedrene (super R50)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "77-53-2",
+          "name": "Cedrol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "110-41-8",
+          "name": "2-Methylundecanal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "112-45-8",
+          "name": "10-Undecenal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "87-44-5",
+          "name": "beta-Caryophyllene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "104-67-6",
+          "name": "gamma-Undecalactone",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "23696-85-7",
+          "name": "DAMASCENONE (1-(2,6,6-Trimethylcyclohexa-1,",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "106-22-9",
+          "name": "dl-Citronellol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "3391-86-4",
+          "name": "1-Octen-3-ol (Amyl vinyl carbinol)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "5989-27-5",
+          "name": "d-Limonene ((R)-p-mentha-1,8-diène)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "3338-55-4",
+          "name": "cis-Ocimene (Z-3,7-Dimethyl-1,3,6-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "546-28-1",
+          "name": "beta cedrene (super R50)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "11028-42-5",
+          "name": "Cedrene",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        }
+      ]
+    },
+    {
+      "name": "BASILICUM",
+      "reference": "G 116 33377",
+      "supplier_name": "ROBERTET",
+      "flash_point": 65.0,
+      "components": [
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 30.0,
+          "percentage_max": 40.0
+        },
+        {
+          "cas_number": "5989-27-5",
+          "name": "d-Limonene ((R)-p-mentha-1,8-diène)",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "18479-58-8",
+          "name": "Dihydromyrcenol (2,6-Dimethyloct-7-en-2-ol)",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "1222-05-5",
+          "name": "GALAXOLIDE (1,3,4,6,7,8-Hexahydro-4,6,6,7,8,",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "4180-23-8",
+          "name": "trans-Anethole [(E)-Anethole]",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "6485-40-1",
+          "name": "l-Carvone",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "89-80-5",
+          "name": "tr-Menthone",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "97-53-0",
+          "name": "Eugenol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5989-54-8",
+          "name": "(S)-p-mentha-1,8-diène (l-Limonene)",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "126-91-0",
+          "name": "(R)-3,7-dimethyl-1,6-octadien-3-ol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "470-82-6",
+          "name": "Eucalyptol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-22-9",
+          "name": "dl-Citronellol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "67674-46-8",
+          "name": "6,6-Dimethoxy-2,5,5-trimethylhex-2-ene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "16510-27-3",
+          "name": "1-CYCLOPROPYLMETHYL-4-METHOXYBENZENE",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "491-07-6",
+          "name": "d,l-Isomenthone",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "112-31-2",
+          "name": "Decanal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "20407-84-5",
+          "name": "2-trans-Dodecenal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "68039-49-6",
+          "name": "Reaction mass of (1R,2R)-2,4-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "124-13-0",
+          "name": "Octanal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "10458-14-7",
+          "name": "Menthone",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "124-19-6",
+          "name": "Nonanal (Aldehyde C9)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "123-35-3",
+          "name": "Myrcene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "127-91-3",
+          "name": "beta-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "105-87-3",
+          "name": "Geranyl acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "13877-91-3",
+          "name": "tr-Ocimene (E-3,7-Dimethyl-1,3,6-octatriene)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        }
+      ]
+    },
+    {
+      "name": "FELICITAS",
+      "reference": "G 116 26065",
+      "supplier_name": "ROBERTET",
+      "flash_point": 77.0,
+      "components": [
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 20.0,
+          "percentage_max": 30.0
+        },
+        {
+          "cas_number": "115-95-7",
+          "name": "Linalyl acetate",
+          "percentage_min": 20.0,
+          "percentage_max": 30.0
+        },
+        {
+          "cas_number": "5989-27-5",
+          "name": "d-Limonene ((R)-p-mentha-1,8-diène)",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "1222-05-5",
+          "name": "GALAXOLIDE (1,3,4,6,7,8-Hexahydro-4,6,6,7,8,",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "107-75-5",
+          "name": "Hydroxycitronellal",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "63500-71-0",
+          "name": "Florol (Tetrahydro-2-isobutyl-4-methyl-",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-25-2",
+          "name": "Nerol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106185-75-5",
+          "name": "2-éthyl-4-(2,2,3-triméthyl-3-cyclopentène-1-",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-24-1",
+          "name": "Geraniol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "123-35-3",
+          "name": "Myrcene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "105-87-3",
+          "name": "Geranyl acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "7212-44-4",
+          "name": "Nerolidol (isomer unspecified)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "112-31-2",
+          "name": "Decanal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "127-91-3",
+          "name": "beta-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "13877-91-3",
+          "name": "tr-Ocimene (E-3,7-Dimethyl-1,3,6-octatriene)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "141-12-8",
+          "name": "Neryl acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        }
+      ]
+    },
+    {
+      "name": "MEMORIA",
+      "reference": "G 116 26315",
+      "supplier_name": "ROBERTET",
+      "flash_point": 95.0,
+      "components": [
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 20.0,
+          "percentage_max": 30.0
+        },
+        {
+          "cas_number": "66068-84-6",
+          "name": "Isocamphenyl cyclohexanol (mixed isomers)",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "115-95-7",
+          "name": "Linalyl acetate",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "4940-11-8",
+          "name": "Ethyl maltol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-22-9",
+          "name": "dl-Citronellol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "127-51-5",
+          "name": "alpha-iso-Methylionone",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-24-1",
+          "name": "Geraniol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "121-33-5",
+          "name": "Vanillin",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "121-32-4",
+          "name": "Ethyl vanillin",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106185-75-5",
+          "name": "2-éthyl-4-(2,2,3-triméthyl-3-cyclopentène-1-",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "65113-99-7",
+          "name": "Reaction products of (2,2,3-",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "1335-46-2",
+          "name": "Methyl ionone (mixture of isomers)",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "104-55-2",
+          "name": "Cinnamaldehyde",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "87-44-5",
+          "name": "beta-Caryophyllene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "431-03-8",
+          "name": "Diacetyl (2,3-Butanedione)",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        }
+      ]
+    },
+    {
+      "name": "VASCONIA",
+      "reference": "G 116 30628",
+      "supplier_name": "ROBERTET",
+      "flash_point": 9.0,
+      "components": [
+        {
+          "cas_number": "32210-23-4",
+          "name": "VERTENEX (4-tert-Butylcyclohexyl acetate)",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "66068-84-6",
+          "name": "Isocamphenyl cyclohexanol (mixed isomers)",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "63500-71-0",
+          "name": "Florol (Tetrahydro-2-isobutyl-4-methyl-",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "80-54-6",
+          "name": "LILIAL (p-tert-Butyl-alpha-",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "1222-05-5",
+          "name": "GALAXOLIDE (1,3,4,6,7,8-Hexahydro-4,6,6,7,8,",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "18871-14-2",
+          "name": "4-Acetoxy-3-pentyltetrahydropyran",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "103-95-7",
+          "name": "CYCLAMEN ALDEHYDE (2-Methyl-3-(p-",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "91-64-5",
+          "name": "Coumarin",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106185-75-5",
+          "name": "2-éthyl-4-(2,2,3-triméthyl-3-cyclopentène-1-",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "23696-85-7",
+          "name": "DAMASCENONE (1-(2,6,6-Trimethylcyclohexa-1,",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "68259-31-4",
+          "name": "5(or 6)-Methyl-7(or 8)-(1-methylethyl)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "68039-49-6",
+          "name": "Reaction mass of (1R,2R)-2,4-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        }
+      ]
+    },
+    {
+      "name": "VERBENA ROSA",
+      "reference": "G 116 26062",
+      "supplier_name": "ROBERTET",
+      "flash_point": 65.0,
+      "components": [
+        {
+          "cas_number": "470-82-6",
+          "name": "Eucalyptol",
+          "percentage_min": 20.0,
+          "percentage_max": 30.0
+        },
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "115-95-7",
+          "name": "Linalyl acetate",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "5989-27-5",
+          "name": "d-Limonene ((R)-p-mentha-1,8-diène)",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "1222-05-5",
+          "name": "GALAXOLIDE (1,3,4,6,7,8-Hexahydro-4,6,6,7,8,",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "21368-68-3",
+          "name": "dl-Camphor",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "106-22-9",
+          "name": "dl-Citronellol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "65405-77-8",
+          "name": "cis-3-Hexenyl salicylate",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "98-52-2",
+          "name": "4-tert-Butylcyclohexanol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "79-92-5",
+          "name": "Camphene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "99-87-6",
+          "name": "p-Cymene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "97-53-0",
+          "name": "Eugenol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "127-91-3",
+          "name": "beta-Pinene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "123-35-3",
+          "name": "Myrcene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "99-85-4",
+          "name": "gamma-Terpinene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "87-44-5",
+          "name": "beta-Caryophyllene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "2050-08-0",
+          "name": "Amyl salicylate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "106-24-1",
+          "name": "Geraniol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "142-92-7",
+          "name": "Hexyl acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "106-25-2",
+          "name": "Nerol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "99-86-5",
+          "name": "alpha-Terpinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "87-20-7",
+          "name": "Isoamyl salicylate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "105-87-3",
+          "name": "Geranyl acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "3338-55-4",
+          "name": "cis-Ocimene (Z-3,7-Dimethyl-1,3,6-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "112-45-8",
+          "name": "10-Undecenal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "112-31-2",
+          "name": "Decanal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "110-41-8",
+          "name": "2-Methylundecanal",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "13877-91-3",
+          "name": "tr-Ocimene (E-3,7-Dimethyl-1,3,6-octatriene)",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "141-12-8",
+          "name": "Neryl acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "13466-78-9",
+          "name": "delta-3-Carene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "105-85-1",
+          "name": "Citronellyl formate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "586-62-9",
+          "name": "Terpinolene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "2442-10-6",
+          "name": "1-Octen-3-yl acetate (Amyl vinyl carbinyl",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "16409-43-1",
+          "name": "ROSE OXIDE (Tetrahydro-4-methyl-2-(2-",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "491-07-6",
+          "name": "d,l-Isomenthone",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "3391-86-4",
+          "name": "1-Octen-3-ol (Amyl vinyl carbinol)",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        },
+        {
+          "cas_number": "5655-61-8",
+          "name": "l-Bornyl acetate",
+          "percentage_min": 0.01,
+          "percentage_max": 0.1
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": 5.0,
+          "percentage_max": 10.0
+        },
+        {
+          "cas_number": "127-91-3",
+          "name": "beta-Pinene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        }
+      ]
+    },
+    {
+      "name": "AMETHYSTE BIGARADE VERTE",
+      "reference": "R 210855/2",
+      "supplier_name": "ROBERTET",
+      "flash_point": null,
+      "components": [
+        {
+          "cas_number": "115-95-7",
+          "name": "Linalyl acetate",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "78-70-6",
+          "name": "Linalool",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "5392-40-5",
+          "name": "Citral",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "5182-36-5",
+          "name": "Neral",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "77-54-3",
+          "name": "Cedrenol",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "586-62-9",
+          "name": "Terpinolene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "127-91-3",
+          "name": "beta-Pinene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "106-02-5",
+          "name": "Pentadecanolide",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "99-85-4",
+          "name": "gamma-Terpinene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "123-35-3",
+          "name": "Myrcene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "10408-16-9",
+          "name": "Longifolene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "127-51-5",
+          "name": "alpha-iso-Methylionone",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "99-49-0",
+          "name": "Carvone",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "67634-00-8",
+          "name": "Methyl octynol carbonate",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "141-12-8",
+          "name": "Neryl acetate",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "20407-84-5",
+          "name": "2-trans-Dodecenal",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "105-87-3",
+          "name": "Geranyl acetate",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "112-54-9",
+          "name": "Dodecanal",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "87-44-5",
+          "name": "beta-Caryophyllene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "106-25-2",
+          "name": "Nerol",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "65405-77-8",
+          "name": "cis-3-Hexenyl salicylate",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "99-86-5",
+          "name": "alpha-Terpinene",
+          "percentage_min": null,
+          "percentage_max": null
+        },
+        {
+          "cas_number": "13466-78-9",
+          "name": "delta-3-Carene",
+          "percentage_min": null,
+          "percentage_max": null
+        }
+      ]
+    },
+    {
+      "name": "COUR DES EPICES",
+      "reference": "8572751",
+      "supplier_name": "CHARABOT",
+      "flash_point": 100.0,
+      "components": [
+        {
+          "cas_number": "3407-42-9",
+          "name": "Indisan (Sandela)",
+          "percentage_min": 10.0,
+          "percentage_max": 20.0
+        },
+        {
+          "cas_number": "67801-20-1",
+          "name": "3-Methyl-5-(2,2,3-trimethyl-3-cyclopenten-1-yl)pent-4-en-2-ol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "125-12-2",
+          "name": "Isobornyl acetate",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "58567-11-6",
+          "name": "Boisambrene Forte",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "546-80-5",
+          "name": "Thujone",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "99-87-6",
+          "name": "p-Cymene",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "4940-11-8",
+          "name": "Ethyl maltol",
+          "percentage_min": 1.0,
+          "percentage_max": 5.0
+        },
+        {
+          "cas_number": "470-82-6",
+          "name": "Eucalyptol",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "80-26-2",
+          "name": "alpha-Terpineol acetate",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        },
+        {
+          "cas_number": "80-56-8",
+          "name": "alpha-Pinene",
+          "percentage_min": 0.1,
+          "percentage_max": 1.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+[
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme solubility apolar in paraffin",
+    "title": "Solubilité des molécules apolaires en paraffine",
+    "content": "Titre : Solubilité des molécules apolaires en paraffine\n\nPRINCIPE SCIENTIFIQUE :\nRègle de Hildebrand : les substances de paramètres de solubilité (δ) proches sont miscibles. La paraffine (δ ≈ 16 MPa^½) est compatible avec les terpènes (δ ≈ 15-17 MPa^½) et les muscs (δ ≈ 17-19 MPa^½).\n\nMÉCANISME :\nLes n-alcanes C20-C40 de la paraffine et les hydrocarbures terpéniques interagissent par forces de van der Waals (London). Pas de composante polaire → dissolution homogène, pas de micro-domaines.\n\nCONSÉQUENCE POSITIVE :\nDissolution complète à la température d'incorporation (60°C). Distribution uniforme du parfum dans la matrice solide. Throw régulier et prévisible.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme solubility apolar in soy",
+    "title": "Incompatibilité des terpènes en cire de soja",
+    "content": "Titre : Incompatibilité des terpènes en cire de soja\n\nPRINCIPE SCIENTIFIQUE :\nLe soja est un triglycéride (δ ≈ 18-20 MPa^½). Les terpènes purs (δ ≈ 15-17 MPa^½) présentent un écart de paramètre de solubilité Δδ > 2, seuil au-delà duquel la miscibilité devient partielle.\n\nMÉCANISME :\nÀ la fonte (55°C), les terpènes se dissolvent par agitation. Au refroidissement, les triglycérides cristallisent (forme β') en excluant les molécules apolaires des plans cristallins. Les terpènes migrent vers les zones amorphes intercristallines → distribution hétérogène.\n\nCONSÉQUENCE NÉGATIVE :\nCold throw irrégulier (zones riches et pauvres en parfum). Hot throw réduit car la viscosité élevée du soja fondu (30-45 cSt vs 4-6 cSt paraffine) freine la migration des terpènes vers la surface du melt pool.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme solubility ester in soy",
+    "title": "Affinité chimique esters/soja (ester-ester)",
+    "content": "Titre : Affinité chimique esters/soja (ester-ester)\n\nPRINCIPE SCIENTIFIQUE :\nLe soja hydrogéné EST un ester (triglycéride = triple ester de glycérol + acides gras). Les esters du parfum (acétates, salicylates) ont la même fonction chimique → solubilité par affinité de groupe fonctionnel.\n\nMÉCANISME :\nLes interactions dipôle-dipôle entre les groupes C=O des esters du parfum et les C=O du triglycéride créent des forces d'attraction supérieures aux seules forces de London. La dissolution est thermodynamiquement favorisée (ΔG_mix < 0).\n\nCONSÉQUENCE POSITIVE :\nDissolution quasi-parfaite. Le parfum s'intègre dans la structure cristalline du soja plutôt que d'en être exclu → rétention excellente, libération progressive lors de la fonte.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme volatility high terpenes",
+    "title": "Volatilité excessive des terpènes — perte des notes de tête",
+    "content": "Titre : Volatilité excessive des terpènes — perte des notes de tête\n\nPRINCIPE SCIENTIFIQUE :\nLa tension de vapeur d'une molécule décroît exponentiellement avec sa masse molaire (loi de Clausius-Clapeyron). Les terpènes (MW ≈ 136, Teb ≈ 170°C) ont une pression de vapeur 10-100× supérieure aux muscs (MW ≈ 258, Teb > 300°C) à la température du melt pool.\n\nMÉCANISME :\nDans le melt pool (55-65°C), les terpènes atteignent une fraction significative de leur pression de vapeur saturante. Leur taux d'évaporation suit la loi de Hertz-Knudsen : J ∝ (Psat - Pamb) / √(MW·T). Plus la molécule est légère, plus elle s'évapore vite.\n\nCONSÉQUENCE POSITIVE :\nCold throw excellent (forte pression de vapeur même à 20°C). Les premières minutes de combustion sont spectaculaires.\n\nCONSÉQUENCE NÉGATIVE :\nLes notes de tête (agrumes, herbes) disparaissent dans les 30-60 premières minutes de combustion. Le parfum \"tourne\" vers les notes de fond. Si le parfum est >50% terpènes, le hot throw sera décevant après 1h.\n\nATTÉNUATION :\nUtiliser des fixateurs (muscs macrocycliques, éthylène brassylate) pour ralentir l'évaporation. Ajouter 5% cire de coco pour créer des micro-réservoirs de libération prolongée.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme volatility heavy musks",
+    "title": "Muscs lourds — diffusion limitée par la masse molaire",
+    "content": "Titre : Muscs lourds — diffusion limitée par la masse molaire\n\nPRINCIPE SCIENTIFIQUE :\nLe coefficient de diffusion D d'une molécule dans un liquide est inversement proportionnel à sa taille (loi de Stokes-Einstein : D = kT / 6πηr). Les muscs (MW 250-300, rayon ~5Å) diffusent 3-5× plus lentement que les terpènes (MW 136, rayon ~3Å).\n\nMÉCANISME :\nDans le melt pool, les muscs se déplacent lentement vers la surface. La couche limite de diffusion (interface cire fondue / air) est le goulot d'étranglement. En paraffine fluide (η ≈ 4 cSt), la diffusion est acceptable. En soja visqueux (η ≈ 35 cSt), elle est quasi-nulle.\n\nCONSÉQUENCE POSITIVE :\nExcellente tenue dans le temps. Les muscs sont les dernières notes à disparaître → le parfum dure des heures.\n\nCONSÉQUENCE NÉGATIVE :\nHot throw dominé par les notes de fond = parfum plat, sans éclat. Si le parfum est >15% muscs lourds en soja, la diffusion sera insuffisante.\n\nATTÉNUATION :\nChoisir des muscs macrocycliques (ambrettolide, éthylène brassylate) plutôt que polycycliques (galaxolide) : même MW mais pression de vapeur légèrement supérieure.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme viscosity melt pool",
+    "title": "Viscosité du melt pool — facteur limitant du throw",
+    "content": "Titre : Viscosité du melt pool — facteur limitant du throw\n\nPRINCIPE SCIENTIFIQUE :\nLe throw (diffusion du parfum dans l'air) est proportionnel au flux de masse à l'interface liquide/air. Ce flux dépend de : (1) la pression de vapeur des molécules, (2) le coefficient de diffusion dans la cire fondue (∝ 1/η), (3) la surface du melt pool.\n\nMÉCANISME :\nLa viscosité η du melt pool contrôle la vitesse à laquelle les molécules de parfum migrent du bulk vers la surface. Paraffine à 60°C : η ≈ 4 cSt (rapide). Soja à 50°C : η ≈ 35 cSt (9× plus lent). Cet écart d'un ordre de grandeur explique la différence fondamentale de throw.\n\nCONSÉQUENCE NÉGATIVE :\nEn cire végétale, le throw est intrinsèquement limité par la viscosité, quelle que soit la qualité du parfum ou la charge.\n\nATTÉNUATION :\nAugmenter la température du melt pool (mèche plus grosse) ou ajouter de la cire de coco (viscosant négatif).\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme flash point risk",
+    "title": "Flash point bas — risque sécurité",
+    "content": "Titre : Flash point bas — risque sécurité\n\nPRINCIPE SCIENTIFIQUE :\nLe flash point d'un mélange est approximé par celui de son composant le plus volatil (loi de Le Chatelier pour les mélanges de vapeurs inflammables). Un composant à FP 33°C (α-pinène) dans un parfum à 8% dans une cire signifie que la concentration effective en phase vapeur atteint ~0.3% du parfum au-dessus du melt pool.\n\nMÉCANISME :\nLa limite inférieure d'inflammabilité (LII) des terpènes en air est ~0.7-1.0% vol. À 8% de charge dans la cire, avec un melt pool à 60°C, la concentration en vapeur de terpènes au-dessus du melt pool peut atteindre 0.3-0.5% — en dessous de la LII mais avec marge réduite. Si la mèche est surdimensionnée (flamme haute, melt pool >65°C), la marge de sécurité disparaît.\n\nCONSÉQUENCE NÉGATIVE :\nFlamme haute, instable. Risque d'allumage des vapeurs si flamme haute + courant d'air. Scintillation visible (micro-combustion des vapeurs).\n\nATTÉNUATION :\nRéduire la charge parfum à 6% max. Dimensionner la mèche correctement (melt pool ≤ 60°C). Ne jamais utiliser en bougie non-conteneur (pas de pilier avec >3% terpènes).\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme aldehyde acid reaction",
+    "title": "Réaction aldéhyde-acide — jaunissement et modification olfactive",
+    "content": "Titre : Réaction aldéhyde-acide — jaunissement et modification olfactive\n\nPRINCIPE SCIENTIFIQUE :\nLes aldéhydes (R-CHO) réagissent avec les acides carboxyliques libres (R'-COOH) pour former des demi-acétals (R-CH(OH)-O-CO-R'). Cette réaction est catalysée par les traces d'acidité résiduelle dans les cires végétales (indice d'acide 0.1-0.5 mg KOH/g).\n\nMÉCANISME :\nLe citral, la vanilline et les aldéhydes cinnamiques sont particulièrement réactifs. En milieu acide (soja, stéarique), la réaction est lente mais progressive. Les demi-acétals formés sont inodores → perte de l'odeur originale. La réaction génère aussi des sous-produits colorés (polymérisation de Tischenko) → jaunissement.\n\nCONSÉQUENCE NÉGATIVE :\nLe parfum \"tourne\" après 2-4 semaines en cire de soja. La vanilline jaunit la cire. Le citral perd son odeur citronnée. Effet irréversible.\n\nATTÉNUATION :\nEn paraffine pure (neutre, pas d'acide libre), le problème n'existe pas. En soja : utiliser du soja à indice d'acide < 0.1. Éviter le mélange soja + acide stéarique avec des parfums aldéhydés.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme phenol oxidation",
+    "title": "Oxydation des phénols — brunissement progressif",
+    "content": "Titre : Oxydation des phénols — brunissement progressif\n\nPRINCIPE SCIENTIFIQUE :\nLes phénols (eugénol, isoeugénol) s'oxydent au contact de l'air en quinones colorées. La réaction est autocatalytique : les quinones catalysent l'oxydation des phénols restants.\n\nMÉCANISME :\nEn surface de la bougie (contact air), les phénols s'oxydent lentement. La réaction est accélérée par la lumière UV et la chaleur. Les quinones formées sont brunes et aromatiques (odeur \"vanille vieille\").\n\nCONSÉQUENCE NÉGATIVE :\nBrunissement de la surface de la bougie. Modification de l'odeur vers des notes \"âgées\". Effet visible surtout en cire blanche (paraffine).\n\nATTÉNUATION :\nStocker les bougies à l'abri de la lumière. Limiter les phénols à 3-5% du parfum total. En production, utiliser un antioxydant (BHT 0.01%) ou couvrir immédiatement.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme crystallization polymorphism",
+    "title": "Polymorphisme cristallin du soja — impact sur la maturation",
+    "content": "Titre : Polymorphisme cristallin du soja — impact sur la maturation\n\nPRINCIPE SCIENTIFIQUE :\nLe soja hydrogéné cristallise en 2 formes polymorphes : β' (métastable, rapide) et β (stable, lente). La transformation β' → β prend 7-21 jours et s'accompagne d'un réarrangement moléculaire qui redistribue le parfum.\n\nMÉCANISME :\nLors du refroidissement rapide : cristallisation en forme β' (petits cristaux, réseau lâche → parfum piégé uniformément). Pendant la cure : transformation β' → β (cristaux plus gros, plus ordonnés → parfum expulsé vers les zones intercristallines → disponible pour le throw).\n\nCONSÉQUENCE POSITIVE :\nAprès cure complète, le throw peut rivaliser avec la paraffine pour les parfums à haute affinité ester.\n\nCONSÉQUENCE NÉGATIVE :\nSans cure de 14 jours, le throw est très inférieur au potentiel réel. Le client qui teste la bougie le jour de la réception sera déçu.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme paraffin crystal channels",
+    "title": "Canaux intercristallins de la paraffine — autoroute du parfum",
+    "content": "Titre : Canaux intercristallins de la paraffine — autoroute du parfum\n\nPRINCIPE SCIENTIFIQUE :\nLa paraffine cristallise en lamelles orthorhombiques empilées. Entre les lamelles, des canaux de 1-10 nm contiennent les impuretés et le parfum. Ces canaux forment un réseau continu de la bulk vers la surface.\n\nMÉCANISME :\nÀ température ambiante, le parfum dans les canaux est immobile (solide piégé). Lors de la combustion, le front de fusion avance et libère progressivement le parfum des canaux → diffusion contrôlée et régulière.\n\nCONSÉQUENCE POSITIVE :\nLe throw est progressif et constant dans le temps (pas de \"burst and fade\"). La paraffine medium (cp 54°C, canaux optimaux) offre le meilleur équilibre rétention/libération.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme micro wax trapping",
+    "title": "Piégeage dans la microcristalline — le trou noir du parfum",
+    "content": "Titre : Piégeage dans la microcristalline — le trou noir du parfum\n\nPRINCIPE SCIENTIFIQUE :\nLa microcristalline a une structure amorphe (cristaux < 1 μm, pas de canaux continus). Le parfum est encapsulé dans des poches isolées sans chemin de diffusion vers la surface.\n\nMÉCANISME :\nLes hydrocarbures ramifiés C30-C70 créent un enchevêtrement tridimensionnel dense. Le parfum s'insère lors du mélange à chaud mais est définitivement piégé au refroidissement. Même lors de la fonte, la viscosité élevée (15-25 cSt) empêche la migration.\n\nCONSÉQUENCE POSITIVE :\nLe piégeage partiel agit comme tampon : libération lissée dans le temps, pas de pic suivi d'un creux.\n\nCONSÉQUENCE NÉGATIVE :\nEn micro pure : throw quasi nul. Le parfum est \"gaspillé\". En blend (5-10%), seule la fraction piégée dans la micro est perdue (perte nette 5-10% du parfum → acceptable).\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme thermal degradation",
+    "title": "Dégradation thermique à l'incorporation",
+    "content": "Titre : Dégradation thermique à l'incorporation\n\nPRINCIPE SCIENTIFIQUE :\nLes molécules de parfum ont des températures de début de décomposition variables. Les aldéhydes se dégradent dès 80°C (réaction de Cannizzaro). Les esters se transestérifient au-dessus de 100°C. Les terpènes s'isomérisent dès 70°C.\n\nMÉCANISME :\nSi la température d'incorporation est trop élevée, les molécules fragiles se transforment en sous-produits inodores ou malodorants. Le citral (aldéhyde) est particulièrement sensible : à 80°C, il cyclise en p-cymène (odeur de thym, inodore en bougie). Le linalol (terpène-alcool) s'isomérise en géraniol et nérol (odeur différente).\n\nCONSÉQUENCE NÉGATIVE :\nLe parfum \"ne sent plus pareil\" en bougie qu'en smelling strip. Le client est déçu. L'effet est irréversible.\n\nATTÉNUATION :\nIncorporer le parfum à la température la plus basse possible : 58-62°C pour les parfums riches en terpènes/aldéhydes, 62-65°C pour les autres. Ne jamais dépasser 70°C avec le parfum incorporé.\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "mécanisme melt pool temperature",
+    "title": "Température du melt pool — le moteur du hot throw",
+    "content": "Titre : Température du melt pool — le moteur du hot throw\n\nPRINCIPE SCIENTIFIQUE :\nLa pression de vapeur P des composants du parfum suit la loi d'Antoine : log(P) = A - B/(T+C). Une augmentation de 10°C du melt pool double approximativement la pression de vapeur → double le throw.\n\nMÉCANISME :\nLa paraffine a un melt pool à 55-65°C (selon la mèche et le cp). Le soja a un melt pool à 45-50°C (point de fusion plus bas → fond plus vite mais moins chaud). Cet écart de 10-15°C se traduit par un throw 2-3× supérieur en paraffine.\n\nCONSÉQUENCE POSITIVE :\nEn paraffine, même un parfum \"faible\" aura un throw acceptable grâce à la température élevée du melt pool.\n\nCONSÉQUENCE NÉGATIVE :\nEn soja, même un bon parfum peut sembler faible car le melt pool n'est pas assez chaud pour vaporiser efficacement les molécules lourdes (MW > 200).\n",
+    "source": "blend-recommender — base scientifique",
+    "priority": 5,
+    "tags": "science,mécanisme,compatibilité"
+  }
+]

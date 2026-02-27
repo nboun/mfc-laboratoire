@@ -1,0 +1,17 @@
+{
+  "name": "MFC Laboratoire",
+  "short_name": "MFC Labo",
+  "description": "Gestion du laboratoire — Maison Française des Cires",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f2eb",
+  "theme_color": "#a32d03",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/img/logo-mfc-carre.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    }
+  ]
+}

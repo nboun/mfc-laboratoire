@@ -1,0 +1,25 @@
+{
+  "name": "mfc-laboratoire",
+  "version": "5.44.12d",
+  "description": "Application de gestion de laboratoire pour bougies parfumées - MFC",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "fds-parse": "python3 modules/fds-parser.py fds-import/ --output fds-import/resultats.json"
+  },
+  "keywords": [
+    "candle",
+    "laboratory",
+    "bougie",
+    "mfc"
+  ],
+  "author": "MFC",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^2.0.2",
+    "pdfkit": "^0.17.2",
+    "sql.js": "^1.14.0",
+    "xlsx": "^0.18.5"
+  }
+}

@@ -1,0 +1,793 @@
+{
+  "_sources": [
+    "PubChem Compound Database (pubchem.ncbi.nlm.nih.gov) — vérifié le 2026-02-20",
+    "Données extraites automatiquement via PubChem PUG View API, section Odor"
+  ],
+  "_method": "Descripteurs extraits du texte brut PubChem. 'sweet' = présence du mot 'sweet' dans la description officielle.",
+  "_coverage": "83 molécules avec données olfactives sur 309 totales",
+  "78-70-6": {
+    "odor": [
+      "floral",
+      "spicy",
+      "camphor",
+      "fresh",
+      "lavender",
+      "bergamot"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6549,
+    "pubchem_raw": "Odor similar to that of bergamot oil and French lavender"
+  },
+  "5989-27-5": {
+    "odor": [
+      "citrus"
+    ],
+    "sweet": false,
+    "pubchem_cid": 440917,
+    "pubchem_raw": "Citrus odor"
+  },
+  "127-91-3": {
+    "odor": [
+      "woody",
+      "pine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 14896,
+    "pubchem_raw": "CHARACTERISTIC TURPENTINE ODOR; DRY, WOODY OR RESINOUS AROMA"
+  },
+  "80-56-8": {
+    "odor": [
+      "pine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6654,
+    "pubchem_raw": "CHARACTERISTIC ODOR OF PINE"
+  },
+  "77-53-2": {
+    "odor": [
+      "woody",
+      "earthy"
+    ],
+    "sweet": false,
+    "pubchem_cid": 65575,
+    "pubchem_raw": "Woody-earthy"
+  },
+  "98-55-5": {
+    "odor": [
+      "floral",
+      "lilac"
+    ],
+    "sweet": false,
+    "pubchem_cid": 17100,
+    "pubchem_raw": "Floral, lilac"
+  },
+  "5392-40-5": {
+    "odor": [
+      "strong",
+      "lemon"
+    ],
+    "sweet": false,
+    "pubchem_cid": 638011,
+    "pubchem_raw": "Strong lemon odor"
+  },
+  "104-55-2": {
+    "odor": [
+      "spicy",
+      "cinnamon",
+      "pungent",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 637511,
+    "pubchem_raw": "PUNGENT, SPICY NOTE"
+  },
+  "121-33-5": {
+    "odor": [
+      "sweet",
+      "vanilla"
+    ],
+    "sweet": true,
+    "pubchem_cid": 1183,
+    "pubchem_raw": "Sweetish smell"
+  },
+  "1222-05-5": {
+    "odor": [
+      "musk",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 91497,
+    "pubchem_raw": "Strong musk odor"
+  },
+  "97-53-0": {
+    "odor": [
+      "floral",
+      "spicy",
+      "warm",
+      "clove"
+    ],
+    "sweet": false,
+    "pubchem_cid": 3314,
+    "pubchem_raw": "Odor of cloves"
+  },
+  "60-12-8": {
+    "odor": [
+      "rose",
+      "mild"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6054,
+    "pubchem_raw": "CHARACTERISTIC ROSE-LIKE ODOR"
+  },
+  "106-22-9": {
+    "odor": [
+      "fresh",
+      "rose"
+    ],
+    "sweet": false,
+    "pubchem_cid": 8842,
+    "pubchem_raw": "Fresh rosy odor"
+  },
+  "106-24-1": {
+    "odor": [
+      "sweet",
+      "floral",
+      "rose",
+      "geranium"
+    ],
+    "sweet": true,
+    "pubchem_cid": 637566,
+    "pubchem_raw": "Sweet rose odor"
+  },
+  "123-35-3": {
+    "odor": [],
+    "sweet": false,
+    "pubchem_cid": 31253,
+    "pubchem_raw": "Pleasant"
+  },
+  "79-92-5": {
+    "odor": [
+      "spicy",
+      "citrus",
+      "green",
+      "camphor",
+      "mint",
+      "pine",
+      "cooling"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6616,
+    "pubchem_raw": "Camphoraceous, cooling, piney wood with trephy nuances...citrus and green minty and green spicy notes"
+  },
+  "99-87-6": {
+    "odor": [
+      "sweet",
+      "citrus",
+      "mild"
+    ],
+    "sweet": true,
+    "pubchem_cid": 7463,
+    "pubchem_raw": "Sweetish aromatic odor"
+  },
+  "586-62-9": {
+    "odor": [
+      "sweet",
+      "pine"
+    ],
+    "sweet": true,
+    "pubchem_cid": 11463,
+    "pubchem_raw": "SWEET, PINE ODOR"
+  },
+  "470-82-6": {
+    "odor": [
+      "camphor"
+    ],
+    "sweet": false,
+    "pubchem_cid": 2758,
+    "pubchem_raw": "Camphor-like odor"
+  },
+  "106-25-2": {
+    "odor": [
+      "sweet",
+      "fresh",
+      "rose"
+    ],
+    "sweet": true,
+    "pubchem_cid": 643820,
+    "pubchem_raw": "Sweet rose"
+  },
+  "112-31-2": {
+    "odor": [
+      "sweet",
+      "floral",
+      "citrus",
+      "waxy",
+      "fatty",
+      "orange"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8175,
+    "pubchem_raw": "Floral-fatty odor"
+  },
+  "124-13-0": {
+    "odor": [
+      "fruity",
+      "citrus",
+      "honey",
+      "fatty",
+      "pungent",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 454,
+    "pubchem_raw": "Strong, fruity odor"
+  },
+  "124-19-6": {
+    "odor": [
+      "floral",
+      "green",
+      "rose",
+      "waxy",
+      "orange"
+    ],
+    "sweet": false,
+    "pubchem_cid": 31289,
+    "pubchem_raw": "Orange-rose odor"
+  },
+  "115-95-7": {
+    "odor": [
+      "sweet",
+      "floral",
+      "fruity",
+      "lavender",
+      "pear",
+      "bergamot"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8294,
+    "pubchem_raw": "...floral-fruity odor, reminiscent of bergamot and it also has some pear character"
+  },
+  "105-87-3": {
+    "odor": [
+      "sweet",
+      "floral",
+      "fruity",
+      "green",
+      "lavender"
+    ],
+    "sweet": true,
+    "pubchem_cid": 1549026,
+    "pubchem_raw": "Odor of lavender"
+  },
+  "125-12-2": {
+    "odor": [
+      "balsamic",
+      "camphor",
+      "pine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 637531,
+    "pubchem_raw": "Pine needles"
+  },
+  "142-92-7": {
+    "odor": [
+      "sweet",
+      "fruity",
+      "pear"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8908,
+    "pubchem_raw": "Sweet-fruity, pearl-like odor"
+  },
+  "89-80-5": {
+    "odor": [
+      "mint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 26447,
+    "pubchem_raw": "Slight peppermint odor"
+  },
+  "21368-68-3": {
+    "odor": [],
+    "sweet": false,
+    "pubchem_cid": 2537,
+    "pubchem_raw": "Fragrant and penetrating odor"
+  },
+  "121-32-4": {
+    "odor": [
+      "vanilla",
+      "strong",
+      "intense"
+    ],
+    "sweet": false,
+    "pubchem_cid": 8467,
+    "pubchem_raw": "Finer and more intense vanilla"
+  },
+  "118-71-8": {
+    "odor": [
+      "fruity",
+      "fresh",
+      "caramel"
+    ],
+    "sweet": false,
+    "pubchem_cid": 8369,
+    "pubchem_raw": "Fragrant, caramel-like odor"
+  },
+  "3658-77-3": {
+    "odor": [
+      "sweet",
+      "pine",
+      "apple",
+      "caramel",
+      "burnt"
+    ],
+    "sweet": true,
+    "pubchem_cid": 19309,
+    "pubchem_raw": "Relatively weak, nonspecific odor; dilute solutions develop a pineapple, strawberry-like odor"
+  },
+  "431-03-8": {
+    "odor": [
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 650,
+    "pubchem_raw": "Quinone odor; vapors have a chlorine-like odor"
+  },
+  "91-64-5": {
+    "odor": [
+      "sweet",
+      "vanilla",
+      "hay"
+    ],
+    "sweet": true,
+    "pubchem_cid": 323,
+    "pubchem_raw": "Pleasant, fragrant odor resembling that of vanilla beans."
+  },
+  "4180-23-8": {
+    "odor": [
+      "anise"
+    ],
+    "sweet": false,
+    "pubchem_cid": 637563,
+    "pubchem_raw": "ANISE OIL ODOR"
+  },
+  "118-58-1": {
+    "odor": [
+      "sweet",
+      "faint"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8363,
+    "pubchem_raw": "Faint sweet odor"
+  },
+  "120-51-4": {
+    "odor": [
+      "balsamic",
+      "almond",
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 2345,
+    "pubchem_raw": "Light, balsamic odor reminiscent of almond"
+  },
+  "97-54-1": {
+    "odor": [
+      "clove"
+    ],
+    "sweet": false,
+    "pubchem_cid": 853433,
+    "pubchem_raw": "Spice-clove odor"
+  },
+  "140-11-4": {
+    "odor": [
+      "sweet",
+      "floral",
+      "fruity",
+      "fresh",
+      "jasmine",
+      "pear"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8785,
+    "pubchem_raw": "PEAR-LIKE ODOR"
+  },
+  "79-77-6": {
+    "odor": [
+      "fruity",
+      "woody",
+      "warm",
+      "cedar"
+    ],
+    "sweet": false,
+    "pubchem_cid": 638014,
+    "pubchem_raw": "Warm woody, dry, and fruity odor"
+  },
+  "120-57-0": {
+    "odor": [
+      "sweet",
+      "floral"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8438,
+    "pubchem_raw": "Heliotrope odor"
+  },
+  "562-74-3": {
+    "odor": [
+      "pine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 11230,
+    "pubchem_raw": "Pine"
+  },
+  "4602-84-0": {
+    "odor": [
+      "citrus",
+      "mild"
+    ],
+    "sweet": false,
+    "pubchem_cid": 445070,
+    "pubchem_raw": "Delicate flowery odor"
+  },
+  "1506-02-1": {
+    "odor": [
+      "musk"
+    ],
+    "sweet": false,
+    "pubchem_cid": 89440,
+    "pubchem_raw": "Odor type: musk"
+  },
+  "14901-07-6": {
+    "odor": [
+      "fruity",
+      "woody",
+      "warm",
+      "cedar"
+    ],
+    "sweet": false,
+    "pubchem_cid": 26955,
+    "pubchem_raw": "Warm woody, dry, and fruity odor"
+  },
+  "128-37-0": {
+    "odor": [
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 31404,
+    "pubchem_raw": "Very faint, musty, occasional cresylic-type odor"
+  },
+  "57-11-4": {
+    "odor": [],
+    "sweet": false,
+    "pubchem_cid": 5281,
+    "pubchem_raw": "Slight odor suggesting tallow"
+  },
+  "57-10-3": {
+    "odor": [],
+    "sweet": false,
+    "pubchem_cid": 985,
+    "pubchem_raw": "Virtually odorless; slight characteristic odor"
+  },
+  "112-92-5": {
+    "odor": [
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 8221,
+    "pubchem_raw": "Faint"
+  },
+  "36653-82-4": {
+    "odor": [
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 2682,
+    "pubchem_raw": "Faint odor"
+  },
+  "928-96-1": {
+    "odor": [
+      "green",
+      "fresh",
+      "pungent",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 5281167,
+    "pubchem_raw": "Powerful grassy-green odor"
+  },
+  "555-10-2": {
+    "odor": [],
+    "sweet": false,
+    "pubchem_cid": 11142,
+    "pubchem_raw": "PLEASANT ODOR"
+  },
+  "134-20-3": {
+    "odor": [
+      "orange"
+    ],
+    "sweet": false,
+    "pubchem_cid": 8635,
+    "pubchem_raw": "Grape-like odor"
+  },
+  "123-11-5": {
+    "odor": [
+      "sweet",
+      "fruity",
+      "spicy",
+      "powdery",
+      "vanilla",
+      "almond",
+      "creamy",
+      "hay"
+    ],
+    "sweet": true,
+    "pubchem_cid": 31244,
+    "pubchem_raw": "Hawthorn odor"
+  },
+  "120-72-9": {
+    "odor": [
+      "floral",
+      "jasmine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 798,
+    "pubchem_raw": "ALMOST FLORAL ODOR WHEN HIGHLY PURIFIED, OTHERWISE EXHIBITS CHARACTERISTIC ODOR OF FECES"
+  },
+  "104-54-1": {
+    "odor": [
+      "floral"
+    ],
+    "sweet": false,
+    "pubchem_cid": 5315892,
+    "pubchem_raw": "ODOR OF HYACINTH"
+  },
+  "100-52-7": {
+    "odor": [
+      "almond"
+    ],
+    "sweet": false,
+    "pubchem_cid": 240,
+    "pubchem_raw": "Characteristic odor or volatile oil of almond"
+  },
+  "89-78-1": {
+    "odor": [
+      "mint",
+      "cooling"
+    ],
+    "sweet": false,
+    "pubchem_cid": 1254,
+    "pubchem_raw": "Peppermint odor /dl-Menthol/"
+  },
+  "122-40-7": {
+    "odor": [
+      "jasmine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 31209,
+    "pubchem_raw": "Jasmine-like odor"
+  },
+  "104-93-8": {
+    "odor": [
+      "sweet",
+      "floral",
+      "fruity",
+      "pungent",
+      "sharp",
+      "strong"
+    ],
+    "sweet": true,
+    "pubchem_cid": 7731,
+    "pubchem_raw": "STRONG FLORAL ODOR"
+  },
+  "100-51-6": {
+    "odor": [
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 244,
+    "pubchem_raw": "Faint aromatic odor"
+  },
+  "127-41-3": {
+    "odor": [
+      "sweet",
+      "floral",
+      "woody",
+      "balsamic",
+      "warm",
+      "strong"
+    ],
+    "sweet": true,
+    "pubchem_cid": 5282108,
+    "pubchem_raw": "It has a warm, woody, floral odor with balsamic and sweet tones and is strongly reminiscent of violet flowers."
+  },
+  "119-36-8": {
+    "odor": [
+      "green"
+    ],
+    "sweet": false,
+    "pubchem_cid": 4133,
+    "pubchem_raw": "LIQUID HAVING THE CHARACTERISTIC ODOR OF WINTERGREEN"
+  },
+  "77-83-8": {
+    "odor": [
+      "fruity",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6501,
+    "pubchem_raw": "ON DILUTION, STRONG FRUITY ODOR"
+  },
+  "76-22-2": {
+    "odor": [],
+    "sweet": false,
+    "pubchem_cid": 2537,
+    "pubchem_raw": "Fragrant and penetrating odor"
+  },
+  "123-92-2": {
+    "odor": [
+      "sweet",
+      "fruity",
+      "pear",
+      "banana",
+      "intense"
+    ],
+    "sweet": true,
+    "pubchem_cid": 31276,
+    "pubchem_raw": "Pear-like odor"
+  },
+  "507-70-0": {
+    "odor": [
+      "camphor",
+      "pine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 64685,
+    "pubchem_raw": "Piney, camphor-like odor"
+  },
+  "106-23-0": {
+    "odor": [
+      "rose",
+      "intense",
+      "lemon"
+    ],
+    "sweet": false,
+    "pubchem_cid": 7794,
+    "pubchem_raw": "Intense lemon-citronella-rose odor"
+  },
+  "488-10-8": {
+    "odor": [
+      "floral",
+      "woody",
+      "citrus",
+      "herbal",
+      "jasmine"
+    ],
+    "sweet": false,
+    "pubchem_cid": 1549018,
+    "pubchem_raw": "Odor of jasmine"
+  },
+  "93-58-3": {
+    "odor": [
+      "fruity",
+      "medicinal"
+    ],
+    "sweet": false,
+    "pubchem_cid": 7150,
+    "pubchem_raw": "Fragrant odor"
+  },
+  "101-84-8": {
+    "odor": [
+      "geranium"
+    ],
+    "sweet": false,
+    "pubchem_cid": 7583,
+    "pubchem_raw": "Geranium-like odor"
+  },
+  "21145-77-7": {
+    "odor": [
+      "musk"
+    ],
+    "sweet": false,
+    "pubchem_cid": 89440,
+    "pubchem_raw": "Odor type: musk"
+  },
+  "89-83-8": {
+    "odor": [
+      "spicy",
+      "herbal",
+      "medicinal"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6989,
+    "pubchem_raw": "Odor of thyme"
+  },
+  "81-14-1": {
+    "odor": [
+      "sweet",
+      "musk",
+      "powdery"
+    ],
+    "sweet": true,
+    "pubchem_cid": 6669,
+    "pubchem_raw": "Sweet, very persistent, slightly animal musk odor"
+  },
+  "66-25-1": {
+    "odor": [
+      "fruity",
+      "green",
+      "sharp",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 6184,
+    "pubchem_raw": "Characteristic fruity odor (on dilution)"
+  },
+  "65-85-0": {
+    "odor": [
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 243,
+    "pubchem_raw": "Odorless or with a slight benzaldehyde odor"
+  },
+  "590-86-3": {
+    "odor": [
+      "apple"
+    ],
+    "sweet": false,
+    "pubchem_cid": 11552,
+    "pubchem_raw": "Apple-like odor"
+  },
+  "5471-51-2": {
+    "odor": [
+      "sweet",
+      "fruity",
+      "warm",
+      "raspberry"
+    ],
+    "sweet": true,
+    "pubchem_cid": 21648,
+    "pubchem_raw": "Sweet fruity, warm odor resembling raspberry preserve"
+  },
+  "499-75-2": {
+    "odor": [
+      "medicinal"
+    ],
+    "sweet": false,
+    "pubchem_cid": 10364,
+    "pubchem_raw": "THYMOL ODOR"
+  },
+  "140-67-0": {
+    "odor": [
+      "sweet",
+      "anise"
+    ],
+    "sweet": true,
+    "pubchem_cid": 8815,
+    "pubchem_raw": "Odor reminiscent of anise with a corresponding sweet taste (differing from anethole)"
+  },
+  "122-99-6": {
+    "odor": [
+      "faint"
+    ],
+    "sweet": false,
+    "pubchem_cid": 31236,
+    "pubchem_raw": "Faint aromatic odor"
+  },
+  "121-39-1": {
+    "odor": [
+      "fruity",
+      "strong"
+    ],
+    "sweet": false,
+    "pubchem_cid": 8469,
+    "pubchem_raw": "STRONG FRUITY ODOR SUGGESTIVE OF STRAWBERRY"
+  },
+  "103-41-3": {
+    "odor": [
+      "sweet"
+    ],
+    "sweet": true,
+    "pubchem_cid": 5273469,
+    "pubchem_raw": "Sweet odor of balsam"
+  }
+}

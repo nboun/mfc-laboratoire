@@ -1,0 +1,237 @@
+[
+  {
+    "category": "Science — Cires",
+    "subcategory": "paraffine",
+    "title": "Paraffine raffinée — Fiche physico-chimique complète",
+    "content": "Type : Paraffine raffinée\nOrigine : minérale (pétrochimie)\nCAS : 8002-74-2\nDescription : Mélange d'hydrocarbures saturés linéaires C20-C40 issus du raffinage pétrolier\n\n── Composition chimique ──\nConstituant principal : n-alcanes C20-C40\niso_alcanes : 10-25%\ncyclo_alcanes : 0-15%\nDétail : Chaînes linéaires prédominantes, longueur moyenne selon grade\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 46-68°C\nPoint de congélation : 44-66°C\nFlash point : 200-260°C\nDensité (solide) : 0.88-0.92 g/cm³\nDensité (80°C) : 0.76-0.79 g/cm³\nViscosité (100°C) : 3-6 mm²/s\nChaleur de fusion : 150-210 J/g\nTeneur en huile : 0-2%\nCharge parfum max : 6-10%\nRetrait : 8-15% Retrait au refroidissement\n\n── Comportement bougie ──\nThrow : excellent\nBurn quality : bonne — flamme stable, combustion régulière\nMelt pool : rapide, bonne propagation\nSurface finish : lisse si bon refroidissement, sinon frosting possible\nCompatibility fragrance : excellente — dissolve bien les parfums\nContainer adhesion : bonne — faible retrait vs végétal\nColor rendering : excellent — base blanche neutre\n\n── Grades ──\nSOFT : cp 46-52°C | pénétration 25-60 | Container, melt pool doux\nMEDIUM : cp 52-58°C | pénétration 14-24 | Container/pilier versatile\nHARD : cp 58-65°C | pénétration 10-18 | Pilier, moulé, haute tenue\nEXTRA_HARD : cp 65-70°C | pénétration 8-14 | Pilier haute température, taper\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,paraffine,composition,propriétés,8002-74-2"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "paraffine_ft",
+    "title": "Paraffine Fischer-Tropsch — Fiche physico-chimique complète",
+    "content": "Type : Paraffine Fischer-Tropsch\nOrigine : synthétique (gas-to-liquid)\nCAS : 8002-74-2\nDescription : Paraffine synthétique GTL, très haute pureté, iso-alcanes réduits\n\n── Composition chimique ──\nConstituant principal : n-alcanes C20-C50 haute pureté\niso_alcanes : < 5%\ncyclo_alcanes : < 2%\nDétail : Chaînes linéaires ultra-pures, point de congélation très net\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 52-65°C\nPoint de congélation : 50-63°C\nFlash point : 220-270°C\nDensité (solide) : 0.9-0.93 g/cm³\nDensité (80°C) : 0.77-0.8 g/cm³\nViscosité (100°C) : 3.5-7 mm²/s\nChaleur de fusion : 170-230 J/g\nTeneur en huile : 0-0.5%\nCharge parfum max : 6-8%\nRetrait : 10-18% Retrait supérieur à paraffine classique\n\n── Comportement bougie ──\nThrow : bon — légèrement inférieur à paraffine classique\nBurn quality : excellente — flamme très stable, peu de suie\nMelt pool : plus lent à cause de la haute cristallinité\nSurface finish : très lisse, aspect premium\nCompatibility fragrance : bonne mais charge max légèrement réduite\nContainer adhesion : moyenne — retrait fort\nColor rendering : excellent — blanc pur\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,paraffine_ft,composition,propriétés,8002-74-2"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "microcristalline",
+    "title": "Cire microcristalline — Fiche physico-chimique complète",
+    "content": "Type : Cire microcristalline\nOrigine : minérale (résidu de raffinage)\nCAS : 63231-60-7\nDescription : Cire à cristaux fins, hydrocarbures ramifiés et naphténiques C30-C70\n\n── Composition chimique ──\nConstituant principal : iso-alcanes et cyclo-alcanes C30-C70\niso_alcanes : 40-60%\ncyclo_alcanes : 20-40%\nn_alcanes : 10-20%\nDétail : Structure ramifiée → cristaux fins → flexibilité\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 60-95°C\nPoint de congélation : 58-90°C\nFlash point : 240-300°C\nDensité (solide) : 0.91-0.94 g/cm³\nDensité (80°C) : 0.79-0.83 g/cm³\nViscosité (100°C) : 10-25 mm²/s\nChaleur de fusion : 100-170 J/g\nTeneur en huile : 0-5%\nCharge parfum max : 3-6%\nRetrait : 2-6% Très faible retrait — anti-sinkholes\n\n── Comportement bougie ──\nThrow : faible à moyen — retient le parfum\nBurn quality : variable — dépend du blend\nMelt pool : lent, visqueux\nSurface finish : opaque, mate\nCompatibility fragrance : faible — utiliser en blend 3-10%\nContainer adhesion : excellente — réduit le retrait\nColor rendering : bon opacifiant\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,microcristalline,composition,propriétés,63231-60-7"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "soja",
+    "title": "Cire de soja hydrogénée — Fiche physico-chimique complète",
+    "content": "Type : Cire de soja hydrogénée\nOrigine : végétale (huile de soja)\nCAS : 68956-68-3\nDescription : Huile de soja totalement ou partiellement hydrogénée, triglycérides saturés\n\n── Composition chimique ──\nConstituant principal : triglycérides d'acides gras saturés\npalmitic : 10-12% (C16:0)\nstearic : 80-88% (C18:0)\noleic : 0-5% (C18:1)\nlinoleic : 0-2% (C18:2)\nDétail : Hydrogénation convertit les insaturés en stéarique (C18:0)\n\n── Composants avec CAS ──\nAcide stéarique (CAS 57-11-4) : 80-88%\nAcide palmitique (CAS 57-10-3) : 10-12%\nGlycérol (CAS 56-81-5) : backbone\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 46-52°C\nPoint de congélation : 44-50°C\nFlash point : 220-280°C\nDensité (solide) : 0.9-0.93 g/cm³\nDensité (80°C) : 0.84-0.87 g/cm³\nViscosité (100°C) : 30-45 mm²/s\nChaleur de fusion : 130-170 J/g\nTeneur en huile : 0-1%\nCharge parfum max : 8-12%\nRetrait : 3-8% \nIndice d'iode : 0-5\nIndice de saponification : 185-200\n\n── Comportement bougie ──\nThrow : bon — chaud excellent si cure 2 semaines\nBurn quality : bonne — flamme douce, combustion propre\nMelt pool : crémeux, large, température basse\nSurface finish : frosting fréquent (polymorphisme), surface mate\nCompatibility fragrance : excellente — haute rétention\nContainer adhesion : variable — wet/dry spots possibles\nColor rendering : crème naturel — couleurs pastels favorisées\n\n── Problèmes connus ──\n• Frosting (cristallisation en surface) — inévitable, pas un défaut\n• Wet spots (décollement verre) — température de coulée critique\n• Variabilité entre lots — origine agricole\n• Cure time long (10-14 jours) pour développement olfactif\n• Polymorphisme cristallin — β' et β formes\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,soja,composition,propriétés,68956-68-3"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "colza",
+    "title": "Cire de colza hydrogénée — Fiche physico-chimique complète",
+    "content": "Type : Cire de colza hydrogénée\nOrigine : végétale (huile de colza)\nCAS : 84681-71-0\nDescription : Huile de colza hydrogénée, riche en acide béhénique post-hydrogénation\n\n── Composition chimique ──\nConstituant principal : triglycérides d'acides gras saturés\nstearic : 2-5% (C18:0)\narachidic : 5-10% (C20:0)\nbehenic : 40-50% (C22:0)\nerucic : 0-5% (C22:1 résiduel)\npalmitic : 3-5% (C16:0)\nDétail : Chaînes plus longues que soja → point de fusion plus élevé\n\n── Composants avec CAS ──\nAcide béhénique (CAS 112-85-6) : 40-50%\nAcide arachidique (CAS 506-30-9) : 5-10%\nAcide stéarique (CAS 57-11-4) : 2-5%\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 50-58°C\nPoint de congélation : 48-56°C\nFlash point : 230-290°C\nDensité (solide) : 0.91-0.94 g/cm³\nDensité (80°C) : 0.85-0.88 g/cm³\nViscosité (100°C) : 25-40 mm²/s\nChaleur de fusion : 140-180 J/g\nCharge parfum max : 8-12%\nRetrait : 3-7% \nIndice d'iode : 0-3\nIndice de saponification : 170-190\n\n── Comportement bougie ──\nThrow : bon — similaire au soja\nBurn quality : bonne — légèrement plus rigide que soja\nMelt pool : plus ferme que soja, bonne structure\nSurface finish : moins de frosting que soja\nCompatibility fragrance : bonne — charge similaire au soja\nContainer adhesion : meilleure que soja\nColor rendering : crème à blanc cassé\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,colza,composition,propriétés,84681-71-0"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "coco",
+    "title": "Cire de coco hydrogénée — Fiche physico-chimique complète",
+    "content": "Type : Cire de coco hydrogénée\nOrigine : végétale (huile de coco)\nCAS : 84836-98-6\nDescription : Huile de coco hydrogénée, riche en acide laurique (C12)\n\n── Composition chimique ──\nConstituant principal : triglycérides d'acides gras saturés à chaîne moyenne\nlauric : 45-52% (C12:0)\nmyristic : 16-21% (C14:0)\npalmitic : 7-10% (C16:0)\ncaprylic : 5-10% (C8:0)\ncapric : 4-8% (C10:0)\nDétail : Chaînes courtes → point de fusion bas, action émolliente\n\n── Composants avec CAS ──\nAcide laurique (CAS 143-07-7) : 45-52%\nAcide myristique (CAS 544-63-8) : 16-21%\nAcide palmitique (CAS 57-10-3) : 7-10%\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 24-28°C\nPoint de congélation : 22-26°C\nFlash point : 230-270°C\nDensité (solide) : 0.91-0.93 g/cm³\nDensité (80°C) : 0.86-0.88 g/cm³\nViscosité (100°C) : 20-30 mm²/s\nChaleur de fusion : 100-140 J/g\nCharge parfum max : 6-10%\nRetrait : 2-5% \nIndice d'iode : 0-2\nIndice de saponification : 250-265\n\n── Comportement bougie ──\nThrow : excellent — boost diffusion grâce aux chaînes courtes\nBurn quality : ne pas utiliser seule — trop molle\nMelt pool : très fluide, abaisse viscosité du blend\nSurface finish : brillant crémeux\nCompatibility fragrance : bonne — chaînes courtes favorisent la libération\nContainer adhesion : excellente\nColor rendering : blanc brillant\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,coco,composition,propriétés,84836-98-6"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "stearique",
+    "title": "Acide stéarique (triple pressed) — Fiche physico-chimique complète",
+    "content": "Type : Acide stéarique (triple pressed)\nOrigine : végétale ou animale\nCAS : 57-11-4\nDescription : Acide gras saturé C18, durcisseur et opacifiant\n\n── Composition chimique ──\nConstituant principal : Acide octadécanoïque (C18H36O2)\nstearic : > 90% (triple pressed)\npalmitic : < 10%\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 67-72°C\nPoint de congélation : 65-69°C\nFlash point : 196-220°C\nDensité (solide) : 0.94-0.96 g/cm³\nCharge parfum max : 0-3%\n\n── Comportement bougie ──\nThrow : n/a — utilisée comme additif uniquement\nBurn quality : durcit la cire, réduit smoking\nMelt pool : ralentit la propagation\nSurface finish : opacifie, blanchit\nCompatibility fragrance : réduit — cristallin, piège les parfums\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,stearique,composition,propriétés,57-11-4"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "cetyl_stearyl_alcohol",
+    "title": "Alcool céto-stéarylique — Fiche physico-chimique complète",
+    "content": "Type : Alcool céto-stéarylique\nOrigine : végétale (palme/coco)\nCAS : 67762-27-0\nDescription : Mélange alcool cétylique (C16) + alcool stéarylique (C18)\n\n── Composition chimique ──\nConstituant principal : Alcools gras C16-C18\ncetyl : 30-50% (hexadécan-1-ol)\nstearyl : 50-70% (octadécan-1-ol)\n\n── Composants avec CAS ──\nAlcool cétylique (CAS 36653-82-4) : 30-50%\nAlcool stéarylique (CAS 112-92-5) : 50-70%\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 49-56°C\nPoint de congélation : 47-54°C\nFlash point : 180-210°C\nDensité (solide) : 0.81-0.84 g/cm³\n\n── Comportement bougie ──\nThrow : n/a — additif\nBurn quality : anti-défaut : réduit sinkholes et frosting en végétal\nSurface finish : lisse les surfaces irrégulières\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,cetyl_stearyl_alcohol,composition,propriétés,67762-27-0"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "vybar",
+    "title": "Vybar (copolymère éthylène-acétate de vinyle) — Fiche physico-chimique complète",
+    "content": "Type : Vybar (copolymère éthylène-acétate de vinyle)\nOrigine : synthétique\nCAS : 9003-18-3\nDescription : Polymère cristallin micro-additionnel, fixateur de parfum et anti-suintement\n\n── Composition chimique ──\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 53-58°C\nPoint de congélation : 50-56°C\nDensité (solide) : 0.9-0.92 g/cm³\nCharge parfum max : 0-0%\n\n── Comportement bougie ──\nThrow : booste le throw en piégeant le parfum dans la matrice cristalline\nBurn quality : améliore opacité et combustion\nSurface finish : lisse, réduit mottling\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,vybar,composition,propriétés,9003-18-3"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "beeswax",
+    "title": "Cire d'abeille — Fiche physico-chimique complète",
+    "content": "Type : Cire d'abeille\nOrigine : animale (apis mellifera)\nCAS : 8012-89-3\nDescription : Cire naturelle d'abeille, esters d'acides gras + hydrocarbures\n\n── Composition chimique ──\nConstituant principal : Esters myricyle (C46) + hydrocarbures C25-C35\nesters : 67-80%\nhydrocarbons : 12-16%\nfatty_acids : 10-15%\nDétail : Palmitate de myricyle (C46H92O2) composant principal\n\n── Propriétés physico-chimiques ──\nPoint de fusion : 62-65°C\nPoint de congélation : 60-63°C\nFlash point : 204-242°C\nDensité (solide) : 0.95-0.97 g/cm³\nDensité (80°C) : 0.82-0.85 g/cm³\nChaleur de fusion : 140-180 J/g\nCharge parfum max : 4-6%\nIndice de saponification : 85-105\n\n── Comportement bougie ──\nThrow : faible — retient fortement le parfum\nBurn quality : excellente — flamme chaude, longue durée\nSurface finish : patine naturelle jaune/ambrée\nCompatibility fragrance : limitée — 4-6% max\n",
+    "source": "wax-enrichment module + littérature technique",
+    "priority": 3,
+    "tags": "cire,beeswax,composition,propriétés,8012-89-3"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité terpène",
+    "title": "Compatibilité cire × terpène — Analyse par type de cire",
+    "content": "Famille moléculaire : terpène\nDescription : Hydrocarbures cycliques volatils (limonène, pinène, ocimène)\nComportement général : Très volatils (MW ~136), flash point bas (33-55°C). Se perdent vite à la fonte.\n\n── Paraffine raffinée ──\nSolubilité : excellente\nRétention : faible\nCold throw : excellent — diffusion rapide depuis la surface\nHot throw : moyen — s'évaporent vite du melt pool\nScore compatibilité : 7/10\nRisque : Flash bas → flamme haute si concentration élevée (>3% du total)\nConseil : Limiter à 20-30% du parfum total. Excellent en tête, mais disparaît vite.\n\n── Cire de soja hydrogénée ──\nSolubilité : bonne\nRétention : moyenne\nCold throw : bon — cure 14j nécessaire pour développement\nHot throw : moyen — viscosité haute ralentit la diffusion\nScore compatibilité : 6/10\nRisque : Moins critique car melt pool plus froid (45-50°C)\nConseil : Cure longue indispensable. Les terpènes migrent en surface.\n\n── Cire de colza hydrogénée ──\nSolubilité : bonne\nRétention : moyenne-bonne\nCold throw : moyen\nHot throw : moyen\nScore compatibilité : 6/10\nRisque : Similaire soja\nConseil : Mieux retenu qu'en soja grâce aux chaînes C22.\n\n── Cire microcristalline ──\nSolubilité : bonne\nRétention : excellente — piégés dans la structure amorphe\nCold throw : faible — retenus dans la matrice\nHot throw : faible — libération très lente\nScore compatibilité : 3/10\nRisque : Faible — haute rétention = moins de volatilité\nConseil : Terpènes gaspillés en micro. Réserver pour blend 5-10% anti-sinkholes.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,terpène,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité terpène-alcool",
+    "title": "Compatibilité cire × terpène-alcool — Analyse par type de cire",
+    "content": "Famille moléculaire : terpène-alcool\nDescription : Alcools terpéniques (linalol, géraniol, citronellol, nérol)\nComportement général : Cœur de la plupart des floraux. MW ~154, bon équilibre vol/rétention.\n\n── Paraffine raffinée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : bon\nHot throw : excellent — libération progressive optimale\nScore compatibilité : 9/10\nRisque : Faible. Allergènes déclarables (géraniol, linalol, citronellol).\nConseil : La combinaison idéale. La paraffine cristalline libère ces molécules de façon régulière.\n\n── Cire de soja hydrogénée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : bon après cure\nHot throw : bon — le -OH interagit avec les triglycérides\nScore compatibilité : 8/10\nRisque : Faible\nConseil : Bon en soja. Le groupement hydroxyle améliore l'interaction avec les esters du soja.\n\n── Cire de colza hydrogénée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : bon\nHot throw : bon\nScore compatibilité : 8/10\nRisque : Faible\nConseil : Comportement similaire au soja, légèrement meilleure rétention.\n\n── Cire microcristalline ──\nSolubilité : moyenne\nRétention : excellente\nCold throw : faible\nHot throw : moyen — libération lente mais continue\nScore compatibilité : 5/10\nRisque : Faible\nConseil : En blend uniquement (5-10%). Retient bien mais libère peu.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,terpène-alcool,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité aldéhyde",
+    "title": "Compatibilité cire × aldéhyde — Analyse par type de cire",
+    "content": "Famille moléculaire : aldéhyde\nDescription : Aldéhydes (citral, citronellal, aldéhydes C8-C12, hydroxycitronellal)\nComportement général : Diffusifs, réactifs chimiquement. Peuvent jaunir les cires blanches.\n\n── Paraffine raffinée ──\nSolubilité : bonne\nRétention : moyenne\nCold throw : excellent — très diffusif\nHot throw : bon mais se dégrade à haute T°\nScore compatibilité : 7/10\nRisque : Jaunissement possible. Réactivité avec additifs basiques.\nConseil : Excellente diffusion mais risque de coloration jaune. Éviter UV + stockage long.\n\n── Cire de soja hydrogénée ──\nSolubilité : moyenne\nRétention : moyenne\nCold throw : bon\nHot throw : moyen — les triglycérides peuvent réagir\nScore compatibilité : 5/10\nRisque : Interaction chimique : les aldéhydes peuvent réagir avec les acides gras libres du soja.\nConseil : Attention : risque de réaction acide-aldéhyde en cure longue. Tester la stabilité.\n\n── Cire de colza hydrogénée ──\nSolubilité : moyenne\nRétention : moyenne\nCold throw : moyen\nHot throw : moyen\nScore compatibilité : 5/10\nRisque : Même risque de réaction qu'en soja.\nConseil : Préférer paraffine pour les parfums riches en aldéhydes.\n\n── Cire microcristalline ──\nSolubilité : moyenne\nRétention : bonne\nCold throw : faible\nHot throw : moyen\nScore compatibilité : 5/10\nRisque : Faible — structure amorphe plus inerte\nConseil : En blend. La micro stabilise les aldéhydes.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,aldéhyde,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité ester",
+    "title": "Compatibilité cire × ester — Analyse par type de cire",
+    "content": "Famille moléculaire : ester\nDescription : Esters (acétates, benzoates, salicylates, linalyl acetate)\nComportement général : Excellente compatibilité toutes cires. Stable, bonne solubilité.\n\n── Paraffine raffinée ──\nSolubilité : excellente\nRétention : bonne\nCold throw : bon\nHot throw : excellent\nScore compatibilité : 9/10\nRisque : Très faible. Famille la plus sûre en bougie.\nConseil : Combinaison idéale. Les esters sont les plus stables et compatibles.\n\n── Cire de soja hydrogénée ──\nSolubilité : excellente — affinité chimique (ester + ester)\nRétention : excellente\nCold throw : bon\nHot throw : excellent — interaction ester-triglycéride favorable\nScore compatibilité : 10/10\nRisque : Très faible\nConseil : Affinité naturelle : le soja est lui-même un ester (triglycéride). Excellente dissolution.\n\n── Cire de colza hydrogénée ──\nSolubilité : excellente\nRétention : excellente\nCold throw : bon\nHot throw : excellent\nScore compatibilité : 10/10\nRisque : Très faible\nConseil : Même logique que soja. Affinité ester-ester.\n\n── Cire microcristalline ──\nSolubilité : bonne\nRétention : excellente\nCold throw : moyen\nHot throw : bon\nScore compatibilité : 7/10\nRisque : Faible\nConseil : Bien retenu, libération régulière.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,ester,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité musc",
+    "title": "Compatibilité cire × musc — Analyse par type de cire",
+    "content": "Famille moléculaire : musc\nDescription : Muscs synthétiques (Galaxolide, Iso E Super, Cashmeran, Ambrettolide)\nComportement général : MW élevé (>230), très peu volatils. Fixateurs. Peuvent freiner la combustion.\n\n── Paraffine raffinée ──\nSolubilité : excellente\nRétention : très élevée — quasi-piégés\nCold throw : faible — pas assez volatils\nHot throw : moyen — libération lente du melt pool\nScore compatibilité : 6/10\nRisque : Si >10% du parfum : peut ralentir la combustion (MW élevé, résidu lourd).\nConseil : Limiter à 15-20% du parfum. Essentiel pour la tenue mais freine si excessif.\n\n── Cire de soja hydrogénée ──\nSolubilité : bonne\nRétention : très élevée\nCold throw : très faible\nHot throw : faible à moyen — viscosité haute + MW élevé = diffusion minimale\nScore compatibilité : 4/10\nRisque : Double frein : viscosité soja + MW musc = parfum \"étouffé\"\nConseil : Réduire la proportion de muscs en soja (10-15% max). Le soja retient trop.\n\n── Cire de colza hydrogénée ──\nSolubilité : bonne\nRétention : très élevée\nCold throw : très faible\nHot throw : faible\nScore compatibilité : 4/10\nRisque : Idem soja\nConseil : Même problème qu'en soja. Préférer des muscs macrocycliques (plus volatils).\n\n── Cire microcristalline ──\nSolubilité : excellente\nRétention : bloqué — ne sort quasiment pas\nCold throw : nul\nHot throw : très faible\nScore compatibilité : 2/10\nRisque : Gaspillage — les muscs restent piégés\nConseil : Éviter les muscs lourds en micro. Totalement retenu.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,musc,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité sesquiterpène",
+    "title": "Compatibilité cire × sesquiterpène — Analyse par type de cire",
+    "content": "Famille moléculaire : sesquiterpène\nDescription : Sesquiterpènes (caryophyllène, cédrène, patchoulol, vétivérol)\nComportement général : MW ~204-222, volatilité moyenne-basse. Boisés et fixateurs naturels.\n\n── Paraffine raffinée ──\nSolubilité : excellente\nRétention : bonne\nCold throw : moyen — pas assez volatils pour cold throw fort\nHot throw : bon — se libèrent bien à la fonte\nScore compatibilité : 8/10\nRisque : Faible. Stabilisent la combustion.\nConseil : Excellents en paraffine. Donnent de la profondeur et de la tenue.\n\n── Cire de soja hydrogénée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : moyen\nHot throw : moyen-bon\nScore compatibilité : 7/10\nRisque : Faible\nConseil : Bonne combinaison. Le patchouli et le cèdre fonctionnent bien en soja.\n\n── Cire de colza hydrogénée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : moyen\nHot throw : bon\nScore compatibilité : 7/10\nRisque : Faible\nConseil : Bon en colza. Chaînes longues C22 du colza ont une affinité avec les sesquiterpènes.\n\n── Cire microcristalline ──\nSolubilité : excellente\nRétention : excellente\nCold throw : faible\nHot throw : moyen\nScore compatibilité : 6/10\nRisque : Faible\nConseil : Bien retenu. En blend, les sesquiterpènes sont les fixateurs naturels.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,sesquiterpène,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité lactone",
+    "title": "Compatibilité cire × lactone — Analyse par type de cire",
+    "content": "Famille moléculaire : lactone\nDescription : Lactones et macrolides (coumarine, γ-undécalactone, ambrettolide)\nComportement général : Esters cycliques. Bonne solubilité. Certains sont des allergènes (coumarine).\n\n── Paraffine raffinée ──\nSolubilité : excellente\nRétention : bonne\nCold throw : bon\nHot throw : excellent — libération progressive\nScore compatibilité : 9/10\nRisque : Faible. Coumarine = allergène déclarable.\nConseil : Excellente famille pour les bougies. Les lactones donnent les notes crémeuses/fruitées.\n\n── Cire de soja hydrogénée ──\nSolubilité : excellente — affinité ester cyclique + triglycéride\nRétention : excellente\nCold throw : bon\nHot throw : bon\nScore compatibilité : 9/10\nRisque : Faible\nConseil : Très bonne affinité naturelle. Les notes lactées/fruitées excellent en soja.\n\n── Cire de colza hydrogénée ──\nSolubilité : excellente\nRétention : excellente\nCold throw : bon\nHot throw : bon\nScore compatibilité : 8/10\nRisque : Faible\nConseil : Idem soja.\n\n── Cire microcristalline ──\nSolubilité : bonne\nRétention : excellente\nCold throw : moyen\nHot throw : moyen\nScore compatibilité : 6/10\nRisque : Faible\nConseil : Bien retenu.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,lactone,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité phénol",
+    "title": "Compatibilité cire × phénol — Analyse par type de cire",
+    "content": "Famille moléculaire : phénol\nDescription : Phénols (eugénol, isoeugénol, thymol, carvacrol)\nComportement général : Polaires, réactifs. Eugénol = épicé (clou de girofle). Allergènes.\n\n── Paraffine raffinée ──\nSolubilité : moyenne — polarité du -OH phénolique\nRétention : moyenne\nCold throw : bon — très diffusif\nHot throw : bon\nScore compatibilité : 5/10\nRisque : Jaunissement + sensibilisant cutané. Réactivité avec antioxydants.\nConseil : Utiliser avec parcimonie (max 2% du total). Jaunissement quasi certain au stockage.\n\n── Cire de soja hydrogénée ──\nSolubilité : moyenne-bonne — le -OH interagit avec les esters\nRétention : bonne\nCold throw : bon\nHot throw : moyen\nScore compatibilité : 5/10\nRisque : Jaunissement + réaction possible avec acides gras libres\nConseil : Coloration plus rapide en soja. Antioxydant recommandé.\n\n── Cire de colza hydrogénée ──\nSolubilité : moyenne\nRétention : bonne\nCold throw : moyen\nHot throw : moyen\nScore compatibilité : 5/10\nRisque : Jaunissement\nConseil : Idem soja.\n\n── Cire microcristalline ──\nSolubilité : moyenne\nRétention : bonne\nCold throw : faible\nHot throw : moyen\nScore compatibilité : 4/10\nRisque : Moindre — moins de surface exposée\nConseil : Retenu.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,phénol,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité cétone",
+    "title": "Compatibilité cire × cétone — Analyse par type de cire",
+    "content": "Famille moléculaire : cétone\nDescription : Cétones (ionones, damascone, méthylcyclopentadécanone, calone)\nComportement général : Polaires, puissantes. Incluent les notes marines (calone) et violette (ionones).\n\n── Paraffine raffinée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : bon — les cétones sont diffusives\nHot throw : bon\nScore compatibilité : 8/10\nRisque : Faible. Les ionones sont très stables.\nConseil : Bonne famille pour paraffine. Les ionones (iris/violette) donnent un throw puissant.\n\n── Cire de soja hydrogénée ──\nSolubilité : bonne — interaction dipôle C=O avec esters\nRétention : bonne\nCold throw : moyen\nHot throw : bon\nScore compatibilité : 7/10\nRisque : Faible\nConseil : Bon en soja. Les cétones se diffusent bien même en matrice visqueuse.\n\n── Cire de colza hydrogénée ──\nSolubilité : bonne\nRétention : bonne\nCold throw : moyen\nHot throw : bon\nScore compatibilité : 7/10\nRisque : Faible\nConseil : Idem soja.\n\n── Cire microcristalline ──\nSolubilité : bonne\nRétention : excellente\nCold throw : faible\nHot throw : moyen\nScore compatibilité : 5/10\nRisque : Faible\nConseil : Retenu. En blend.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,cétone,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité alcool",
+    "title": "Compatibilité cire × alcool — Analyse par type de cire",
+    "content": "Famille moléculaire : alcool\nDescription : Alcools (benzylique, phényléthylique, cis-3-hexénol)\nComportement général : Polaires, solvants naturels. Flash point parfois bas.\n\n── Paraffine raffinée ──\nSolubilité : moyenne — polarité du -OH\nRétention : faible — migrent en surface\nCold throw : excellent — très diffusifs\nHot throw : moyen — s'évaporent vite\nScore compatibilité : 6/10\nRisque : Migration en surface (suintement si excès). Flash variable.\nConseil : Attention au suintement si >3% alcools. Bonne diffusion mais pas de tenue.\n\n── Cire de soja hydrogénée ──\nSolubilité : bonne — le -OH interagit avec les groupes ester du soja\nRétention : moyenne\nCold throw : bon\nHot throw : moyen-bon\nScore compatibilité : 7/10\nRisque : Moins de suintement qu'en paraffine grâce à l'interaction polaire\nConseil : Mieux retenu en soja qu'en paraffine. Le phényléthanol (rose) excelle en soja.\n\n── Cire de colza hydrogénée ──\nSolubilité : bonne\nRétention : moyenne\nCold throw : bon\nHot throw : moyen\nScore compatibilité : 7/10\nRisque : Faible\nConseil : Similaire soja.\n\n── Cire microcristalline ──\nSolubilité : faible — trop polaire\nRétention : faible\nCold throw : faible\nHot throw : faible\nScore compatibilité : 3/10\nRisque : Exsudation\nConseil : Éviter les alcools purs en micro.\n\n",
+    "source": "wax-enrichment module — interactions cire/parfum",
+    "priority": 3,
+    "tags": "compatibilité,cire,parfum,alcool,solubilité,throw,rétention"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité principes",
+    "title": "Principes fondamentaux de la compatibilité cire × parfum",
+    "content": "La compatibilité entre une cire et un parfum dépend de 3 facteurs principaux :\n\n1. POLARITÉ — Règle du \"similaire dissout le similaire\"\nLa paraffine est apolaire (hydrocarbures purs) → excellente solubilité des terpènes et muscs (apolaires, LogP élevé).\nLe soja est moyennement polaire (triglycérides = esters) → affinité naturelle avec les esters du parfum.\nL'acide stéarique est polaire → mauvaise solubilité des hydrocarbures, bonne pour les alcools.\n\n2. TAILLE MOLÉCULAIRE et VISCOSITÉ\nMolécules légères (MW < 150, ex: limonène MW=136) : diffusent vite dans la paraffine fluide, mais s'évaporent du soja visqueux.\nMolécules lourdes (MW > 250, ex: galaxolide MW=258) : retenues dans la microcristalline, libérées lentement de la paraffine.\nLa viscosité du melt pool contrôle la vitesse de diffusion : paraffine 3-6 cSt (rapide) vs soja 30-45 cSt (lent).\n\n3. STRUCTURE CRISTALLINE\nParaffine : cristaux larges et ordonnés → le parfum se concentre entre les cristaux → bon cold throw.\nSoja : cristaux polymorphes (β' et β) → parfum piégé dans la matrice → cold throw faible, cure longue nécessaire.\nMicrocristalline : structure amorphe → piège tout, ne libère rien → throw quasi nul seule.\n\nCONSÉQUENCES PRATIQUES :\n— Un parfum riche en terpènes (agrumes) : meilleur en paraffine (diffusion rapide) qu'en soja (piégé).\n— Un parfum riche en muscs lourds : mieux en soja (affinité ester-triglycéride) avec cure longue.\n— Un parfum riche en esters (fruités) : excellent partout, affinité naturelle avec le soja.\n— Un parfum riche en aldéhydes : attention en soja (risque de réaction avec les traces d'acides libres).",
+    "source": "Littérature technique cirier — synthèse MFC",
+    "priority": 5,
+    "tags": "polarité,compatibilité,solubilité,LogP,viscosité,cristallinité,principes,science"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité température",
+    "title": "Température d'incorporation du parfum selon la cire",
+    "content": "L'incorporation du parfum dans la cire est critique. Trop chaud = perte des notes de tête. Trop froid = mauvaise dissolution.\n\nPARAFFINE STANDARD :\n— Température recommandée : 60-65°C (5-10°C au-dessus du point de congélation)\n— Maximum absolu : 70°C (au-delà, dégradation des terpènes et aldéhydes sensibles)\n— Pour parfums riches en agrumes : 58-62°C (préserver les terpènes volatils)\n— Pour parfums ambrés/boisés : 62-68°C (meilleure dissolution des muscs lourds)\n\nPARAFFINE FISCHER-TROPSCH :\n— Température recommandée : 62-68°C (cristallinité plus haute → dissolution plus lente)\n— Bien mélanger 3-5 min — la structure ultra-pure résiste plus à la pénétration du parfum\n\nCIRE DE SOJA :\n— Température recommandée : 55-60°C (point de fusion bas)\n— Maximum absolu : 65°C (au-delà, odeur de brûlé et dégradation des acides gras)\n— Agiter doucement — les bulles d'air piègent le parfum et créent des cavités\n\nCIRE DE COLZA :\n— Température recommandée : 58-62°C (point de fusion légèrement supérieur au soja)\n— Comportement similaire au soja mais meilleure rétention grâce aux chaînes C22\n\nCIRE DE COCO :\n— Ne s'utilise pas seule — en blend 5-15%\n— Ajouter le blend coco AVANT le parfum (la coco fond à 24°C, elle est déjà liquide)\n\nMICROCRISTALLINE :\n— En blend uniquement (3-10%)\n— Fondre séparément à 85-95°C, ajouter à la paraffine, PUIS incorporer le parfum\n— Ne jamais ajouter le parfum dans la microcristalline pure (trop chaud + piégeage total)",
+    "source": "Pratique terrain MFC + recommandations fournisseurs",
+    "priority": 5,
+    "tags": "température,incorporation,parfum,cire,process,recommandation,soja,paraffine,colza"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité throw",
+    "title": "Classement des cires par performance de throw (diffusion)",
+    "content": "Classement des types de cires par capacité de diffusion du parfum :\n\nCOLD THROW (à froid, bougie éteinte) :\n1. Paraffine soft (cp 46-52°C) — Excellent : cristaux espacés, parfum en surface\n2. Paraffine medium (cp 52-58°C) — Très bon\n3. Soja — Bon après cure 14j : le polymorphisme β' libère le parfum en surface\n4. Colza — Bon : similaire soja, cure 10-14j\n5. Paraffine dure (cp 58-65°C) — Moyen : cristaux serrés retiennent le parfum\n6. Coco (en blend) — Moyen : boost les notes de tête uniquement\n7. Microcristalline — Faible : structure amorphe piège tout\n\nHOT THROW (à chaud, melt pool actif) :\n1. Paraffine medium — Excellent : melt pool fluide (3-6 cSt), large, bonne température\n2. Paraffine soft — Excellent mais flamme plus haute (cire souple)\n3. Paraffine FT — Très bon : melt pool très propre\n4. Colza — Bon : viscosité intermédiaire\n5. Soja — Bon mais dépend fortement de la cure et du parfum\n6. Coco (en blend) — Bon pour les notes de tête, boost initial\n7. Paraffine dure — Moyen : melt pool plus étroit\n8. Microcristalline — Faible : viscosité trop haute, ne libère pas\n\nFACTEURS CLÉS DU THROW :\n— Viscosité du melt pool : basse = meilleur throw (paraffine >> soja)\n— Température du melt pool : haute = meilleur throw (paraffine 55-65°C vs soja 45-50°C)\n— Surface du melt pool : large = meilleur throw (diamètre container ÷ mèche corrects)\n— Affinité chimique parfum/cire : matching polarité = dissolution homogène",
+    "source": "Tests MFC + littérature cirier",
+    "priority": 5,
+    "tags": "throw,cold throw,hot throw,diffusion,classement,cire,performance"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité sécurité",
+    "title": "Sécurité — Flash point et interactions dangereuses cire × parfum",
+    "content": "FLASH POINT ET SÉCURITÉ :\n\nLe flash point d'un parfum dans une bougie dépend de son composant au FP le plus bas.\nLes composants critiques (flash point < 65°C) :\n— Terpènes : limonène (FP 48°C), α-pinène (FP 33°C), β-pinène (FP 38°C)\n— Certains aldéhydes : acétaldéhyde (FP -39°C), citral (FP 91°C — ok)\n— Solvants résiduels : IPM (FP >100°C — ok), DPG (FP 135°C — ok, mais interdit MFC)\n\nRISQUES PAR TYPE DE CIRE :\nParaffine : melt pool 55-65°C → les terpènes à FP < 60°C s'évaporent AVANT d'atteindre le flash.\nRisque réel uniquement si concentration de terpènes > 3% du total ET mèche surdimensionnée.\n\nSoja : melt pool 45-50°C → risque réduit car température inférieure. Mais la viscosité haute\ncrée des poches de concentration → risque localisé si mélange inhomogène.\n\nMicrocristalline (en blend) : aucun risque — ne libère pas assez de volatils.\n\nRÈGLE MFC :\n— Toujours vérifier le flash point du parfum (FDS fournisseur)\n— Si FP < 65°C : limiter la charge parfum à 6% max\n— Si FP > 65°C : charge standard selon la cire (8-10% paraffine, 8-12% soja)\n— Jamais de flamme nue près des cires en fusion avec parfum incorporé",
+    "source": "Sécurité MFC + normes NF EN 15493",
+    "priority": 5,
+    "tags": "sécurité,flash point,terpènes,risque,flamme,norme,NF EN 15493"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "compatibilité cure",
+    "title": "Cure time par type de cire — Impact sur la diffusion du parfum",
+    "content": "La cure (maturation) est le temps nécessaire après coulée pour que le parfum se redistribue\nuniformément dans la matrice cristalline de la cire. C'est le facteur #1 du hot throw.\n\nPARAFFINE :\n— Cure minimum : 24-48h\n— Cure optimale : 3-7 jours\n— Mécanisme : les cristaux de paraffine se stabilisent, le parfum migre dans les espaces intercristallins.\n— Les paraffines soft (46-52°C) curent plus vite car cristaux plus espacés.\n— Les paraffines dures (58-65°C) demandent plus de temps, cristaux plus denses.\n\nSOJA :\n— Cure minimum : 7 jours\n— Cure optimale : 14-21 jours\n— Mécanisme : le soja cristallise en 2 phases (β' rapide → β lente). La transformation β'→β\n  libère le parfum piégé. C'est pourquoi le throw s'améliore dramatiquement après 2 semaines.\n— Le frosting est lié à cette transformation cristalline et n'affecte PAS le throw.\n\nCOLZA :\n— Cure minimum : 5 jours\n— Cure optimale : 10-14 jours\n— Mécanisme : similaire au soja mais les chaînes C22 (acide béhénique) cristallisent plus vite.\n— Variabilité inter-lots plus faible que le soja.\n\nCOCO (en blend) :\n— Pas de cure propre — fond à 24°C, ne cristallise pas de manière stable.\n— Accélère la cure du blend en fluidifiant les interfaces.\n\nMICROCRISTALLINE (en blend) :\n— Ralentit la cure du mélange — sa structure amorphe freine la migration du parfum.\n— En blend 5-10% : ajouter 2-3 jours de cure supplémentaires.\n\nTEMPÉRATURE DE STOCKAGE PENDANT LA CURE :\n— Idéal : 20-25°C, stable, sans variation jour/nuit\n— Trop froid (< 15°C) : cristallisation rapide, parfum mal distribué\n— Trop chaud (> 30°C) : ramollissement, perte de notes de tête par évaporation",
+    "source": "Tests MFC + science de la cristallisation",
+    "priority": 5,
+    "tags": "cure,maturation,cristallisation,polymorphisme,soja,paraffine,colza,temperature"
+  },
+  {
+    "category": "Science — Cires",
+    "subcategory": "comparaison polarité",
+    "title": "Échelle de polarité des cires — Impact sur la solubilité des parfums",
+    "content": "Échelle de polarité des cires (du plus apolaire au plus polaire) :\n\n1. PARAFFINE (très apolaire) — Hydrocarbures purs C20-C40\n   → Dissout : terpènes +++, muscs +++, esters ++, aldéhydes +\n   → Dissout mal : alcools polaires, phénols (eugénol partiellement)\n\n2. MICROCRISTALLINE (apolaire) — Hydrocarbures ramifiés C30-C70\n   → Similaire paraffine mais viscosité excessive → piège tout sans libérer\n   \n3. CIRE D'ABEILLE (légèrement polaire) — Esters myricyle + hydrocarbures\n   → Dissout : terpènes ++, esters ++, muscs +\n   → Charge parfum limitée à 4-6% (compétition ester/ester)\n\n4. COLZA (moyennement polaire) — Triglycérides C22\n   → Dissout : esters +++, terpènes-alcools ++, aldéhydes ++, muscs +\n   → Chaînes C22 → bonne rétention des MW > 200\n\n5. SOJA (moyennement polaire) — Triglycérides C18\n   → Dissout : esters +++, terpènes-alcools ++, aldéhydes +, muscs +\n   → Structure triglycéride = ester → affinité naturelle avec les esters du parfum\n\n6. ACIDE STÉARIQUE (polaire) — Acide gras pur C18\n   → Dissout : alcools ++, phénols +\n   → Dissout mal : terpènes, muscs apolaires\n   → Utiliser comme additif 3-5%, jamais comme cire principale\n\nCONSÉQUENCE POUR LE FORMULATEUR :\nUn parfum à dominante agrumes/boisé (apolaire) → privilégier paraffine\nUn parfum à dominante florale/fruitée (esters) → excellent en soja ou colza\nUn parfum à dominante épicée/phénolique → blend paraffine + 5% stéarique",
+    "source": "Chimie des interfaces — principes de solubilité appliqués à la ciergerie",
+    "priority": 4,
+    "tags": "polarité,solubilité,LogP,affinité,ester,terpène,musc,formulation"
+  }
+]
+

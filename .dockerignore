@@ -1,0 +1,5 @@
+node_modules
+mfc-data
+__pycache__
+*.zip
+.git

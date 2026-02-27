@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFC Laboratoire — Extracteur FDS Parfums</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .fds-container { max-width: 1100px; margin: 0 auto; padding: 1rem; }
+        .fds-header { text-align: center; margin-bottom: 2rem; }
+        .fds-header h2 { color: #1a1a1a; font-size: 1.4rem; margin-bottom: 0.3rem; }
+        .fds-header p { color: #888; font-size: 0.85rem; }
+        
+        /* Upload zone */
+        .upload-zone {
+            border: 2px dashed #d4c5b0; border-radius: 12px; padding: 2rem;
+            text-align: center; cursor: pointer; transition: all 0.3s;
+            background: #faf8f5; margin-bottom: 1.5rem;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #c9a96e; background: #f5f0e8;
+        }
+        .upload-zone .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .upload-zone p { margin: 0.3rem 0; color: #666; font-size: 0.85rem; }
+
+        /* File list */
+        .file-list { margin-bottom: 1.5rem; }
+        .file-item {
+            display: flex; align-items: center; gap: 0.8rem;
+            padding: 0.6rem 1rem; border: 1px solid #eee; border-radius: 8px;
+            margin-bottom: 0.4rem; background: #fff; font-size: 0.82rem;
+        }
+        .file-item .name { flex: 1; font-weight: 500; }
+        .file-item .size { color: #999; min-width: 60px; text-align: right; }
+        .file-item .actions { display: flex; gap: 0.4rem; }
+        .file-item .btn-sm {
+            padding: 0.2rem 0.5rem; font-size: 0.72rem; border-radius: 4px;
+            border: 1px solid #ddd; background: #f8f8f8; cursor: pointer;
+        }
+        .file-item .btn-sm:hover { background: #eee; }
+        .file-item .btn-sm.danger { color: #c0392b; border-color: #e6b3ae; }
+        .file-item .btn-sm.danger:hover { background: #fdecea; }
+
+        /* Action buttons */
+        .actions-bar {
+            display: flex; gap: 0.8rem; margin-bottom: 1.5rem;
+            flex-wrap: wrap; align-items: center;
+        }
+        .btn-action {
+            padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-primary { background: #c9a96e; color: #fff; }
+        .btn-primary:hover { background: #b8954f; }
+        .btn-primary:disabled { background: #ddd; color: #999; cursor: not-allowed; }
+        .btn-secondary { background: #f0ebe3; color: #1a1a1a; }
+        .btn-secondary:hover { background: #e5ddd0; }
+        .btn-success { background: #27ae60; color: #fff; }
+        .btn-success:hover { background: #219a52; }
+
+        /* Progress */
+        .progress-bar {
+            display: none; height: 6px; background: #eee; border-radius: 3px;
+            margin-bottom: 1rem; overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%; background: #c9a96e; transition: width 0.3s;
+            border-radius: 3px;
+        }
+        .status-msg { font-size: 0.8rem; color: #888; margin-bottom: 1rem; min-height: 1.2rem; }
+
+        /* Results */
+        .result-card {
+            border: 1px solid #e0d8cc; border-radius: 10px; margin-bottom: 1rem;
+            overflow: hidden; background: #fff;
+        }
+        .result-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.8rem 1rem; background: #faf8f5; border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .result-header h3 { font-size: 0.95rem; margin: 0; }
+        .result-header .badge {
+            font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 10px;
+            background: #e8dcc8; color: #8b6914;
+        }
+        .result-body { display: none; padding: 1rem; }
+        .result-body.open { display: block; }
+        .mol-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+        .mol-table th { background: #f5f0e8; padding: 0.4rem 0.6rem; text-align: left; font-weight: 600; }
+        .mol-table td { padding: 0.35rem 0.6rem; border-bottom: 1px solid #f0ebe3; }
+        .mol-table tr:hover td { background: #faf8f5; }
+        .props-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.5rem; margin-top: 0.5rem;
+        }
+        .prop-item { background: #faf8f5; padding: 0.5rem; border-radius: 6px; font-size: 0.8rem; }
+        .prop-item .label { color: #999; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .prop-item .value { font-weight: 600; color: #1a1a1a; margin-top: 0.15rem; }
+
+        /* JSON viewer */
+        .json-output {
+            display: none; background: #1a1a1a; color: #c9a96e; padding: 1rem;
+            border-radius: 8px; font-family: monospace; font-size: 0.75rem;
+            max-height: 500px; overflow: auto; white-space: pre-wrap;
+            margin-top: 1rem;
+        }
+        .json-output.visible { display: block; }
+    </style>
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC">
+            <div class="brand-text">
+                <h1>LABORATOIRE</h1>
+                <span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span>
+            </div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html" class="active">FDS Parfums</a>
+            <a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+            <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="fds-container">
+        <div class="fds-header">
+            <h2>🧪 Extracteur FDS Parfums</h2>
+            <p>Déposez vos FDS en PDF — extraction automatique des compositions moléculaires et propriétés physiques</p>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <div class="icon">📄</div>
+            <p><strong>Glissez vos FDS ici</strong> ou cliquez pour sélectionner</p>
+            <p>PDF uniquement · Plusieurs fichiers acceptés</p>
+            <input type="file" id="fileInput" multiple accept=".pdf" style="display:none" onchange="handleFiles(this.files)">
+        </div>
+
+        <!-- File List -->
+        <div class="file-list" id="fileList"></div>
+
+        <!-- Actions -->
+        <div class="actions-bar">
+            <button class="btn-action btn-primary" id="btnParse" onclick="parseAll()" disabled>
+                🔬 Extraire toutes les FDS
+            </button>
+            <button class="btn-action btn-success" id="btnImport" onclick="importToKB()" style="display:none">
+                📥 Importer dans la Base de Connaissances
+            </button>
+            <button class="btn-action btn-secondary" id="btnJson" onclick="toggleJson()" style="display:none">
+                { } Voir le JSON brut
+            </button>
+            <button class="btn-action btn-secondary" id="btnExport" onclick="exportJson()" style="display:none">
+                💾 Exporter JSON
+            </button>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-bar" id="progress"><div class="fill" id="progressFill"></div></div>
+        <div class="status-msg" id="status"></div>
+
+        <!-- Results -->
+        <div id="results"></div>
+
+        <!-- JSON Output -->
+        <div class="json-output" id="jsonOutput"></div>
+
+        <!-- Dashboard FDS -->
+        <div id="kbStats" style="margin-top:2rem;border-top:2px solid #e0d8cc;padding-top:1.5rem;">
+            <h3 style="font-size:1rem;color:#1a1a1a;margin-bottom:0.8rem;">📊 Tableau de bord FDS</h3>
+            <div id="kbDashboard" style="font-size:0.82rem;color:#888;">Chargement...</div>
+            
+            <!-- Alertes -->
+            <div id="kbAlerts" style="display:none;margin-top:0.8rem;"></div>
+            
+            <!-- FDS traitées (masquées par défaut) -->
+            <div style="margin-top:0.8rem;">
+                <button onclick="toggleFdsList()" style="background:none;border:1px solid #ccc;padding:0.3rem 0.8rem;border-radius:6px;cursor:pointer;font-size:0.75rem;color:#888;">
+                    📋 Voir / masquer le détail des FDS traitées
+                </button>
+                <div id="kbListDetail" style="display:none;margin-top:0.5rem;max-height:300px;overflow-y:auto;"></div>
+            </div>
+
+            <!-- Actions -->
+            <div id="archiveSection" style="margin-top:1rem;display:none;">
+                <button class="btn-action" onclick="reimportArchive()" id="btnReimport" style="background:#1565c0;color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;font-size:0.85rem;">
+                    🔄 Réimporter depuis l'archive (mfc-data/fds/)
+                </button>
+                <span id="archiveCount" style="margin-left:0.8rem;font-size:0.8rem;color:#888;"></span>
+            </div>
+            <div style="margin-top:1rem;display:flex;gap:0.6rem;flex-wrap:wrap;align-items:flex-start;">
+                <div>
+                    <button class="btn-action" onclick="rescanAll(false)" id="btnRescan" style="background:#E65100;color:#fff;border:none;padding:0.7rem 1.4rem;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+                        🔬 Re-scanner TOUTES les FDS
+                    </button>
+                    <div style="font-size:0.7rem;color:#888;margin-top:0.2rem;">Ne touche pas aux parfums déjà complets.</div>
+                </div>
+                <div>
+                    <button class="btn-action" onclick="rescanAll(true)" id="btnRescanForce" style="background:#c62828;color:#fff;border:none;padding:0.7rem 1.4rem;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+                        ⚡ Forcer la ré-extraction complète
+                    </button>
+                    <div style="font-size:0.7rem;color:#c62828;margin-top:0.2rem;">Supprime et ré-extrait TOUS les composants (parseur amélioré).</div>
+                </div>
+                <div id="rescanProgress" style="display:none;margin-top:0.5rem;padding:0.5rem;background:#fff3e0;border-radius:6px;font-size:0.82rem;width:100%;"></div>
+                <div style="margin-top:0.8rem;">
+                    <button onclick="purgeAllFragrances()" id="btnPurge" style="background:#424242;color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;">
+                        🗑️ Purger tous les parfums
+                    </button>
+                    <span style="font-size:0.7rem;color:#888;margin-left:0.5rem;">Vide parfums + composants pour re-scan propre (cires, mèches, recettes, KB conservés).</span>
+                </div>
+            </div>
+            
+            <!-- PubChem Enrichment -->
+            <div style="margin-top:1.2rem;padding:1rem;background:#f3e5f5;border-radius:8px;">
+                <h4 style="font-size:0.9rem;color:#6a1b9a;margin-bottom:0.5rem;">🧪 Enrichissement PubChem</h4>
+                <p style="font-size:0.75rem;color:#888;margin-bottom:0.6rem;">
+                    Met à jour le profil moléculaire de TOUTES les molécules issues des FDS via PubChem (masse, bp, logP, seuil olfactif, descripteurs).
+                </p>
+                <button onclick="enrichAllPubChem()" id="btnPubChem" style="background:#6a1b9a;color:#fff;border:none;padding:0.6rem 1.2rem;border-radius:8px;cursor:pointer;font-size:0.85rem;font-weight:600;">
+                    🧬 Enrichir TOUTES les molécules via PubChem
+                </button>
+                <div id="pubchemProgress" style="display:none;margin-top:0.5rem;padding:0.5rem;background:#f3e5f5;border:1px solid #ce93d8;border-radius:6px;font-size:0.82rem;"></div>
+            </div>
+
+            <!-- Liste des parfums -->
+            <div style="margin-top:1.5rem;">
+                <h4 style="font-size:0.9rem;color:#1a1a1a;margin-bottom:0.5rem;">📋 Parfums en base <span id="fragCountBadge" style="font-size:0.75rem;color:#888;"></span></h4>
+                <input type="text" id="fragSearch" placeholder="Rechercher un parfum..." oninput="filterFragList()" style="width:100%;padding:0.5rem 0.8rem;border:1px solid #ddd;border-radius:6px;font-size:0.82rem;margin-bottom:0.5rem;box-sizing:border-box;">
+                <div id="fragListContainer" style="max-height:500px;overflow-y:auto;border:1px solid #e0e0e0;border-radius:8px;background:#fff;"></div>
+            </div>
+
+            <!-- Détail parfum -->
+            <div id="fragDetail" style="display:none;margin-top:1rem;padding:1rem;background:#fafafa;border:1px solid #ddd;border-radius:8px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <h4 id="fragDetailTitle" style="font-size:0.95rem;color:#1a1a1a;margin:0;"></h4>
+                    <button onclick="document.getElementById('fragDetail').style.display='none'" style="background:none;border:none;font-size:1.2rem;cursor:pointer;">✕</button>
+                </div>
+                <div id="fragDetailInfo" style="font-size:0.78rem;color:#666;margin:0.4rem 0;"></div>
+                <table style="width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:0.5rem;">
+                    <thead><tr style="background:#f5f5f5;">
+                        <th style="text-align:left;padding:0.3rem 0.5rem;border-bottom:1px solid #ddd;">CAS</th>
+                        <th style="text-align:left;padding:0.3rem 0.5rem;border-bottom:1px solid #ddd;">Nom</th>
+                        <th style="text-align:right;padding:0.3rem 0.5rem;border-bottom:1px solid #ddd;">Min %</th>
+                        <th style="text-align:right;padding:0.3rem 0.5rem;border-bottom:1px solid #ddd;">Max %</th>
+                    </tr></thead>
+                    <tbody id="fragDetailComps"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let parsedData = null;
+
+        // ── Drag & Drop ──
+        const dropZone = document.getElementById('dropZone');
+        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+        dropZone.addEventListener('drop', e => {
+            e.preventDefault(); dropZone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // ── Upload Files ──
+        async function handleFiles(files) {
+            const pdfs = Array.from(files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+            if (!pdfs.length) return setStatus('⚠️ Aucun PDF détecté');
+            
+            setStatus(`⏳ Envoi de ${pdfs.length} fichier(s)...`);
+            const form = new FormData();
+            pdfs.forEach(f => form.append('fds', f));
+            
+            try {
+                const res = await fetch('/api/fds/upload', { method: 'POST', body: form });
+                if (!res.ok) {
+                    const text = await res.text();
+                    setStatus(`❌ Erreur serveur (${res.status}): ${text.substring(0, 100)}`);
+                    return;
+                }
+                const data = await res.json();
+                setStatus(`✅ ${data.count} fichier(s) envoyé(s)`);
+                loadFiles();
+            } catch (e) {
+                setStatus(`❌ Erreur upload: ${e.message}`);
+            }
+        }
+
+        // ── Load File List ──
+        async function loadFiles() {
+            const res = await fetch('/api/fds/files');
+            const { files } = await res.json();
+            const el = document.getElementById('fileList');
+            
+            if (!files.length) {
+                el.innerHTML = '<p style="color:#999;text-align:center;font-size:0.85rem;">Aucune FDS déposée</p>';
+                document.getElementById('btnParse').disabled = true;
+                return;
+            }
+            
+            document.getElementById('btnParse').disabled = false;
+            el.innerHTML = files.map(f => `
+                <div class="file-item">
+                    <span>📄</span>
+                    <span class="name">${f.name.replace(/^\d+-/, '')}</span>
+                    <span class="size">${(f.size / 1024).toFixed(0)} Ko</span>
+                    <div class="actions">
+                        <button class="btn-sm danger" onclick="deleteFile('${f.name}')">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ── Delete File ──
+        async function deleteFile(name) {
+            await fetch('/api/fds/files/' + encodeURIComponent(name), { method: 'DELETE' });
+            loadFiles();
+        }
+
+        // ── Parse All ──
+        async function parseAll() {
+            const btn = document.getElementById('btnParse');
+            btn.disabled = true;
+            btn.textContent = '⏳ Extraction en cours...';
+            showProgress(true, 0);
+            setStatus('🔬 Analyse des PDF en cours...');
+            
+            try {
+                const res = await fetch('/api/fds/parse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    parsedData = data.results;
+                    showProgress(true, 100);
+                    setStatus(`✅ ${data.count} FDS extraite(s) avec succès`);
+                    renderResults(data.results);
+                    document.getElementById('btnImport').style.display = '';
+                    document.getElementById('btnJson').style.display = '';
+                    document.getElementById('btnExport').style.display = '';
+                } else {
+                    setStatus(`❌ Erreur: ${data.error}`);
+                }
+            } catch (e) {
+                setStatus(`❌ Erreur: ${e.message}`);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '🔬 Extraire toutes les FDS';
+            setTimeout(() => showProgress(false), 2000);
+        }
+
+        // ── Render Results ──
+        function renderResults(results) {
+            const el = document.getElementById('results');
+            el.innerHTML = results.map((r, idx) => {
+                const id = r.identification;
+                const props = r.proprietes_physiques;
+                const comp = r.composition;
+                const classif = r.classification_globale;
+                
+                return `
+                <div class="result-card">
+                    <div class="result-header" onclick="toggleResult(${idx})">
+                        <h3>
+                            ${id.nom || r.fichier}
+                            ${id.code ? `<span style="color:#999;font-weight:400;"> — ${id.code}</span>` : ''}
+                            ${id.fournisseur ? `<span style="color:#bbb;font-weight:400;font-size:0.8rem;"> · ${id.fournisseur}</span>` : ''}
+                        </h3>
+                        <span class="badge">${comp.length} molécules</span>
+                    </div>
+                    <div class="result-body" id="body-${idx}">
+                        <!-- Properties -->
+                        <div class="props-grid">
+                            ${props.flash_point_c ? `<div class="prop-item"><div class="label">Point éclair</div><div class="value">${props.flash_point_c}°C</div></div>` : ''}
+                            ${props.densite ? `<div class="prop-item"><div class="label">Densité</div><div class="value">${props.densite}</div></div>` : ''}
+                            ${props.ebullition_c ? `<div class="prop-item"><div class="label">Ébullition</div><div class="value">${props.ebullition_c}°C</div></div>` : ''}
+                            ${props.viscosite_mpa_s ? `<div class="prop-item"><div class="label">Viscosité</div><div class="value">${props.viscosite_mpa_s} mPa·s</div></div>` : ''}
+                            ${props.etat ? `<div class="prop-item"><div class="label">État</div><div class="value">${props.etat}</div></div>` : ''}
+                            ${props.couleur ? `<div class="prop-item"><div class="label">Couleur</div><div class="value">${props.couleur}</div></div>` : ''}
+                            ${classif.mot_signal ? `<div class="prop-item"><div class="label">Signal</div><div class="value">${classif.mot_signal}</div></div>` : ''}
+                            ${classif.phrases_H?.length ? `<div class="prop-item"><div class="label">Dangers</div><div class="value">${classif.phrases_H.map(h=>h.code).join(', ')}</div></div>` : ''}
+                        </div>
+                        
+                        <!-- Composition Table -->
+                        <h4 style="margin:1rem 0 0.5rem;font-size:0.85rem;color:#666;">Composition moléculaire</h4>
+                        <div style="overflow-x:auto;">
+                        <table class="mol-table">
+                            <thead>
+                                <tr><th>Conc.</th><th>CAS</th><th>EINECS</th><th>Classification</th><th>Nom chimique</th></tr>
+                            </thead>
+                            <tbody>
+                                ${comp.map(m => `
+                                    <tr>
+                                        <td><strong>${m.concentration}%</strong></td>
+                                        <td style="font-family:monospace;">${m.cas}</td>
+                                        <td style="font-family:monospace;color:#999;">${m.einecs}</td>
+                                        <td style="font-size:0.72rem;color:#c0392b;">${m.classification || '—'}</td>
+                                        <td>${m.nom_chimique || '<em style="color:#ccc">non extrait</em>'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        </div>
+                        
+                        <!-- Actions rapides -->
+                        <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid #eee;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            <button class="btn-action" style="background:#27ae60;color:#fff;font-size:0.78rem;padding:0.4rem 0.8rem;border:none;border-radius:6px;cursor:pointer;" 
+                                onclick="goCreateSample(${idx})">📋 Créer un échantillon</button>
+                            <button class="btn-action" style="background:#2980b9;color:#fff;font-size:0.78rem;padding:0.4rem 0.8rem;border:none;border-radius:6px;cursor:pointer;" 
+                                onclick="goFormulation(${idx})">🧪 Lancer une formulation</button>
+                            <button class="btn-action" style="background:#d4a853;color:#fff;font-size:0.78rem;padding:0.4rem 0.8rem;border:none;border-radius:6px;cursor:pointer;" 
+                                onclick="goFormulateur(${idx})">🤖 Assistant Formulateur</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function toggleResult(idx) {
+            document.getElementById('body-' + idx).classList.toggle('open');
+        }
+
+        // ── Import to KB ──
+        async function importToKB() {
+            if (!parsedData) return;
+            const btn = document.getElementById('btnImport');
+            btn.disabled = true;
+            btn.textContent = '⏳ Import en cours...';
+            
+            try {
+                const res = await fetch('/api/fds/import-kb', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ parfums: parsedData })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    let statusMsg = `✅ ${data.imported} FDS importée(s) dans la Base de Connaissances` +
+                        (data.total - data.imported > 0 ? ` (${data.total - data.imported} déjà existante(s))` : '');
+                    
+                    // Aussi importer dans les tables fragrances + fragrance_components
+                    try {
+                        const dbRes = await fetch('/api/fds/import-db', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ parfums: parsedData })
+                        });
+                        const dbData = await dbRes.json();
+                        if (dbData.success && dbData.created > 0) {
+                            statusMsg += `\n✅ ${dbData.created} parfum(s) + ${dbData.composants} composants enregistrés dans la base`;
+                        }
+                    } catch (e) { console.warn('import-db:', e); }
+                    
+                    setStatus(statusMsg);
+                    
+                    // Nettoyage : supprimer les fichiers PDF traités du serveur
+                    try {
+                        const filesRes = await fetch('/api/fds/files');
+                        const { files } = await filesRes.json();
+                        for (const f of files) {
+                            await fetch('/api/fds/files/' + encodeURIComponent(f.name), { method: 'DELETE' });
+                        }
+                    } catch (e) { /* silencieux */ }
+                    
+                    // Nettoyage visuel : masquer résultats et boutons secondaires
+                    document.getElementById('results').innerHTML = '';
+                    document.getElementById('jsonOutput').classList.remove('visible');
+                    document.getElementById('btnImport').style.display = 'none';
+                    document.getElementById('btnJson').style.display = 'none';
+                    document.getElementById('btnExport').style.display = 'none';
+                    parsedData = null;
+                    
+                    // Recharger la liste (vide maintenant)
+                    loadFiles();
+                    
+                    // Rafraîchir les stats KB
+                    loadKBStats();
+                } else {
+                    setStatus(`❌ Erreur: ${data.error}`);
+                }
+            } catch (e) {
+                setStatus(`❌ Erreur import: ${e.message}`);
+            }
+            
+            btn.disabled = false;
+            btn.textContent = '📥 Importer dans la Base de Connaissances';
+        }
+
+        // ── JSON Toggle ──
+        function toggleJson() {
+            const el = document.getElementById('jsonOutput');
+            if (el.classList.contains('visible')) {
+                el.classList.remove('visible');
+            } else {
+                el.textContent = JSON.stringify(parsedData, null, 2);
+                el.classList.add('visible');
+            }
+        }
+
+        // ── Export JSON ──
+        function exportJson() {
+            if (!parsedData) return;
+            const blob = new Blob([JSON.stringify(parsedData, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `fds-extraction-${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+        }
+
+        // ── Helpers ──
+        function setStatus(msg) { document.getElementById('status').innerHTML = msg; }
+        function showProgress(show, pct) {
+            const bar = document.getElementById('progress');
+            bar.style.display = show ? 'block' : 'none';
+            if (pct !== undefined) document.getElementById('progressFill').style.width = pct + '%';
+        }
+
+        // Init
+        loadFiles();
+        checkPython();
+        loadKBStats();
+        loadFragList();
+
+        // ── Actions après parsing FDS ──
+        function getFdsInfo(idx) {
+            if (!parsedData || !parsedData[idx]) return null;
+            const r = parsedData[idx];
+            const id = r.identification || {};
+            const props = r.proprietes_physiques || {};
+            return {
+                name: id.nom || '',
+                ref: id.code || '',
+                supplier: id.fournisseur || '',
+                flash_point: props.flash_point_c || '',
+                file: r.fichier || ''
+            };
+        }
+
+        function goCreateSample(idx) {
+            const info = getFdsInfo(idx);
+            if (!info) return;
+            const params = new URLSearchParams();
+            if (info.name) params.set('fragrance_name', info.name);
+            if (info.ref) params.set('fragrance_ref', info.ref);
+            if (info.supplier) params.set('fragrance_supplier', info.supplier);
+            params.set('from', 'fds');
+            window.location.href = 'echantillons.html?' + params.toString();
+        }
+
+        function goFormulation(idx) {
+            const info = getFdsInfo(idx);
+            if (!info) return;
+            const params = new URLSearchParams();
+            if (info.name) params.set('fragrance_name', info.name);
+            if (info.ref) params.set('fragrance_ref', info.ref);
+            if (info.supplier) params.set('fragrance_supplier', info.supplier);
+            params.set('from', 'fds');
+            window.location.href = 'formulations.html?' + params.toString();
+        }
+
+        function goFormulateur(idx) {
+            const info = getFdsInfo(idx);
+            if (!info) return;
+            const params = new URLSearchParams();
+            if (info.name) params.set('fragrance', info.name);
+            if (info.ref) params.set('ref', info.ref);
+            if (info.supplier) params.set('supplier', info.supplier);
+            window.location.href = 'formulateur.html?' + params.toString();
+        }
+        
+        async function checkPython() {
+            try {
+                const res = await fetch('/api/fds/status');
+                const data = await res.json();
+                if (!data.ok) {
+                    setStatus(`⚠️ <strong>${data.error}</strong>`);
+                    document.getElementById('btnParse').disabled = true;
+                    document.getElementById('btnParse').title = data.error;
+                }
+            } catch (e) {}
+        }
+
+        // ── KB Stats ──
+        function toggleFdsList() {
+            const el = document.getElementById('kbListDetail');
+            el.style.display = el.style.display === 'none' ? '' : 'none';
+        }
+        
+        async function enrichAllPubChem() {
+            const btn = document.getElementById('btnPubChem');
+            const prog = document.getElementById('pubchemProgress');
+            btn.disabled = true;
+            btn.textContent = '⏳ Connexion PubChem...';
+            prog.style.display = '';
+            prog.textContent = '⏳ Démarrage...';
+            
+            try {
+                const source = new EventSource('/api/pubchem/batch-enrich/stream?batch_size=999');
+                source.onmessage = (e) => {
+                    const d = JSON.parse(e.data);
+                    if (d.event === 'progress') {
+                        prog.textContent = `⏳ ${d.current}/${d.total} — ${d.name || d.cas || ''}`;
+                        btn.textContent = `⏳ ${d.current}/${d.total}`;
+                    } else if (d.event === 'done') {
+                        source.close();
+                        const msg = `✅ ${d.enriched?.length || 0} molécule(s) enrichie(s), ${d.skipped?.length || 0} ignorée(s), ${d.errors?.length || 0} erreur(s)`;
+                        prog.textContent = msg;
+                        prog.style.background = '#e8f5e9';
+                        prog.style.borderColor = '#81c784';
+                        btn.disabled = false;
+                        btn.textContent = '🧬 Enrichir TOUTES les molécules via PubChem';
+                        loadKBStats();
+                    } else if (d.event === 'error') {
+                        source.close();
+                        prog.textContent = `❌ ${d.error}`;
+                        btn.disabled = false;
+                        btn.textContent = '🧬 Enrichir TOUTES les molécules via PubChem';
+                    }
+                };
+                source.onerror = () => {
+                    source.close();
+                    prog.textContent = '❌ Connexion perdue';
+                    btn.disabled = false;
+                    btn.textContent = '🧬 Enrichir TOUTES les molécules via PubChem';
+                };
+            } catch(e) {
+                prog.textContent = `❌ ${e.message}`;
+                btn.disabled = false;
+                btn.textContent = '🧬 Enrichir TOUTES les molécules via PubChem';
+            }
+        }
+        
+        async function loadKBStats() {
+            try {
+                const res = await fetch('/api/fds/stats');
+                const data = await res.json();
+                const { total, fiches, fragrances, composants, recent_72h, recent_fragrances_72h, unique_cas, invalid_cas, empty_fragrances, no_components } = data;
+                
+                // Dashboard principal — compteurs
+                const dash = document.getElementById('kbDashboard');
+                dash.innerHTML = `
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.6rem;margin-bottom:0.8rem;">
+                        <div style="background:#e8f5e9;padding:0.6rem;border-radius:8px;text-align:center;">
+                            <div style="font-size:1.4rem;font-weight:700;color:#2e7d32;">${total}</div>
+                            <div style="font-size:0.7rem;color:#666;">FDS total</div>
+                        </div>
+                        <div style="background:#e3f2fd;padding:0.6rem;border-radius:8px;text-align:center;">
+                            <div style="font-size:1.4rem;font-weight:700;color:#1565c0;">${fragrances}</div>
+                            <div style="font-size:0.7rem;color:#666;">Parfums en base</div>
+                        </div>
+                        <div style="background:#fff3e0;padding:0.6rem;border-radius:8px;text-align:center;">
+                            <div style="font-size:1.4rem;font-weight:700;color:#E65100;">${composants}</div>
+                            <div style="font-size:0.7rem;color:#666;">Composants</div>
+                        </div>
+                        <div style="background:#f3e5f5;padding:0.6rem;border-radius:8px;text-align:center;">
+                            <div style="font-size:1.4rem;font-weight:700;color:#6a1b9a;">${unique_cas || 0}</div>
+                            <div style="font-size:0.7rem;color:#666;">CAS uniques</div>
+                        </div>
+                        <div style="background:${recent_72h > 0 ? '#e8f5e9' : '#f5f5f5'};padding:0.6rem;border-radius:8px;text-align:center;">
+                            <div style="font-size:1.4rem;font-weight:700;color:${recent_72h > 0 ? '#2e7d32' : '#bbb'};">${recent_72h || 0}</div>
+                            <div style="font-size:0.7rem;color:#666;">FDS (72h)</div>
+                        </div>
+                    </div>`;
+                
+                // Alertes
+                const alerts = document.getElementById('kbAlerts');
+                let alertHtml = '';
+                if (invalid_cas > 0) {
+                    alertHtml += `<div style="background:#fff3e0;padding:0.5rem 0.8rem;border-radius:6px;font-size:0.78rem;margin-bottom:0.4rem;border-left:3px solid #E65100;">
+                        ⚠️ <strong>${invalid_cas}</strong> CAS invalide(s) détecté(s) — relancez le re-scan avec le parseur amélioré</div>`;
+                }
+                if (no_components > 0) {
+                    alertHtml += `<div style="background:#ffebee;padding:0.5rem 0.8rem;border-radius:6px;font-size:0.78rem;margin-bottom:0.4rem;border-left:3px solid #c62828;">
+                        ❌ <strong>${no_components}</strong> parfum(s) sans aucun composant</div>`;
+                }
+                if (empty_fragrances && empty_fragrances.length > 0 && empty_fragrances.length <= 10) {
+                    alertHtml += `<div style="font-size:0.72rem;color:#888;margin-bottom:0.4rem;">
+                        Parfums vides : ${empty_fragrances.map(f => f.name).join(', ')}</div>`;
+                }
+                if (alertHtml) {
+                    alerts.style.display = '';
+                    alerts.innerHTML = alertHtml;
+                } else {
+                    alerts.style.display = 'none';
+                }
+                
+                // Liste détaillée (masquée)
+                const detail = document.getElementById('kbListDetail');
+                if (fiches && fiches.length > 0) {
+                    detail.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
+                        ${fiches.map(f => {
+                            const nom = f.title.replace('FDS Parfum : ', '');
+                            const date = f.created_at ? new Date(f.created_at).toLocaleDateString('fr-FR') : '';
+                            return '<span style="background:#e8f5e9;color:#2e7d32;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.68rem;">'+nom+(date ? ' · ' + date : '')+'</span>';
+                        }).join('')}
+                    </div>`;
+                }
+                
+                // Archive
+                const archRes = await fetch('/api/fds/archive');
+                const archData = await archRes.json();
+                if (archData.inbox > 0 || archData.done > 0) {
+                    document.getElementById('archiveSection').style.display = '';
+                    let info = '';
+                    if (archData.inbox > 0) info += `📥 ${archData.inbox} à traiter`;
+                    if (archData.done > 0) info += (info ? ' · ' : '') + `✅ ${archData.done} traité(s)`;
+                    document.getElementById('archiveCount').textContent = info;
+                    document.getElementById('btnReimport').disabled = archData.inbox === 0;
+                    if (archData.inbox === 0) {
+                        document.getElementById('btnReimport').textContent = '✅ Toutes les FDS sont traitées';
+                        document.getElementById('btnReimport').style.background = '#888';
+                    }
+                }
+            } catch (e) {
+                document.getElementById('kbDashboard').innerHTML = '<p style="color:#ccc;">Erreur chargement stats</p>';
+            }
+        }
+
+        async function reimportArchive() {
+            const btn = document.getElementById('btnReimport');
+            btn.disabled = true;
+            btn.textContent = '⏳ Lancement...';
+            setStatus('⏳ Lancement du reimport...');
+            
+            try {
+                const res = await fetch('/api/fds/reimport-archive', { method: 'POST' });
+                const data = await res.json();
+                if (!data.success) {
+                    setStatus(`❌ ${data.error}`);
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Réimporter depuis l\'archive';
+                    return;
+                }
+                pollReimportStatus(btn, '🔄 Réimporter depuis l\'archive');
+            } catch(e) {
+                setStatus(`❌ ${e.message}`);
+                btn.disabled = false;
+                btn.textContent = '🔄 Réimporter depuis l\'archive';
+            }
+        }
+        
+        async function purgeAllFragrances() {
+            if (!confirm('⚠️ Supprimer TOUS les parfums et composants ?\n\nCires, mèches, recettes et base de connaissances seront conservés.\nVous pourrez re-scanner les FDS ensuite pour recréer les parfums proprement.')) return;
+            const btn = document.getElementById('btnPurge');
+            btn.disabled = true; btn.textContent = '🗑️ Purge en cours...';
+            try {
+                const r = await fetch('/api/fragrances/purge-all', { method: 'POST' });
+                const d = await r.json();
+                if (d.success) {
+                    btn.textContent = `✅ ${d.deleted_fragrances} parfums + ${d.deleted_components} composants + ${d.deleted_pdfs||0} PDF supprimés`;
+                    setTimeout(() => location.reload(), 2000);
+                } else { btn.textContent = '❌ Erreur'; }
+            } catch(e) { btn.textContent = '❌ ' + e.message; }
+            setTimeout(() => { btn.disabled = false; btn.textContent = '🗑️ Purger tous les parfums'; }, 5000);
+        }
+
+        async function rescanAll(force) {
+            const msg = force 
+                ? 'FORCER la ré-extraction complète ?\n\nTous les composants existants seront SUPPRIMÉS et ré-extraits avec le parseur amélioré.\nCette opération est irréversible.'
+                : 'Re-scanner les FDS ?\n\nSeuls les parfums incomplets seront mis à jour.';
+            if (!confirm(msg)) return;
+            
+            const btn = force ? document.getElementById('btnRescanForce') : document.getElementById('btnRescan');
+            const prog = document.getElementById('rescanProgress');
+            document.getElementById('btnRescan').disabled = true;
+            document.getElementById('btnRescanForce').disabled = true;
+            btn.textContent = '⏳ Lancement du scan...';
+            prog.style.display = '';
+            prog.textContent = '⏳ Démarrage...';
+            
+            try {
+                const res = await fetch('/api/fds/rescan-all', { 
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ force: !!force })
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    prog.textContent = `❌ ${data.error}`;
+                    document.getElementById('btnRescan').disabled = false;
+                    document.getElementById('btnRescanForce').disabled = false;
+                    btn.textContent = force ? '⚡ Forcer la ré-extraction complète' : '🔬 Re-scanner TOUTES les FDS';
+                    return;
+                }
+                prog.textContent = `⏳ ${data.message}`;
+                pollReimportStatus(btn, force ? '⚡ Forcer la ré-extraction complète' : '🔬 Re-scanner TOUTES les FDS', prog, () => {
+                    document.getElementById('btnRescan').disabled = false;
+                    document.getElementById('btnRescanForce').disabled = false;
+                });
+            } catch(e) {
+                prog.textContent = `❌ ${e.message}`;
+                document.getElementById('btnRescan').disabled = false;
+                document.getElementById('btnRescanForce').disabled = false;
+                btn.textContent = force ? '⚡ Forcer la ré-extraction complète' : '🔬 Re-scanner TOUTES les FDS';
+            }
+        }
+        
+        function pollReimportStatus(btn, btnLabel, progressEl, onDone) {
+            const poll = setInterval(async () => {
+                try {
+                    const sr = await fetch('/api/fds/reimport-status');
+                    const st = await sr.json();
+                    const msg = `⏳ ${st.progress}`;
+                    btn.textContent = msg;
+                    setStatus(msg);
+                    if (progressEl) progressEl.textContent = msg;
+                    
+                    if (st.done) {
+                        clearInterval(poll);
+                        const r = st.result;
+                        const nParsed = r.parsed || r.scanned || 0;
+                        const nCreated = r.parfums || r.created || 0;
+                        const nEnriched = r.enriched || 0;
+                        const nComps = r.composants || r.totalComps || 0;
+                        const nKb = r.kb || 0;
+                        const nErrors = r.errors || 0;
+                        const nSkipped = r.skipped || 0;
+                        const nAlreadyOk = r.already_ok || 0;
+                        
+                        let summary = `✅ ${nParsed} FDS parsées`;
+                        if (nCreated > 0) summary += ` — ${nCreated} parfum(s) créé(s)`;
+                        if (nEnriched > 0) summary += ` — ${nEnriched} enrichi(s)`;
+                        if (nComps > 0) summary += ` — ${nComps} composants`;
+                        if (nKb > 0) summary += ` — ${nKb} fiches KB`;
+                        if (nAlreadyOk > 0) summary += ` — ${nAlreadyOk} déjà complet(s)`;
+                        if (nSkipped > 0) summary += ` — ${nSkipped} ignoré(s)`;
+                        if (nErrors > 0) summary += ` — ⚠️ ${nErrors} erreur(s)`;
+                        
+                        setStatus(summary);
+                        if (progressEl) { progressEl.textContent = summary; progressEl.style.background = '#e8f5e9'; }
+                        btn.disabled = false;
+                        btn.textContent = btnLabel;
+                        loadKBStats();
+                        if (onDone) onDone();
+                    }
+                    if (!st.running && !st.done) {
+                        clearInterval(poll);
+                        btn.disabled = false;
+                        btn.textContent = btnLabel;
+                        if (onDone) onDone();
+                    }
+                } catch(e) {}
+            }, 2000);
+        }
+
+        // ── Liste des parfums ──
+        let allFragrances = [];
+        async function loadFragList() {
+            try {
+                const list = await fetch('/api/fragrances').then(r => r.json());
+                allFragrances = list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+                document.getElementById('fragCountBadge').textContent = `(${allFragrances.length})`;
+                renderFragList(allFragrances);
+            } catch(e) { console.error('loadFragList:', e); }
+        }
+
+        function renderFragList(list) {
+            const container = document.getElementById('fragListContainer');
+            if (!list.length) { container.innerHTML = '<div style="padding:1rem;color:#888;text-align:center;">Aucun parfum</div>'; return; }
+            container.innerHTML = list.map(f => `
+                <div onclick="showFragDetail(${f.id})" style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0.8rem;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='#fff8e1'" onmouseout="this.style.background=''">
+                    <div>
+                        <span style="font-size:0.82rem;font-weight:600;color:#1a1a1a;">${f.name || '?'}</span>
+                        ${f.reference ? '<span style="font-size:0.7rem;color:#888;margin-left:0.5rem;">ref: ' + f.reference + '</span>' : ''}
+                    </div>
+                    <span style="font-size:0.7rem;color:#aaa;">▸</span>
+                </div>
+            `).join('');
+        }
+
+        function filterFragList() {
+            const q = document.getElementById('fragSearch').value.toLowerCase();
+            if (!q) { renderFragList(allFragrances); return; }
+            renderFragList(allFragrances.filter(f => (f.name || '').toLowerCase().includes(q) || (f.reference || '').toLowerCase().includes(q)));
+        }
+
+        async function showFragDetail(id) {
+            try {
+                const frag = await fetch('/api/fragrances/' + id).then(r => r.json());
+                const comps = await fetch('/api/fragrances/' + id + '/components').then(r => r.json());
+                document.getElementById('fragDetailTitle').textContent = frag.name || '?';
+                document.getElementById('fragDetailInfo').innerHTML = [
+                    frag.reference ? 'Réf: ' + frag.reference : '',
+                    frag.flash_point ? 'Flash point: ' + frag.flash_point + '°C' : '',
+                    frag.supplier_name ? 'Fournisseur: ' + frag.supplier_name : '',
+                    (Array.isArray(comps) ? comps.length : 0) + ' composant(s) CAS'
+                ].filter(Boolean).join(' · ');
+                const tbody = document.getElementById('fragDetailComps');
+                if (Array.isArray(comps) && comps.length > 0) {
+                    tbody.innerHTML = comps.sort((a, b) => (b.percentage_max || 0) - (a.percentage_max || 0)).map(c => `
+                        <tr style="border-bottom:1px solid #f0f0f0;">
+                            <td style="padding:0.25rem 0.5rem;font-family:monospace;font-size:0.75rem;">${c.cas_number || '?'}</td>
+                            <td style="padding:0.25rem 0.5rem;">${c.name || '?'}</td>
+                            <td style="padding:0.25rem 0.5rem;text-align:right;">${c.percentage_min != null ? c.percentage_min + '%' : '-'}</td>
+                            <td style="padding:0.25rem 0.5rem;text-align:right;">${c.percentage_max != null ? c.percentage_max + '%' : '-'}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="padding:0.5rem;color:#888;text-align:center;">Aucun composant extrait</td></tr>';
+                }
+                document.getElementById('fragDetail').style.display = 'block';
+                document.getElementById('fragDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } catch(e) { console.error('showFragDetail:', e); }
+        }
+    </script>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

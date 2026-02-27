@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFC — Clients</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC">
+            <div class="brand-text"><h1>LABORATOIRE</h1><span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span></div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a><a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+            <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html" class="active">Clients</a>
+            <a href="operateurs.html">Opérateurs</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- SECTION 1: Liste des clients + stats business -->
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">👤 Nos clients</h3>
+                <div>
+                    <button class="btn btn-sm" style="background:#e65100;color:#fff;" onclick="detectDuplicates()">🔍 Détecter doublons</button>
+                    <button class="btn btn-sm" style="background:#6a1b9a;color:#fff;" onclick="window.open('/api/patrimoine/pdf','_blank')">📄 Export Patrimoine PDF</button>
+                </div>
+            </div>
+
+            <!-- Panneau doublons (caché par défaut) -->
+            <div id="duplicates-panel" style="display:none;padding:0.8rem 1rem;background:var(--fond-surface);border-bottom:1px solid var(--bordure);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;">
+                    <h4 style="margin:0;font-size:0.9rem;color:var(--mfc-cire);">⚠️ Doublons détectés</h4>
+                    <button class="btn btn-sm" onclick="document.getElementById('duplicates-panel').style.display='none'" style="background:var(--bordure);font-size:0.7rem;">✕ Fermer</button>
+                </div>
+                <div id="duplicates-list"></div>
+            </div>
+
+            <div id="business-stats" style="padding:0 1rem;"></div>
+            <div class="table-container">
+                <table id="clients-table">
+                    <thead><tr>
+                        <th>Client</th><th>Type</th><th>Échantillons</th><th>Formulations</th>
+                        <th>Tests</th><th>Validés</th><th>Refusés</th><th>Taux</th><th></th>
+                    </tr></thead>
+                    <tbody id="clients-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECTION 2: Dashboard client sélectionné -->
+        <div id="client-dashboard" style="display:none;" class="mt-2">
+            <div class="card" style="border-left:3px solid #a32d03;">
+                <div class="card-header">
+                    <h3 class="card-title" id="dash-client-name">—</h3>
+                    <button class="btn btn-sm btn-secondary" onclick="closeDashboard()">✕ Fermer</button>
+                </div>
+
+                <!-- Stats rapides -->
+                <div class="grid grid-4" style="padding:0.5rem 1rem;" id="dash-stats"></div>
+
+                <!-- Graphiques côte à côte -->
+                <div class="grid grid-2" style="padding:1rem;gap:1rem;">
+                    <div style="background:#faf8f5;border-radius:8px;padding:1rem;">
+                        <h4 style="font-size:0.8rem;margin:0 0 0.5rem;">📊 Tests par statut</h4>
+                        <canvas id="chart-status" height="200"></canvas>
+                    </div>
+                    <div style="background:#faf8f5;border-radius:8px;padding:1rem;">
+                        <h4 style="font-size:0.8rem;margin:0 0 0.5rem;">🧵 Mèches utilisées</h4>
+                        <canvas id="chart-wicks" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Historique décisions -->
+                <div style="padding:0 1rem 1rem;">
+                    <h4 style="font-size:0.85rem;margin:0 0 0.5rem;">📋 Historique des décisions</h4>
+                    <div id="dash-decisions" class="table-container"></div>
+                </div>
+
+                <!-- Projets / Collaborations -->
+                <div style="padding:0 1rem 1rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <h4 style="font-size:0.85rem;margin:0 0 0.5rem;">📁 Projets / Collaborations</h4>
+                        <button class="btn btn-sm btn-primary" onclick="openProjectModal()">+ Nouveau projet</button>
+                    </div>
+                    <div id="dash-projects" class="table-container"></div>
+                </div>
+
+                <!-- Formulations -->
+                <div style="padding:0 1rem 1rem;">
+                    <h4 style="font-size:0.85rem;margin:0 0 0.5rem;">🧪 Formulations</h4>
+                    <div id="dash-formulations" class="table-container"></div>
+                </div>
+
+                <!-- Savoir lié -->
+                <div style="padding:0 1rem 1rem;" id="dash-knowledge-section" style="display:none;">
+                    <h4 style="font-size:0.85rem;margin:0 0 0.5rem;">📚 Savoir-faire lié à ce client</h4>
+                    <div id="dash-knowledge"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: Moteur de recommandation -->
+        <div class="card mt-2" style="border-left:3px solid #f9a825;">
+            <div class="card-header"><h3 class="card-title">🤖 Recommandation IA</h3></div>
+            <div style="padding:0 1rem 1rem;">
+                <p style="font-size:0.78rem;color:#666;margin:0 0 0.75rem;">Décrivez le besoin, l'IA recommande la recette, la mèche et les ajustements.</p>
+                <div class="grid grid-4" style="gap:0.5rem;">
+                    <div class="form-group"><label>Ø intérieur (mm)</label><input type="number" class="form-control" id="rec-diameter" placeholder="80"></div>
+                    <div class="form-group"><label>Hauteur (mm)</label><input type="number" class="form-control" id="rec-height" placeholder="90"></div>
+                    <div class="form-group"><label>Type</label><select class="form-control" id="rec-type"><option value="container">Container</option><option value="pilier">Pilier</option><option value="votive">Votive</option></select></div>
+                    <div class="form-group"><label>% Parfum</label><input type="number" class="form-control" id="rec-parfum" placeholder="10" step="0.5"></div>
+                </div>
+                <div class="grid grid-3" style="gap:0.5rem;">
+                    <div class="form-group"><label>Parfum</label><input type="text" class="form-control" id="rec-fragrance" placeholder="Ex: Rose, Bois..."></div>
+                    <div class="form-group"><label>Famille olfactive</label><select class="form-control" id="rec-family"><option value="">—</option><option>Florale</option><option>Boisée</option><option>Ambrée</option><option>Hespéridée</option><option>Orientale</option><option>Gourmande</option></select></div>
+                    <div class="form-group"><label>Client</label><select class="form-control" id="rec-client"><option value="">— Tous —</option></select></div>
+                </div>
+                <button class="btn btn-primary" onclick="getRecommendation()" style="background:#f9a825;color:#333;font-weight:600;">🔍 Recommander</button>
+                <div id="rec-results" style="margin-top:1rem;"></div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: Comparaison de tests -->
+        <div class="card mt-2">
+            <div class="card-header"><h3 class="card-title">📊 Comparer des tests</h3></div>
+            <div style="padding:0 1rem 1rem;">
+                <p style="font-size:0.78rem;color:#666;margin:0 0 0.75rem;">Sélectionnez des tests (V1, V2, V3...) pour comparer l'évolution.</p>
+                <div class="grid grid-2" style="gap:0.5rem;">
+                    <div class="form-group"><label>Tests à comparer (IDs séparés par virgule)</label><input type="text" class="form-control" id="compare-ids" placeholder="1,2,3"></div>
+                    <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="compareTests()" style="width:100%;">📊 Comparer</button></div>
+                </div>
+                <div id="compare-results" style="margin-top:1rem;">
+                    <canvas id="chart-compare" height="250" style="display:none;"></canvas>
+                    <div id="compare-table"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let clients = [];
+    let chartStatus = null, chartWicks = null, chartCompare = null;
+
+    // ═══ CHARGEMENT ═══
+    document.addEventListener('DOMContentLoaded', () => { loadBusinessStats(); });
+
+    async function loadBusinessStats() {
+        const r = await fetch('/api/business/stats');
+        const data = await r.json();
+        clients = data.clients;
+
+        // Global stats bar
+        const g = data.global;
+        document.getElementById('business-stats').innerHTML = `
+            <div class="grid grid-4" style="gap:0.5rem;margin-bottom:0.75rem;">
+                <div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:700;color:#a32d03;">${g.total_clients}</div>
+                    <div style="font-size:0.7rem;color:#888;">Clients</div>
+                </div>
+                <div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:700;color:#2e7d32;">${g.total_validated}</div>
+                    <div style="font-size:0.7rem;color:#888;">Tests validés</div>
+                </div>
+                <div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:700;color:#333;">${g.global_success_rate}%</div>
+                    <div style="font-size:0.7rem;color:#888;">Taux réussite</div>
+                </div>
+                <div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;">
+                    <div style="font-size:1.4rem;font-weight:700;color:#6a1b9a;">${g.patrimoine_score}</div>
+                    <div style="font-size:0.7rem;color:#888;">Score patrimoine</div>
+                </div>
+            </div>`;
+
+        // Clients table
+        document.getElementById('clients-body').innerHTML = data.clients.map(c => `
+            <tr onclick="openDashboard(${c.id})" style="cursor:pointer;">
+                <td><strong>${c.name}</strong></td>
+                <td><span style="font-size:0.7rem;background:#f0ece6;padding:0.15rem 0.4rem;border-radius:4px;">${c.type || '—'}</span></td>
+                <td>${c.samples}</td>
+                <td>${c.formulations}</td>
+                <td>${c.tests_total}</td>
+                <td style="color:#2e7d32;font-weight:600;">${c.tests_validated}</td>
+                <td style="color:#c62828;">${c.tests_refused}</td>
+                <td><strong>${c.success_rate !== null ? c.success_rate + '%' : '—'}</strong></td>
+                <td><button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openDashboard(${c.id})">Voir →</button></td>
+            </tr>
+        `).join('');
+
+        // Populate rec-client dropdown
+        const sel = document.getElementById('rec-client');
+        data.clients.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = c.name; sel.appendChild(o); });
+    }
+
+    // ═══ DASHBOARD CLIENT ═══
+    async function openDashboard(id) {
+        currentDashClientId = id;
+        const r = await fetch('/api/clients/' + id + '/dashboard');
+        const d = await r.json();
+
+        document.getElementById('client-dashboard').style.display = '';
+        document.getElementById('dash-client-name').textContent = '👤 ' + d.client.name + (d.client.client_type ? ' — ' + d.client.client_type : '');
+
+        // Stats
+        const s = d.stats;
+        document.getElementById('dash-stats').innerHTML = `
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;">${s.total_samples}</div><div style="font-size:0.7rem;color:#888;">Échantillons</div></div>
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;">${s.total_formulations}</div><div style="font-size:0.7rem;color:#888;">Formulations</div></div>
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#2e7d32;">${s.validated}</div><div style="font-size:0.7rem;color:#888;">Validés</div></div>
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:700;color:#a32d03;">${s.success_rate}%</div><div style="font-size:0.7rem;color:#888;">Taux</div></div>`;
+
+        // Chart: status
+        if (chartStatus) chartStatus.destroy();
+        chartStatus = new Chart(document.getElementById('chart-status'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Validés', 'Refusés', 'En cours'],
+                datasets: [{ data: [s.validated, s.refused, s.in_progress], backgroundColor: ['#2e7d32', '#c62828', '#f9a825'] }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+        });
+
+        // Chart: wicks
+        if (chartWicks) chartWicks.destroy();
+        if (s.wicks.length) {
+            chartWicks = new Chart(document.getElementById('chart-wicks'), {
+                type: 'bar',
+                data: {
+                    labels: s.wicks.map(w => w.wick_reference),
+                    datasets: [
+                        { label: 'Validés', data: s.wicks.map(w => w.validated), backgroundColor: '#2e7d32' },
+                        { label: 'Total', data: s.wicks.map(w => w.count - w.validated), backgroundColor: '#ddd' }
+                    ]
+                },
+                options: { responsive: true, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+            });
+        }
+
+        // Decisions
+        if (d.decisions.length) {
+            document.getElementById('dash-decisions').innerHTML = `<table><thead><tr><th>Test</th><th>Formulation</th><th>Parfum</th><th>Mèche</th><th>Décision</th><th>Retour</th></tr></thead><tbody>` +
+                d.decisions.map(dec => `<tr>
+                    <td>${dec.test_number || '—'}</td>
+                    <td>${dec.form_code || '—'}</td>
+                    <td>${dec.fragrance_name || '—'}</td>
+                    <td>${dec.wick_reference || '—'}</td>
+                    <td>${dec.client_status === 'validé' ? '<span style="color:#2e7d32;font-weight:700;">✅ Validé</span>' : '<span style="color:#c62828;font-weight:700;">❌ Refusé</span>'}</td>
+                    <td style="font-size:0.75rem;max-width:200px;">${dec.client_feedback || '—'}</td>
+                </tr>`).join('') + '</tbody></table>';
+        } else {
+            document.getElementById('dash-decisions').innerHTML = '<em style="color:#999;font-size:0.8rem;">Aucune décision enregistrée</em>';
+        }
+
+        // Formulations
+        if (d.formulations.length) {
+            document.getElementById('dash-formulations').innerHTML = `<table><thead><tr><th>Code</th><th>Nom</th><th>Parfum</th><th>%</th><th>Mèche</th><th>Container</th></tr></thead><tbody>` +
+                d.formulations.map(f => `<tr>
+                    <td><strong>${f.code || '—'}</strong></td>
+                    <td>${f.name || '—'}</td>
+                    <td>${f.fragrance_name || '—'}</td>
+                    <td>${f.fragrance_percentage || '—'}%</td>
+                    <td>${f.wick_reference || '—'}</td>
+                    <td>${f.container_type || '—'} Ø${f.diameter || '?'}</td>
+                </tr>`).join('') + '</tbody></table>';
+        }
+
+        // Knowledge
+        if (d.knowledge.length) {
+            document.getElementById('dash-knowledge').innerHTML = d.knowledge.map(k =>
+                `<div style="background:#f0ece6;padding:0.5rem 0.75rem;border-radius:6px;margin-bottom:0.4rem;">
+                    <strong style="font-size:0.8rem;">${k.title}</strong>
+                    <p style="font-size:0.72rem;color:#555;margin:0.2rem 0 0;">${(k.content || '').substring(0, 120)}...</p>
+                </div>`).join('');
+        }
+
+        // Projects
+        renderProjects(d.projects || []);
+
+        document.getElementById('client-dashboard').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeDashboard() { document.getElementById('client-dashboard').style.display = 'none'; currentDashClientId = null; }
+    function loadDashboard(id) { if (id) openDashboard(id); }
+
+    // ═══ RECOMMANDATION IA ═══
+    async function getRecommendation() {
+        const data = {
+            diameter: parseInt(document.getElementById('rec-diameter').value) || null,
+            height: parseInt(document.getElementById('rec-height').value) || null,
+            candle_type: document.getElementById('rec-type').value,
+            fragrance_percentage: parseFloat(document.getElementById('rec-parfum').value) || null,
+            fragrance_name: document.getElementById('rec-fragrance').value || null,
+            fragrance_family: document.getElementById('rec-family').value || null,
+            client_id: document.getElementById('rec-client').value || null
+        };
+        const r = await fetch('/api/assistant/recommend', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const rec = await r.json();
+        let html = '';
+
+        // Warnings
+        if (rec.warnings?.length) {
+            html += '<div style="background:#fff3e0;border-left:3px solid #e65100;padding:0.6rem 0.8rem;border-radius:6px;margin-bottom:0.75rem;">';
+            rec.warnings.forEach(w => { html += '<p style="font-size:0.8rem;margin:0.2rem 0;">' + w + '</p>'; });
+            html += '</div>';
+        }
+
+        // Recipes
+        if (rec.recipes?.length) {
+            html += '<h4 style="font-size:0.85rem;margin:0.5rem 0;">📖 Recettes recommandées</h4>';
+            rec.recipes.forEach((r, i) => {
+                html += `<div style="background:${i===0?'#e8f5e9':'#faf8f5'};padding:0.6rem 0.8rem;border-radius:6px;margin-bottom:0.4rem;${i===0?'border-left:3px solid #2e7d32;':''}">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <strong style="font-size:0.85rem;">${i===0?'⭐ ':''}${r.code} — ${r.name || ''}</strong>
+                        <span style="font-size:0.7rem;background:#fff;padding:0.15rem 0.5rem;border-radius:10px;">Score: ${r.score}</span>
+                    </div>
+                    <p style="font-size:0.72rem;color:#555;margin:0.2rem 0 0;">${r.description ? r.description.substring(0, 150) : ''}</p>
+                    ${r.waxes?.length ? '<p style="font-size:0.7rem;color:#888;margin:0.2rem 0 0;">Cires: ' + r.waxes.map(w => w.reference + ' ' + w.percentage + '%').join(' + ') + '</p>' : ''}
+                    ${r.default_wick ? '<p style="font-size:0.7rem;color:#888;margin:0;">Mèche: ' + r.default_wick + '</p>' : ''}
+                </div>`;
+            });
+        }
+
+        // Wicks from history
+        if (rec.wicks?.length) {
+            html += '<h4 style="font-size:0.85rem;margin:0.75rem 0 0.3rem;">🧵 Mèches testées sur ce diamètre</h4>';
+            html += '<table style="font-size:0.78rem;"><thead><tr><th>Mèche</th><th>Utilisations</th><th>Validées</th><th>Taux</th></tr></thead><tbody>';
+            rec.wicks.forEach(w => {
+                html += `<tr><td><strong>${w.reference}</strong></td><td>${w.uses}</td><td style="color:#2e7d32;">${w.validated}</td><td><strong>${w.success_rate}%</strong></td></tr>`;
+            });
+            html += '</tbody></table>';
+        }
+
+        // Client history
+        if (rec.client_history?.length) {
+            html += '<h4 style="font-size:0.85rem;margin:0.75rem 0 0.3rem;">👤 Historique client</h4>';
+            rec.client_history.forEach(h => {
+                const icon = h.client_status === 'validé' ? '✅' : '❌';
+                html += `<p style="font-size:0.78rem;margin:0.15rem 0;">${icon} ${h.fragrance_name || '—'} / ${h.wick_reference || '—'} ${h.client_feedback ? '— "' + h.client_feedback + '"' : ''}</p>`;
+            });
+        }
+
+        if (!html) html = '<em style="color:#999;">Pas assez de données pour recommander. Remplissez au moins le diamètre.</em>';
+        document.getElementById('rec-results').innerHTML = html;
+    }
+
+    // ═══ COMPARAISON DE TESTS ═══
+    async function compareTests() {
+        const ids = document.getElementById('compare-ids').value;
+        if (!ids) return;
+        const r = await fetch('/api/tests/compare?ids=' + ids);
+        const tests = await r.json();
+        if (!tests.length) { document.getElementById('compare-table').innerHTML = '<em style="color:#999;">Aucun test trouvé</em>'; return; }
+
+        // Chart
+        const canvas = document.getElementById('chart-compare');
+        canvas.style.display = '';
+        if (chartCompare) chartCompare.destroy();
+
+        const colors = ['#a32d03', '#2e7d32', '#1565c0', '#e65100', '#6a1b9a'];
+        const datasets = tests.map((t, i) => ({
+            label: t.test_number || 'Test ' + t.id,
+            data: t.cycles.map(c => c.mass_consumed || (c.mass_before - c.mass_after) || 0),
+            borderColor: colors[i % colors.length],
+            backgroundColor: colors[i % colors.length] + '20',
+            tension: 0.3,
+            fill: true
+        }));
+        const maxCycles = Math.max(...tests.map(t => t.cycles.length));
+
+        chartCompare = new Chart(canvas, {
+            type: 'line',
+            data: {
+                labels: Array.from({ length: maxCycles }, (_, i) => 'C' + (i + 1)),
+                datasets
+            },
+            options: {
+                responsive: true,
+                scales: { y: { title: { display: true, text: 'Masse consommée (g)' }, beginAtZero: true } },
+                plugins: { legend: { position: 'bottom' }, title: { display: true, text: 'Consommation par cycle' } }
+            }
+        });
+
+        // Comparison table
+        let html = '<table style="font-size:0.75rem;margin-top:1rem;"><thead><tr><th>Test</th><th>Mèche</th><th>Parfum</th><th>%</th><th>Cycles</th><th>Total consommé</th><th>Moy/cycle</th><th>Pool max</th></tr></thead><tbody>';
+        tests.forEach(t => {
+            const consumed = t.cycles.reduce((s, c) => s + (c.mass_consumed || (c.mass_before - c.mass_after) || 0), 0);
+            const maxPool = Math.max(...t.cycles.map(c => c.pool_diameter || 0));
+            html += `<tr>
+                <td><strong>${t.test_number || t.id}</strong></td>
+                <td>${t.wick_reference || '—'}</td>
+                <td>${t.fragrance_name || '—'}</td>
+                <td>${t.fragrance_percentage || '—'}%</td>
+                <td>${t.cycles.length}/4</td>
+                <td><strong>${consumed.toFixed(1)}g</strong></td>
+                <td>${(consumed / (t.cycles.length || 1)).toFixed(1)}g</td>
+                <td>${maxPool}mm</td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('compare-table').innerHTML = html;
+    }
+
+    // ═══════ PROJETS / COLLABORATIONS ═══════
+    let currentDashClientId = null;
+
+    function openProjectModal(proj) {
+        const isEdit = !!proj;
+        const html = `<div class="modal-overlay active" id="project-modal" onclick="if(event.target===this)this.remove()">
+            <div class="modal" style="max-width:500px;">
+                <div class="modal-header"><h2>${isEdit ? 'Modifier le projet' : 'Nouveau projet / Collaboration'}</h2>
+                    <button class="modal-close" onclick="document.getElementById('project-modal').remove()">&times;</button></div>
+                <div class="modal-body">
+                    <div class="form-group"><label>Nom du projet *</label>
+                        <input type="text" class="form-control" id="proj_name" value="${proj?.name||''}" placeholder="Ex: Collection Printemps 2026"></div>
+                    <div class="form-group"><label>Marque / Collaboration</label>
+                        <input type="text" class="form-control" id="proj_brand" value="${proj?.brand||''}" placeholder="Ex: Ladurée, Parfums d'Orsay..."></div>
+                    <div class="form-group"><label>Description</label>
+                        <textarea class="form-control" id="proj_desc" rows="2" placeholder="Détails du projet...">${proj?.description||''}</textarea></div>
+                    <div class="grid grid-2">
+                        <div class="form-group"><label>Date de début</label>
+                            <input type="date" class="form-control" id="proj_date" value="${proj?.start_date||new Date().toISOString().split('T')[0]}"></div>
+                        <div class="form-group"><label>Statut</label>
+                            <select class="form-control" id="proj_status">
+                                <option value="actif" ${proj?.status==='actif'?'selected':''}>Actif</option>
+                                <option value="en_pause" ${proj?.status==='en_pause'?'selected':''}>En pause</option>
+                                <option value="terminé" ${proj?.status==='terminé'?'selected':''}>Terminé</option>
+                            </select></div>
+                    </div>
+                    <div class="form-group"><label>Notes</label>
+                        <textarea class="form-control" id="proj_notes" rows="2">${proj?.notes||''}</textarea></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="document.getElementById('project-modal').remove()">Annuler</button>
+                    <button class="btn btn-primary" onclick="saveProject(${proj?.id||'null'})">${isEdit?'Modifier':'Créer le projet'}</button>
+                </div>
+            </div></div>`;
+        document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    async function saveProject(editId) {
+        const data = {
+            client_id: currentDashClientId,
+            name: document.getElementById('proj_name').value,
+            brand: document.getElementById('proj_brand').value,
+            description: document.getElementById('proj_desc').value,
+            start_date: document.getElementById('proj_date').value,
+            status: document.getElementById('proj_status').value,
+            notes: document.getElementById('proj_notes').value
+        };
+        if (!data.name) { alert('Le nom du projet est obligatoire'); return; }
+        try {
+            if (editId) {
+                await fetch('/api/projects/' + editId, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            } else {
+                await fetch('/api/projects', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+            }
+            document.getElementById('project-modal').remove();
+            loadDashboard(currentDashClientId);
+        } catch(e) { alert('Erreur: ' + e.message); }
+    }
+
+    async function deleteProject(id, name) {
+        if (!confirm(`Supprimer le projet "${name}" ?\nLes échantillons et formulations liés seront détachés.`)) return;
+        await fetch('/api/projects/' + id, { method:'DELETE' });
+        loadDashboard(currentDashClientId);
+    }
+
+    function renderProjects(projects) {
+        if (!projects || !projects.length) {
+            document.getElementById('dash-projects').innerHTML = '<p style="color:#999;font-size:0.8rem;padding:0.5rem;">Aucun projet. Cliquez sur "+ Nouveau projet" pour commencer.</p>';
+            return;
+        }
+        const statusBadge = s => {
+            const colors = { actif:'#27ae60', en_pause:'#f39c12', 'terminé':'#999' };
+            return `<span style="background:${colors[s]||'#999'};color:#fff;padding:2px 8px;border-radius:10px;font-size:0.7rem;">${s}</span>`;
+        };
+        let html = '<table style="font-size:0.78rem;"><thead><tr><th>Projet</th><th>Marque</th><th>Statut</th><th>Échant.</th><th>Formul.</th><th>Date</th><th>Actions</th></tr></thead><tbody>';
+        projects.forEach(p => {
+            html += `<tr>
+                <td><strong>${p.name}</strong>${p.description ? '<br><small style="color:#888;">'+p.description+'</small>' : ''}</td>
+                <td>${p.brand || '—'}</td>
+                <td>${statusBadge(p.status)}</td>
+                <td>${p.sample_count || 0}</td>
+                <td>${p.formulation_count || 0}</td>
+                <td>${p.start_date || '—'}</td>
+                <td>
+                    <button class="btn btn-sm" onclick='openProjectModal(${JSON.stringify(p)})' style="background:#666;color:#fff;font-size:0.7rem;padding:2px 6px;">✏️</button>
+                    <button class="btn btn-sm" onclick="deleteProject(${p.id},'${p.name.replace(/'/g,"\\'")}')" style="background:#e74c3c;color:#fff;font-size:0.7rem;padding:2px 6px;">🗑️</button>
+                </td>
+            </tr>`;
+        });
+        html += '</tbody></table>';
+        document.getElementById('dash-projects').innerHTML = html;
+    }
+
+    // ═══ DOUBLONS CLIENTS ═══
+    async function detectDuplicates() {
+        const panel = document.getElementById('duplicates-panel');
+        const list = document.getElementById('duplicates-list');
+        list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--texte-muted);">🔍 Analyse en cours...</div>';
+        panel.style.display = 'block';
+
+        try {
+            const res = await fetch('/api/clients/duplicates/detect');
+            const data = await res.json();
+
+            if (data.duplicate_groups === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:1rem;color:var(--vert);">✅ Aucun doublon détecté parmi les ' + data.total_clients + ' clients.</div>';
+                return;
+            }
+
+            let html = '<p style="font-size:0.82rem;color:var(--texte-secondary);margin-bottom:0.8rem;">' + 
+                data.duplicate_count + ' doublon(s) potentiel(s) dans ' + data.duplicate_groups + ' groupe(s) — ' + data.total_clients + ' clients au total.</p>';
+
+            data.groups.forEach((group, gi) => {
+                html += '<div style="background:var(--fond-carte);border:1px solid var(--bordure);border-radius:8px;padding:0.8rem;margin-bottom:0.8rem;">';
+                html += '<div style="font-weight:600;font-size:0.85rem;margin-bottom:0.5rem;">Groupe ' + (gi+1) + '</div>';
+                html += clientRow(group.primary, true, group);
+                group.duplicates.forEach(dup => { html += clientRow(dup, false, group); });
+                html += '</div>';
+            });
+
+            list.innerHTML = html;
+        } catch (e) {
+            list.innerHTML = '<div style="color:var(--rouge);padding:1rem;">Erreur : ' + e.message + '</div>';
+        }
+    }
+
+    function clientRow(client, isPrimary, group) {
+        const badge = isPrimary 
+            ? '<span style="background:var(--vert-badge);color:var(--vert-texte);padding:0.15rem 0.5rem;border-radius:10px;font-size:0.7rem;font-weight:600;">Principal</span>'
+            : '<span style="background:var(--orange-badge);color:var(--orange-texte);padding:0.15rem 0.5rem;border-radius:10px;font-size:0.7rem;font-weight:600;">' + (client.match_reason || 'Doublon') + '</span>';
+        
+        const stats = [
+            client.sample_count ? client.sample_count + ' éch.' : null,
+            client.formulation_count ? client.formulation_count + ' form.' : null,
+            client.test_count ? client.test_count + ' tests' : null,
+            client.project_count ? client.project_count + ' projets' : null
+        ].filter(Boolean).join(', ') || 'aucune donnée liée';
+
+        let actions = '';
+        if (!isPrimary) {
+            const pName = group.primary.name.replace(/'/g,"\\'").substring(0,25);
+            const cName = client.name.replace(/'/g,"\\'").substring(0,25);
+            actions = '<div style="margin-top:0.4rem;display:flex;gap:0.4rem;flex-wrap:wrap;">' +
+                '<button class="btn btn-sm" onclick="mergeClient(' + group.primary.id + ',' + client.id + ',\'' + pName + '\',\'' + cName + '\')" ' +
+                    'style="background:var(--mfc-cire);color:#fff;font-size:0.72rem;padding:3px 8px;">🔗 Fusionner → «' + pName + '»</button>' +
+                '<button class="btn btn-sm" onclick="mergeClient(' + client.id + ',' + group.primary.id + ',\'' + cName + '\',\'' + pName + '\')" ' +
+                    'style="background:var(--bleu);color:#fff;font-size:0.72rem;padding:3px 8px;">🔄 Garder celui-ci</button>' +
+                '</div>';
+        }
+
+        return '<div style="padding:0.4rem 0;border-bottom:1px solid var(--bordure-legere);">' +
+            '<strong style="font-size:0.85rem;">' + client.name + '</strong> ' + badge + 
+            (client.company ? ' <span style="font-size:0.78rem;color:var(--texte-secondary);">— 🏢 ' + client.company + '</span>' : '') +
+            '<br><span style="font-size:0.72rem;color:var(--texte-muted);">' + stats + ' · ID ' + client.id + '</span>' +
+            actions + '</div>';
+    }
+
+    async function mergeClient(keepId, mergeId, keepName, mergeName) {
+        if (!confirm('Fusionner «' + mergeName + '» dans «' + keepName + '» ?\n\nÉchantillons, formulations et projets seront rattachés.\n«' + mergeName + '» sera supprimé.')) return;
+        
+        try {
+            const res = await fetch('/api/clients/duplicates/merge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keep_id: keepId, merge_id: mergeId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ ' + data.message + '\n\nTransferts :\n' + data.updates.join('\n'));
+                loadClients();
+                detectDuplicates();
+            } else {
+                alert('❌ ' + (data.error || 'Erreur inconnue'));
+            }
+        } catch (e) { alert('❌ ' + e.message); }
+    }
+</script>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>

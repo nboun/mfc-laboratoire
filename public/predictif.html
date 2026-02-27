@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Prédictif - MFC Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+<style>
+/* ══════════ PRÉDICTIF — STYLES SPÉCIFIQUES ══════════ */
+
+.pred-page { max-width: 1400px; margin: 0 auto; padding: 1.5rem clamp(0.5rem, 2vw, 2rem); }
+
+/* Tabs */
+.pred-tabs { display: flex; gap: 0; border-bottom: 2px solid var(--bordure); margin-bottom: 1.5rem; }
+.pred-tab {
+    padding: 0.7rem 1.5rem; cursor: pointer;
+    font-family: var(--font-display); font-weight: 500; font-size: 0.95rem;
+    color: var(--texte-secondary); border-bottom: 3px solid transparent;
+    transition: var(--transition); background: none; border: none; border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+.pred-tab:hover { color: var(--mfc-cire); }
+.pred-tab.active { color: var(--mfc-cire); border-bottom-color: var(--mfc-cire); }
+.pred-panel { display: none; }
+.pred-panel.active { display: block; }
+
+/* Header */
+.pred-header {
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1.5rem; flex-wrap: wrap;
+}
+.pred-header h2 {
+    font-family: var(--font-display); font-weight: 400; font-size: 1.4rem;
+    color: var(--texte); margin: 0;
+}
+.pred-header .subtitle { font-size: 0.8rem; color: var(--texte-muted); }
+
+/* Stats row */
+.pred-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.8rem; margin-bottom: 1.5rem;
+}
+.pred-stat {
+    background: var(--fond-carte); border: 1px solid var(--bordure-legere);
+    border-radius: var(--radius); padding: 1rem;
+    display: flex; flex-direction: column;
+}
+.pred-stat .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texte-muted); margin-bottom: 0.3rem; }
+.pred-stat .value { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--mfc-cire); }
+.pred-stat .detail { font-size: 0.75rem; color: var(--texte-secondary); margin-top: 0.2rem; }
+
+/* Rankings table */
+.rankings-controls { display: flex; gap: 0.8rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+.rankings-controls input, .rankings-controls select {
+    padding: 0.5rem 0.8rem; border: 1px solid var(--bordure);
+    border-radius: var(--radius-sm); font-family: var(--font-body); font-size: 0.85rem;
+    background: var(--fond-input); color: var(--texte);
+}
+.rankings-controls input { flex: 1; min-width: 200px; }
+
+.rankings-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.rankings-table th {
+    background: var(--fond-surface); padding: 0.6rem 0.5rem;
+    text-align: left; font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--texte-secondary); border-bottom: 2px solid var(--bordure);
+    cursor: pointer; white-space: nowrap; user-select: none;
+}
+.rankings-table th:hover { color: var(--mfc-cire); }
+.rankings-table th .sort-arrow { margin-left: 0.3rem; opacity: 0.4; font-size: 0.65rem; }
+.rankings-table th.sorted .sort-arrow { opacity: 1; color: var(--mfc-cire); }
+.rankings-table td {
+    padding: 0.55rem 0.5rem; border-bottom: 1px solid var(--bordure-legere);
+    vertical-align: middle;
+}
+.rankings-table tr { cursor: pointer; transition: var(--transition); }
+.rankings-table tr:hover { background: var(--mfc-cire-glow); }
+.rankings-table .name-cell { font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Distribution mini bar */
+.distrib-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; min-width: 80px; }
+.distrib-bar .seg-tete { background: #f59e0b; }
+.distrib-bar .seg-coeur { background: #ef4444; }
+.distrib-bar .seg-fond { background: #7c3aed; }
+
+/* Throw badge */
+.throw-badge {
+    display: inline-block; padding: 0.15rem 0.5rem; border-radius: 10px;
+    font-size: 0.72rem; font-weight: 600;
+}
+.throw-badge.fort { background: #dcfce7; color: #166534; }
+.throw-badge.moyen { background: #fef9c3; color: #854d0e; }
+.throw-badge.faible { background: #fee2e2; color: #991b1b; }
+
+/* LogP bar inline */
+.logp-bar {
+    display: inline-block; height: 6px; border-radius: 3px;
+    background: linear-gradient(90deg, #f59e0b, #ef4444, #7c3aed);
+    position: relative; min-width: 60px;
+}
+.logp-marker {
+    position: absolute; top: -3px; width: 12px; height: 12px;
+    background: var(--mfc-cire); border: 2px solid white; border-radius: 50%;
+    box-shadow: var(--shadow-sm); transform: translateX(-50%);
+}
+
+/* ══════════ PROFIL ══════════ */
+.profile-select { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap; }
+.profile-select select { flex: 1; min-width: 250px; padding: 0.6rem 0.8rem; border: 1px solid var(--bordure); border-radius: var(--radius-sm); font-size: 0.9rem; }
+.profile-select button { padding: 0.6rem 1.2rem; background: var(--mfc-cire); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; }
+.profile-select button:hover { background: var(--mfc-cire-fonce); }
+
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+@media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
+.profile-card {
+    background: var(--fond-carte); border: 1px solid var(--bordure-legere);
+    border-radius: var(--radius); padding: 1.2rem;
+}
+.profile-card h3 {
+    font-family: var(--font-display); font-size: 0.95rem; font-weight: 500;
+    color: var(--texte); margin-bottom: 0.8rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--bordure-legere);
+}
+.profile-card.full-width { grid-column: 1 / -1; }
+
+/* Throw meters */
+.throw-meter { margin: 0.8rem 0; }
+.throw-meter .meter-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem; }
+.throw-meter .meter-bar { height: 14px; background: var(--fond-surface); border-radius: 7px; overflow: hidden; }
+.throw-meter .meter-fill { height: 100%; border-radius: 7px; transition: width 0.6s ease; }
+.throw-meter .meter-fill.cold { background: linear-gradient(90deg, #93c5fd, #3b82f6); }
+.throw-meter .meter-fill.hot { background: linear-gradient(90deg, #fbbf24, #ef4444); }
+
+/* Distribution chart (SVG-based) */
+.distrib-chart { text-align: center; padding: 0.5rem; }
+.distrib-chart svg { max-width: 220px; }
+
+/* Alerts */
+.alert-item {
+    display: flex; gap: 0.8rem; align-items: flex-start;
+    padding: 0.7rem; margin-bottom: 0.5rem;
+    border-radius: var(--radius-sm); font-size: 0.82rem;
+}
+.alert-item.securite { background: #fef2f2; border-left: 3px solid #ef4444; }
+.alert-item.important { background: #fff7ed; border-left: 3px solid #f59e0b; }
+.alert-item.warning { background: #fefce8; border-left: 3px solid #eab308; }
+.alert-item.positif { background: #f0fdf4; border-left: 3px solid #22c55e; }
+.alert-item .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+.alert-item .alert-body { flex: 1; }
+.alert-item .alert-title { font-weight: 600; margin-bottom: 0.2rem; }
+.alert-item .alert-detail { color: var(--texte-secondary); font-size: 0.78rem; }
+
+/* Dosage card */
+.dosage-range {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--font-display); font-size: 1.3rem; font-weight: 600;
+    color: var(--mfc-cire); margin: 0.5rem 0;
+}
+.dosage-note { font-size: 0.8rem; color: var(--texte-secondary); font-style: italic; }
+
+/* Molecule table in profile */
+.mol-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.mol-table th { background: var(--fond-surface); padding: 0.45rem; text-align: left; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--texte-muted); }
+.mol-table td { padding: 0.4rem 0.45rem; border-bottom: 1px solid var(--bordure-legere); }
+.vol-tag {
+    display: inline-block; padding: 0.1rem 0.4rem; border-radius: 8px; font-size: 0.68rem; font-weight: 600;
+}
+.vol-tag.tete_haute { background: #fef3c7; color: #92400e; }
+.vol-tag.tete { background: #ffedd5; color: #9a3412; }
+.vol-tag.coeur { background: #fce7f3; color: #9d174d; }
+.vol-tag.fond { background: #ede9fe; color: #5b21b6; }
+.vol-tag.fond_fixateur { background: #e0e7ff; color: #3730a3; }
+
+/* ══════════ COMPARAISON ══════════ */
+.compare-select { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; align-items: center; flex-wrap: wrap; }
+.compare-select select { flex: 1; min-width: 200px; padding: 0.6rem 0.8rem; border: 1px solid var(--bordure); border-radius: var(--radius-sm); font-size: 0.9rem; }
+.compare-select .vs { font-family: var(--font-display); font-weight: 600; color: var(--texte-muted); font-size: 1.1rem; }
+
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+@media (max-width: 900px) { .compare-grid { grid-template-columns: 1fr; } }
+.compare-card {
+    background: var(--fond-carte); border: 1px solid var(--bordure-legere);
+    border-radius: var(--radius); padding: 1.2rem;
+}
+.compare-card h3 {
+    font-family: var(--font-display); font-size: 0.95rem; font-weight: 500;
+    margin-bottom: 0.8rem;
+}
+.compare-card.full-width { grid-column: 1 / -1; }
+
+.compare-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.5rem 0; border-bottom: 1px solid var(--bordure-legere);
+    font-size: 0.82rem;
+}
+.compare-row .metric { color: var(--texte-secondary); font-weight: 500; min-width: 120px; }
+.compare-row .val { font-weight: 600; text-align: center; min-width: 100px; }
+.compare-row .val.winner { color: var(--mfc-cire); }
+
+.explanation-item {
+    padding: 0.6rem 0.8rem; margin-bottom: 0.4rem;
+    background: var(--mfc-cire-glow); border-radius: var(--radius-sm);
+    font-size: 0.82rem; line-height: 1.5;
+}
+
+/* Loading */
+.loading { text-align: center; padding: 3rem; color: var(--texte-muted); }
+.loading::after { content: ''; display: inline-block; width: 16px; height: 16px; border: 2px solid var(--bordure); border-top-color: var(--mfc-cire); border-radius: 50%; animation: spin 0.6s linear infinite; margin-left: 0.5rem; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Tooltip */
+[data-tooltip] { position: relative; cursor: help; }
+[data-tooltip]:hover::after {
+    content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%;
+    transform: translateX(-50%); padding: 0.4rem 0.6rem; background: var(--texte);
+    color: white; font-size: 0.7rem; border-radius: 4px; white-space: nowrap;
+    z-index: 10; pointer-events: none;
+}
+</style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="img/logo-mfc-carre.jpg" alt="MFC">
+            <div class="brand-text"><h1>LABORATOIRE</h1><span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span></div>
+        </div>
+        <div class="navbar-menu">
+            <a href="index.html">Accueil</a>
+            <a href="echantillons.html">Échantillons</a>
+            <a href="formulations.html">Formulations</a>
+            <a href="tests.html">Tests</a>
+            <a href="matieres.html">Matières</a>
+            <a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a>
+            <a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+            <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html" class="active">🔮 Prédictif</a>
+        </div>
+    </nav>
+
+    <div class="pred-page">
+        <!-- Tabs -->
+        <div class="pred-tabs">
+            <button class="pred-tab active" data-tab="rankings">Classement</button>
+            <button class="pred-tab" data-tab="profile">Profil moléculaire</button>
+            <button class="pred-tab" data-tab="compare">Comparaison</button>
+        </div>
+
+        <!-- ══════════ CLASSEMENT ══════════ -->
+        <div id="tab-rankings" class="pred-panel active">
+            <div class="pred-header">
+                <h2>Classement prédictif</h2>
+                <span class="subtitle">Analyse moléculaire de tous les parfums — tri par critère</span>
+            </div>
+            <div id="rankings-stats" class="pred-stats"></div>
+            <div class="rankings-controls">
+                <input type="text" id="rankings-search" placeholder="Filtrer par nom…">
+                <select id="rankings-sort">
+                    <option value="name">Nom (A→Z)</option>
+                    <option value="avg_logp_desc">LogP moyen ↓</option>
+                    <option value="avg_logp_asc">LogP moyen ↑</option>
+                    <option value="cold_desc">Diffusion à froid ↓</option>
+                    <option value="hot_desc">Diffusion à chaud ↓</option>
+                    <option value="tete_desc">Notes de tête ↓</option>
+                    <option value="fond_desc">Notes de fond ↓</option>
+                    <option value="fp_asc">Point éclair ↑ (risque)</option>
+                </select>
+            </div>
+            <div id="rankings-table-wrap">
+                <div class="loading">Chargement des classements</div>
+            </div>
+        </div>
+
+        <!-- ══════════ PROFIL ══════════ -->
+        <div id="tab-profile" class="pred-panel">
+            <div class="pred-header">
+                <h2>Profil moléculaire</h2>
+                <span class="subtitle">Analyse complète d'un parfum — prédictions et alertes</span>
+            </div>
+            <div class="profile-select">
+                <select id="profile-fragrance"><option value="">— Choisir un parfum —</option></select>
+                <button onclick="loadProfile()">Analyser</button>
+            </div>
+            <div id="profile-content"></div>
+        </div>
+
+        <!-- ══════════ COMPARAISON ══════════ -->
+        <div id="tab-compare" class="pred-panel">
+            <div class="pred-header">
+                <h2>Comparaison de parfums</h2>
+                <span class="subtitle">Comprendre pourquoi deux parfums donnent des résultats différents</span>
+            </div>
+            <div class="compare-select">
+                <select id="compare-frag1"><option value="">— Parfum A —</option></select>
+                <span class="vs">VS</span>
+                <select id="compare-frag2"><option value="">— Parfum B —</option></select>
+                <button onclick="loadCompare()" style="padding:0.6rem 1.2rem;background:var(--mfc-cire);color:white;border:none;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;">Comparer</button>
+            </div>
+            <div id="compare-content"></div>
+        </div>
+    </div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   MFC Laboratoire — Module Prédictif
+   ═══════════════════════════════════════════════════════════ */
+
+// ── State ──
+let allRankings = [];
+let allFragrances = [];
+
+// ── Tabs ──
+document.querySelectorAll('.pred-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.pred-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.pred-panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+});
+
+// ── Helpers ──
+function throwBadge(level) {
+    const labels = { fort: 'Fort', moyen: 'Moyen', faible: 'Faible' };
+    return `<span class="throw-badge ${level}">${labels[level] || level}</span>`;
+}
+
+function distribBar(t, c, f) {
+    const total = t + c + f || 1;
+    return `<div class="distrib-bar" data-tooltip="Tête ${t} / Cœur ${c} / Fond ${f}">
+        <div class="seg-tete" style="width:${(t/total)*100}%"></div>
+        <div class="seg-coeur" style="width:${(c/total)*100}%"></div>
+        <div class="seg-fond" style="width:${(f/total)*100}%"></div>
+    </div>`;
+}
+
+function volLabel(vol) {
+    const labels = { tete_haute: 'Tête+', tete: 'Tête', coeur: 'Cœur', fond: 'Fond', fond_fixateur: 'Fixateur' };
+    return vol ? `<span class="vol-tag ${vol}">${labels[vol] || vol}</span>` : '<span style="color:var(--texte-muted)">—</span>';
+}
+
+function logpColor(lp) {
+    if (lp === null) return 'var(--texte-muted)';
+    if (lp < 2) return '#f59e0b';
+    if (lp < 3) return '#f97316';
+    if (lp < 4) return '#ef4444';
+    if (lp < 5) return '#8b5cf6';
+    return '#6366f1';
+}
+
+// ── Rankings ──
+async function loadRankings() {
+    try {
+        const res = await fetch('/api/predictif/rankings');
+        const data = await res.json();
+        allRankings = data.rankings || [];
+        
+        // Populate fragrance selects
+        allFragrances = allRankings.map(r => ({ id: r.id, name: r.name })).sort((a,b) => a.name.localeCompare(b.name));
+        populateSelects();
+        
+        renderRankingsStats();
+        renderRankingsTable();
+    } catch(e) {
+        document.getElementById('rankings-table-wrap').innerHTML = `<p style="color:var(--rouge)">Erreur : ${e.message}</p>`;
+    }
+}
+
+function renderRankingsStats() {
+    const r = allRankings;
+    if (!r.length) return;
+    
+    const avgLogPs = r.map(x => x.avg_logp).filter(x => x !== null);
+    const avgCold = r.reduce((s,x) => s + x.cold_score, 0) / r.length;
+    const avgHot = r.reduce((s,x) => s + x.hot_score, 0) / r.length;
+    const bestCold = r.reduce((best, x) => x.cold_score > best.cold_score ? x : best);
+    const bestHot = r.reduce((best, x) => x.hot_score > best.hot_score ? x : best);
+    
+    document.getElementById('rankings-stats').innerHTML = `
+        <div class="pred-stat">
+            <span class="label">Parfums analysés</span>
+            <span class="value">${r.length}</span>
+            <span class="detail">${r.reduce((s,x) => s + x.n_comps, 0)} composants</span>
+        </div>
+        <div class="pred-stat">
+            <span class="label">LogP moyen global</span>
+            <span class="value">${avgLogPs.length ? (avgLogPs.reduce((a,b)=>a+b,0)/avgLogPs.length).toFixed(2) : '—'}</span>
+            <span class="detail">Plage : ${Math.min(...avgLogPs).toFixed(1)} → ${Math.max(...avgLogPs).toFixed(1)}</span>
+        </div>
+        <div class="pred-stat">
+            <span class="label">Meilleur diffusion à froid</span>
+            <span class="value">${bestCold.name}</span>
+            <span class="detail">Score : ${bestCold.cold_score}%</span>
+        </div>
+        <div class="pred-stat">
+            <span class="label">Meilleur diffusion à chaud</span>
+            <span class="value">${bestHot.name}</span>
+            <span class="detail">Score : ${bestHot.hot_score}%</span>
+        </div>
+    `;
+}
+
+function renderRankingsTable() {
+    const filter = document.getElementById('rankings-search').value.toLowerCase();
+    const sortKey = document.getElementById('rankings-sort').value;
+    
+    let data = allRankings.filter(r => r.name.toLowerCase().includes(filter));
+    
+    // Sort
+    const sorters = {
+        name: (a,b) => a.name.localeCompare(b.name),
+        avg_logp_desc: (a,b) => (b.avg_logp||0) - (a.avg_logp||0),
+        avg_logp_asc: (a,b) => (a.avg_logp||0) - (b.avg_logp||0),
+        cold_desc: (a,b) => b.cold_score - a.cold_score,
+        hot_desc: (a,b) => b.hot_score - a.hot_score,
+        tete_desc: (a,b) => b.tete - a.tete,
+        fond_desc: (a,b) => b.fond - a.fond,
+        fp_asc: (a,b) => (a.fp||999) - (b.fp||999),
+    };
+    data.sort(sorters[sortKey] || sorters.name);
+    
+    let html = `<table class="rankings-table">
+        <thead><tr>
+            <th style="width:30px">#</th>
+            <th>Parfum</th>
+            <th data-tooltip="Nombre de composants identifiés">Comp.</th>
+            <th data-tooltip="LogP moyen — lipophilicité">LogP</th>
+            <th data-tooltip="Distribution tête / cœur / fond">Pyramide</th>
+            <th data-tooltip="Score de diffusion à froid (sans flamme)">Diffusion à froid</th>
+            <th data-tooltip="Score de diffusion à chaud (flamme)">Diffusion à chaud</th>
+            <th data-tooltip="Point éclair du mélange">PE °C</th>
+        </tr></thead><tbody>`;
+    
+    data.forEach((r, i) => {
+        const coldLevel = r.cold_score > 40 ? 'fort' : r.cold_score > 20 ? 'moyen' : 'faible';
+        const hotLevel = r.hot_score > 60 ? 'fort' : r.hot_score > 35 ? 'moyen' : 'faible';
+        const fpClass = r.fp && r.fp < 50 ? 'color:var(--rouge);font-weight:600' : '';
+        
+        html += `<tr onclick="openProfile(${r.id})">
+            <td style="color:var(--texte-muted)">${i+1}</td>
+            <td class="name-cell">${r.name}</td>
+            <td>${r.n_comps}</td>
+            <td style="color:${logpColor(r.avg_logp)};font-weight:600">${r.avg_logp !== null ? r.avg_logp.toFixed(2) : '—'}</td>
+            <td>${distribBar(r.tete, r.coeur, r.fond)}</td>
+            <td>${throwBadge(coldLevel)} <span style="color:var(--texte-muted);font-size:0.7rem">${r.cold_score}%</span></td>
+            <td>${throwBadge(hotLevel)} <span style="color:var(--texte-muted);font-size:0.7rem">${r.hot_score}%</span></td>
+            <td style="${fpClass}">${r.fp || '—'}</td>
+        </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    document.getElementById('rankings-table-wrap').innerHTML = html;
+}
+
+function openProfile(id) {
+    document.getElementById('profile-fragrance').value = id;
+    document.querySelectorAll('.pred-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.pred-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector('[data-tab="profile"]').classList.add('active');
+    document.getElementById('tab-profile').classList.add('active');
+    loadProfile();
+}
+
+// ── Selects ──
+function populateSelects() {
+    const selects = ['profile-fragrance', 'compare-frag1', 'compare-frag2'];
+    selects.forEach(sid => {
+        const sel = document.getElementById(sid);
+        const current = sel.value;
+        sel.innerHTML = '<option value="">— Choisir un parfum —</option>';
+        allFragrances.forEach(f => {
+            sel.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+        });
+        if (current) sel.value = current;
+    });
+}
+
+// ── Profile ──
+async function loadProfile() {
+    const fid = document.getElementById('profile-fragrance').value;
+    if (!fid) return;
+    
+    const el = document.getElementById('profile-content');
+    el.innerHTML = '<div class="loading">Analyse en cours</div>';
+    
+    try {
+        const res = await fetch(`/api/predictif/profile/${fid}`);
+        const data = await res.json();
+        if (data.error) { el.innerHTML = `<p style="color:var(--rouge)">${data.error}</p>`; return; }
+        renderProfile(data);
+    } catch(e) {
+        el.innerHTML = `<p style="color:var(--rouge)">Erreur : ${e.message}</p>`;
+    }
+}
+
+function renderProfile(data) {
+    const s = data.summary;
+    const d = s.distribution;
+    const total = d.tete + d.coeur + d.fond + (d.inconnu||0);
+    const el = document.getElementById('profile-content');
+    
+    // Donut SVG
+    function donutSVG(t, c, f) {
+        const total = t + c + f || 1;
+        const r = 70, cx = 90, cy = 90, sw = 22;
+        const circ = 2 * Math.PI * r;
+        const pT = t/total, pC = c/total, pF = f/total;
+        const oT = 0, oC = pT * circ, oF = (pT + pC) * circ;
+        return `<svg viewBox="0 0 180 180" width="180" height="180">
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--fond-surface)" stroke-width="${sw}"/>
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#f59e0b" stroke-width="${sw}"
+                stroke-dasharray="${pT*circ} ${circ}" stroke-dashoffset="0" transform="rotate(-90 ${cx} ${cy})"/>
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#ef4444" stroke-width="${sw}"
+                stroke-dasharray="${pC*circ} ${circ}" stroke-dashoffset="${-oC}" transform="rotate(-90 ${cx} ${cy})"/>
+            <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#7c3aed" stroke-width="${sw}"
+                stroke-dasharray="${pF*circ} ${circ}" stroke-dashoffset="${-oF}" transform="rotate(-90 ${cx} ${cy})"/>
+            <text x="${cx}" y="${cy-6}" text-anchor="middle" font-family="var(--font-display)" font-size="18" font-weight="600" fill="var(--texte)">${total}</text>
+            <text x="${cx}" y="${cy+12}" text-anchor="middle" font-family="var(--font-body)" font-size="10" fill="var(--texte-secondary)">composants</text>
+        </svg>
+        <div style="display:flex;gap:1rem;justify-content:center;margin-top:0.5rem;font-size:0.78rem">
+            <span><span style="display:inline-block;width:10px;height:10px;background:#f59e0b;border-radius:2px;margin-right:4px"></span>Tête ${t}</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#ef4444;border-radius:2px;margin-right:4px"></span>Cœur ${c}</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#7c3aed;border-radius:2px;margin-right:4px"></span>Fond ${f}</span>
+            ${d.inconnu ? `<span style="color:var(--texte-muted)">? ${d.inconnu}</span>` : ''}
+        </div>`;
+    }
+    
+    // Alerts HTML
+    let alertsHtml = '';
+    if (data.alerts && data.alerts.length) {
+        alertsHtml = data.alerts.map(a => `
+            <div class="alert-item ${a.level}">
+                <span class="alert-icon">${a.icon}</span>
+                <div class="alert-body">
+                    <div class="alert-title">${a.title}</div>
+                    <div class="alert-detail">${a.detail}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        alertsHtml = '<p style="color:var(--texte-muted);font-size:0.85rem">Aucune alerte particulière.</p>';
+    }
+    
+    // Molecules table
+    let molHtml = `<table class="mol-table">
+        <thead><tr><th>Molécule</th><th>CAS</th><th>LogP</th><th>Volatilité</th><th>PE °C</th><th>% max</th></tr></thead><tbody>`;
+    for (const m of data.molecules) {
+        const fpStyle = m.fp !== null && m.fp < 40 ? 'color:var(--rouge);font-weight:600' : '';
+        molHtml += `<tr>
+            <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${m.name}">${m.name}</td>
+            <td style="font-size:0.72rem;color:var(--texte-muted)">${m.cas || '—'}</td>
+            <td style="color:${logpColor(m.logp)};font-weight:600">${m.logp !== null ? m.logp.toFixed(2) : '—'}</td>
+            <td>${volLabel(m.volatility)}</td>
+            <td style="${fpStyle}">${m.fp !== null ? m.fp + '°C' : '—'}</td>
+            <td>${m.pct_max !== null ? m.pct_max + '%' : '—'}</td>
+        </tr>`;
+    }
+    molHtml += '</tbody></table>';
+    
+    el.innerHTML = `
+        <h2 style="font-family:var(--font-display);font-weight:400;font-size:1.3rem;margin-bottom:1rem">
+            ${data.fragrance.name}
+            <span style="font-size:0.8rem;color:var(--texte-muted);margin-left:0.5rem">${data.fragrance.reference || ''}</span>
+            ${data.fragrance.flash_point ? `<span style="font-size:0.8rem;color:var(--texte-secondary);margin-left:0.5rem">PE ${data.fragrance.flash_point}°C</span>` : ''}
+        </h2>
+        
+        <div class="pred-stats">
+            <div class="pred-stat">
+                <span class="label">Composants</span>
+                <span class="value">${s.n_components}</span>
+                <span class="detail">${d.tete} tête · ${d.coeur} cœur · ${d.fond} fond</span>
+            </div>
+            <div class="pred-stat">
+                <span class="label">LogP moyen</span>
+                <span class="value" style="color:${logpColor(s.avg_logp)}">${s.avg_logp !== null ? s.avg_logp.toFixed(2) : '—'}</span>
+                <span class="detail">${s.wax_compatibility ? 'Compatibilité cire : ' + s.wax_compatibility : ''}</span>
+            </div>
+            <div class="pred-stat">
+                <span class="label">Diffusion à froid</span>
+                <span class="value">${throwBadge(s.cold_throw)}</span>
+                <span class="detail">Score : ${s.cold_throw_score}%</span>
+            </div>
+            <div class="pred-stat">
+                <span class="label">Diffusion à chaud</span>
+                <span class="value">${throwBadge(s.hot_throw)}</span>
+                <span class="detail">Score : ${s.hot_throw_score}%</span>
+            </div>
+        </div>
+        
+        <div class="profile-grid">
+            <!-- Pyramide olfactive -->
+            <div class="profile-card">
+                <h3>Pyramide olfactive</h3>
+                <div class="distrib-chart">${donutSVG(d.tete, d.coeur, d.fond)}</div>
+            </div>
+            
+            <!-- Diffusion -->
+            <div class="profile-card">
+                <h3>Prédiction de diffusion</h3>
+                <div class="throw-meter">
+                    <div class="meter-label"><span>Diffusion à froid</span><span style="font-weight:600">${s.cold_throw_score}%</span></div>
+                    <div class="meter-bar"><div class="meter-fill cold" style="width:${s.cold_throw_score}%"></div></div>
+                    <div style="font-size:0.72rem;color:var(--texte-muted);margin-top:0.2rem">Molécules volatiles (LogP &lt; 3) → diffusion sans flamme</div>
+                </div>
+                <div class="throw-meter">
+                    <div class="meter-label"><span>Diffusion à chaud</span><span style="font-weight:600">${s.hot_throw_score}%</span></div>
+                    <div class="meter-bar"><div class="meter-fill hot" style="width:${s.hot_throw_score}%"></div></div>
+                    <div style="font-size:0.72rem;color:var(--texte-muted);margin-top:0.2rem">Notes cœur + fond libérées dans la cire fondue</div>
+                </div>
+                <div style="margin-top:1rem;padding-top:0.8rem;border-top:1px solid var(--bordure-legere)">
+                    <h3 style="border:none;padding:0;margin-bottom:0.5rem">Dosage recommandé</h3>
+                    <div class="dosage-range">${s.dosage.min}% — ${s.dosage.max}%</div>
+                    <div class="dosage-note">${s.dosage.note}</div>
+                </div>
+            </div>
+            
+            <!-- Alertes -->
+            <div class="profile-card">
+                <h3>Alertes et recommandations</h3>
+                ${alertsHtml}
+            </div>
+            
+            <!-- Compatibilité -->
+            <div class="profile-card">
+                <h3>Compatibilité cire</h3>
+                <div style="font-size:0.85rem;line-height:1.8">
+                    <div><strong>Solubilité :</strong> ${s.wax_compatibility || '—'}</div>
+                    <div><strong>LogP moyen :</strong> ${s.avg_logp !== null ? s.avg_logp.toFixed(2) : '—'} 
+                        <span style="color:var(--texte-muted);font-size:0.75rem">
+                            (${s.avg_logp >= 3 ? '≥3 = excellente dissolution' : s.avg_logp >= 2 ? '2-3 = bonne dissolution' : '<2 = risque exsudation'})
+                        </span>
+                    </div>
+                    <div style="margin-top:0.6rem;font-size:0.78rem;color:var(--texte-secondary)">
+                        ${s.avg_logp >= 3 ? 'Ce parfum devrait bien se dissoudre dans les cires paraffine et soja. Dosage généreux possible sans risque de suintement.' :
+                          s.avg_logp >= 2 ? 'Bonne compatibilité avec la plupart des cires. Respecter les dosages recommandés.' :
+                          'Parfum relativement polaire — tester avec un dosage prudent, surtout en paraffine pure. Risque d\'exsudation au-delà de 8%.'}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Molécules -->
+            <div class="profile-card full-width">
+                <h3>Détail des ${s.n_components} composants <span style="font-weight:300;font-size:0.8rem;color:var(--texte-muted)">(trié par LogP décroissant)</span></h3>
+                <div style="max-height:400px;overflow-y:auto">${molHtml}</div>
+            </div>
+        </div>
+    `;
+}
+
+// ── Comparaison ──
+async function loadCompare() {
+    const id1 = document.getElementById('compare-frag1').value;
+    const id2 = document.getElementById('compare-frag2').value;
+    if (!id1 || !id2) return;
+    if (id1 === id2) { alert('Choisir deux parfums différents'); return; }
+    
+    const el = document.getElementById('compare-content');
+    el.innerHTML = '<div class="loading">Comparaison en cours</div>';
+    
+    try {
+        const res = await fetch(`/api/predictif/compare/${id1}/${id2}`);
+        const data = await res.json();
+        if (data.error) { el.innerHTML = `<p style="color:var(--rouge)">${data.error}</p>`; return; }
+        renderCompare(data);
+    } catch(e) {
+        el.innerHTML = `<p style="color:var(--rouge)">Erreur : ${e.message}</p>`;
+    }
+}
+
+function renderCompare(data) {
+    const p1 = data.fragrance_1, p2 = data.fragrance_2;
+    const el = document.getElementById('compare-content');
+    
+    function compRow(label, v1, v2, unit, higherBetter) {
+        const n1 = parseFloat(v1), n2 = parseFloat(v2);
+        let w1 = '', w2 = '';
+        if (!isNaN(n1) && !isNaN(n2) && n1 !== n2) {
+            if (higherBetter) { w1 = n1 > n2 ? 'winner' : ''; w2 = n2 > n1 ? 'winner' : ''; }
+            else { w1 = n1 < n2 ? 'winner' : ''; w2 = n2 < n1 ? 'winner' : ''; }
+        }
+        const s = unit || '';
+        return `<div class="compare-row">
+            <span class="metric">${label}</span>
+            <span class="val ${w1}">${v1 !== null && v1 !== undefined ? v1 + s : '—'}</span>
+            <span class="val ${w2}">${v2 !== null && v2 !== undefined ? v2 + s : '—'}</span>
+        </div>`;
+    }
+    
+    const cold1 = p1.cold_score > 40 ? 'fort' : p1.cold_score > 20 ? 'moyen' : 'faible';
+    const cold2 = p2.cold_score > 40 ? 'fort' : p2.cold_score > 20 ? 'moyen' : 'faible';
+    const hot1 = p1.hot_score > 60 ? 'fort' : p1.hot_score > 35 ? 'moyen' : 'faible';
+    const hot2 = p2.hot_score > 60 ? 'fort' : p2.hot_score > 35 ? 'moyen' : 'faible';
+    
+    el.innerHTML = `
+        <div class="compare-grid">
+            <!-- Métriques comparées -->
+            <div class="compare-card full-width">
+                <h3 style="display:flex;justify-content:space-between">
+                    <span>Métriques</span>
+                    <span style="display:flex;gap:2rem;font-weight:400;font-size:0.85rem">
+                        <span style="color:var(--mfc-cire)">${p1.name}</span>
+                        <span style="color:var(--texte-secondary)">${p2.name}</span>
+                    </span>
+                </h3>
+                ${compRow('Composants', p1.n_comps, p2.n_comps, '', true)}
+                ${compRow('LogP moyen', p1.avg_logp?.toFixed(2), p2.avg_logp?.toFixed(2), '', true)}
+                ${compRow('Notes de tête', p1.distribution.tete, p2.distribution.tete, '')}
+                ${compRow('Notes de cœur', p1.distribution.coeur, p2.distribution.coeur, '')}
+                ${compRow('Notes de fond', p1.distribution.fond, p2.distribution.fond, '')}
+                ${compRow('Diffusion à froid', p1.cold_score, p2.cold_score, '%', true)}
+                ${compRow('Diffusion à chaud', p1.hot_score, p2.hot_score, '%', true)}
+                ${compRow('Point éclair', p1.fp, p2.fp, '°C', false)}
+            </div>
+            
+            <!-- Diffusion comparée -->
+            <div class="compare-card">
+                <h3>${p1.name}</h3>
+                <div class="throw-meter">
+                    <div class="meter-label"><span>Diffusion à froid</span><span>${throwBadge(cold1)} ${p1.cold_score}%</span></div>
+                    <div class="meter-bar"><div class="meter-fill cold" style="width:${p1.cold_score}%"></div></div>
+                </div>
+                <div class="throw-meter">
+                    <div class="meter-label"><span>Diffusion à chaud</span><span>${throwBadge(hot1)} ${p1.hot_score}%</span></div>
+                    <div class="meter-bar"><div class="meter-fill hot" style="width:${p1.hot_score}%"></div></div>
+                </div>
+                <div style="margin-top:0.8rem">${distribBar(p1.distribution.tete, p1.distribution.coeur, p1.distribution.fond)}</div>
+                <div style="font-size:0.75rem;color:var(--texte-muted);margin-top:0.3rem">Tête ${p1.distribution.tete} · Cœur ${p1.distribution.coeur} · Fond ${p1.distribution.fond}</div>
+                ${p1.risks.solid ? `<div style="font-size:0.75rem;color:var(--orange);margin-top:0.3rem">⚠️ ${p1.risks.solid} mol. solide(s)</div>` : ''}
+                ${p1.risks.decoloration ? `<div style="font-size:0.75rem;color:var(--orange);margin-top:0.2rem">🎨 ${p1.risks.decoloration} risque(s) décoloration</div>` : ''}
+            </div>
+            <div class="compare-card">
+                <h3>${p2.name}</h3>
+                <div class="throw-meter">
+                    <div class="meter-label"><span>Diffusion à froid</span><span>${throwBadge(cold2)} ${p2.cold_score}%</span></div>
+                    <div class="meter-bar"><div class="meter-fill cold" style="width:${p2.cold_score}%"></div></div>
+                </div>
+                <div class="throw-meter">
+                    <div class="meter-label"><span>Diffusion à chaud</span><span>${throwBadge(hot2)} ${p2.hot_score}%</span></div>
+                    <div class="meter-bar"><div class="meter-fill hot" style="width:${p2.hot_score}%"></div></div>
+                </div>
+                <div style="margin-top:0.8rem">${distribBar(p2.distribution.tete, p2.distribution.coeur, p2.distribution.fond)}</div>
+                <div style="font-size:0.75rem;color:var(--texte-muted);margin-top:0.3rem">Tête ${p2.distribution.tete} · Cœur ${p2.distribution.coeur} · Fond ${p2.distribution.fond}</div>
+                ${p2.risks.solid ? `<div style="font-size:0.75rem;color:var(--orange);margin-top:0.3rem">⚠️ ${p2.risks.solid} mol. solide(s)</div>` : ''}
+                ${p2.risks.decoloration ? `<div style="font-size:0.75rem;color:var(--orange);margin-top:0.2rem">🎨 ${p2.risks.decoloration} risque(s) décoloration</div>` : ''}
+            </div>
+            
+            <!-- Molécules communes -->
+            <div class="compare-card full-width">
+                <h3>Composition moléculaire</h3>
+                <div class="pred-stats" style="margin-bottom:0.5rem">
+                    <div class="pred-stat">
+                        <span class="label">Molécules communes</span>
+                        <span class="value">${data.shared_molecules}</span>
+                    </div>
+                    <div class="pred-stat">
+                        <span class="label">Uniques à ${p1.name}</span>
+                        <span class="value">${data.unique_to_1}</span>
+                    </div>
+                    <div class="pred-stat">
+                        <span class="label">Uniques à ${p2.name}</span>
+                        <span class="value">${data.unique_to_2}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Explications -->
+            ${data.explanations && data.explanations.length ? `
+            <div class="compare-card full-width">
+                <h3>Pourquoi ces différences ?</h3>
+                ${data.explanations.map(e => `<div class="explanation-item">💡 ${e}</div>`).join('')}
+            </div>
+            ` : ''}
+        </div>
+    `;
+}
+
+// ── Events ──
+document.getElementById('rankings-search').addEventListener('input', renderRankingsTable);
+document.getElementById('rankings-sort').addEventListener('change', renderRankingsTable);
+
+// ── URL params ──
+function handleUrlParams() {
+    const params = new URLSearchParams(location.search);
+    if (params.get('parfum')) {
+        setTimeout(() => {
+            document.getElementById('profile-fragrance').value = params.get('parfum');
+            document.querySelector('[data-tab="profile"]').click();
+            loadProfile();
+        }, 500);
+    }
+    if (params.get('compare')) {
+        const ids = params.get('compare').split(',');
+        if (ids.length === 2) {
+            setTimeout(() => {
+                document.getElementById('compare-frag1').value = ids[0];
+                document.getElementById('compare-frag2').value = ids[1];
+                document.querySelector('[data-tab="compare"]').click();
+                loadCompare();
+            }, 500);
+        }
+    }
+}
+
+// ── Version ──
+fetch('/api/version').then(r=>r.json()).then(d=>{const v=document.getElementById('mfc-v');if(v&&d.version)v.textContent='v'+d.version;}).catch(()=>{});
+
+// ── Init ──
+loadRankings().then(handleUrlParams);
+</script>
+</body>
+</html>

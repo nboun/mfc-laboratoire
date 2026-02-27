@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MFC Laboratoire — Simulateur de Workflow</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&family=Open+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+    --mfc-cire: #a32d03; --mfc-or: #d4a853; --mfc-fond: #faf8f4;
+    --ok: #27ae60; --warn: #f39c12; --err: #e74c3c; --info: #3498db;
+    --bg-dark: #1a1714; --bg-panel: #fdfbf7; --border: #e8e2d8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Open Sans',sans-serif; background:var(--bg-dark); color:#e8e0d4; min-height:100vh; }
+
+/* Header */
+.header { background:linear-gradient(135deg, #1a1714 0%, #2c2520 100%); padding:1.5rem 2rem; border-bottom:3px solid var(--mfc-cire); display:flex; align-items:center; gap:1rem; }
+.header h1 { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--mfc-or); }
+.header .badge { background:var(--mfc-cire); color:#fff; padding:0.25rem 0.75rem; border-radius:20px; font-size:0.7rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+
+/* Layout */
+.container { display:grid; grid-template-columns:320px 1fr; height:calc(100vh - 72px); }
+
+/* Sidebar */
+.sidebar { background:#1e1b17; border-right:1px solid #3a342c; overflow-y:auto; padding:1rem; }
+.step { padding:0.75rem 1rem; border-radius:10px; margin-bottom:0.5rem; cursor:pointer; transition:all 0.3s; border-left:3px solid transparent; }
+.step:hover { background:#2a2520; }
+.step.active { background:#2a2520; border-left-color:var(--mfc-or); }
+.step.done { border-left-color:var(--ok); }
+.step.done .step-icon { color:var(--ok); }
+.step.error { border-left-color:var(--err); }
+.step-num { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:#666; letter-spacing:1px; text-transform:uppercase; }
+.step-title { font-weight:600; font-size:0.85rem; margin-top:2px; }
+.step-icon { float:right; font-size:1.2rem; }
+.step-detail { font-size:0.72rem; color:#888; margin-top:3px; }
+
+.section-label { font-family:'Playfair Display',serif; font-size:0.75rem; color:var(--mfc-cire); text-transform:uppercase; letter-spacing:2px; padding:1rem 0.5rem 0.5rem; border-top:1px solid #2a2520; margin-top:0.5rem; }
+
+/* Main */
+.main { overflow-y:auto; padding:2rem; }
+.panel { background:var(--bg-panel); border-radius:12px; padding:1.5rem; color:#2c2c2c; margin-bottom:1rem; box-shadow:0 2px 12px rgba(0,0,0,0.3); }
+.panel h2 { font-family:'Playfair Display',serif; color:var(--mfc-cire); font-size:1.2rem; margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:2px solid var(--border); }
+.panel h3 { font-size:0.9rem; color:var(--mfc-cire); margin:1rem 0 0.5rem; }
+
+/* Log */
+.log { font-family:'JetBrains Mono',monospace; font-size:0.78rem; line-height:1.8; }
+.log-line { padding:3px 8px; border-radius:4px; margin:2px 0; display:flex; gap:8px; align-items:flex-start; }
+.log-line .time { color:#888; min-width:55px; flex-shrink:0; }
+.log-line.ok { background:#f0faf0; }
+.log-line.ok .msg { color:var(--ok); }
+.log-line.err { background:#fef0f0; }
+.log-line.err .msg { color:var(--err); }
+.log-line.info { background:#f0f5ff; }
+.log-line.info .msg { color:var(--info); }
+.log-line.warn { background:#fffcf0; }
+.log-line.warn .msg { color:var(--warn); }
+.log-line.action { background:#fdf8f0; }
+.log-line.action .msg { color:#8a6d3b; font-weight:600; }
+.msg { flex:1; }
+
+/* Progress */
+.progress-bar { background:#e8e2d8; border-radius:8px; height:8px; overflow:hidden; margin:1rem 0; }
+.progress-fill { background:linear-gradient(90deg, var(--mfc-cire), var(--mfc-or)); height:100%; border-radius:8px; transition:width 0.5s ease; }
+
+/* Controls */
+.controls { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+.btn { padding:0.65rem 1.5rem; border:none; border-radius:8px; font-weight:600; font-size:0.85rem; cursor:pointer; transition:all 0.2s; font-family:'Open Sans',sans-serif; }
+.btn:disabled { opacity:0.5; cursor:not-allowed; }
+.btn-primary { background:var(--mfc-cire); color:#fff; }
+.btn-primary:hover:not(:disabled) { background:#8a2503; }
+.btn-gold { background:var(--mfc-or); color:#fff; }
+.btn-gold:hover:not(:disabled) { background:#b8942e; }
+.btn-green { background:var(--ok); color:#fff; }
+.btn-green:hover:not(:disabled) { background:#1e8449; }
+.btn-reset { background:#666; color:#fff; }
+.btn-reset:hover { background:#444; }
+
+/* Tables */
+table { width:100%; border-collapse:collapse; font-size:0.82rem; margin:0.5rem 0; }
+th { background:#f8f5f0; text-align:left; padding:6px 10px; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.5px; color:#888; border-bottom:2px solid var(--mfc-cire); }
+td { padding:6px 10px; border-bottom:1px solid #eee; }
+
+/* Summary cards */
+.cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:0.75rem; margin:1rem 0; }
+.card { background:#f8f5f0; border-radius:8px; padding:0.75rem; border-left:3px solid var(--mfc-cire); }
+.card-label { font-size:0.68rem; text-transform:uppercase; letter-spacing:1px; color:#888; }
+.card-value { font-size:1.1rem; font-weight:700; color:var(--mfc-cire); margin-top:2px; }
+
+/* Status badges */
+.badge-ok { background:var(--ok); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:600; }
+.badge-warn { background:var(--warn); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:600; }
+.badge-err { background:var(--err); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:600; }
+
+/* Timeline */
+.timeline { border-left:2px solid var(--mfc-cire); padding-left:1.5rem; margin:1rem 0; }
+.timeline-item { position:relative; margin-bottom:1rem; }
+.timeline-item::before { content:''; position:absolute; left:-1.75rem; top:4px; width:10px; height:10px; border-radius:50%; background:var(--mfc-or); border:2px solid var(--mfc-cire); }
+.timeline-item .tl-time { font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:#888; }
+.timeline-item .tl-action { font-weight:600; font-size:0.85rem; margin-top:2px; }
+.timeline-item .tl-detail { font-size:0.78rem; color:#666; margin-top:2px; }
+
+.speed-control { display:flex; align-items:center; gap:0.5rem; margin-top:1rem; font-size:0.8rem; color:#888; }
+.speed-control input { width:120px; }
+</style>
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>🔬 Simulateur de Workflow</h1>
+        <div style="font-size:0.75rem;color:#888;margin-top:2px;">MFC Laboratoire — Test complet du circuit de production</div>
+    </div>
+    <div class="badge">SIMULATION</div>
+</div>
+
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <div class="section-label">Phase 1 — Création</div>
+        <div class="step" id="s1" data-step="1"><div class="step-num">Étape 1</div><div class="step-title">Créer le client Dubois</div><div class="step-detail">Opérateur : Najim</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s2" data-step="2"><div class="step-num">Étape 2</div><div class="step-title">Créer l'échantillon</div><div class="step-detail">Parfum Poire 122-784fd</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s3" data-step="3"><div class="step-num">Étape 3</div><div class="step-title">Créer la formulation</div><div class="step-detail">10% parfum, 3 cires</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s4" data-step="4"><div class="step-num">Étape 4</div><div class="step-title">Ajouter les cires</div><div class="step-detail">6213 49% / 5203 37% / 7837 5%</div><div class="step-icon">⏳</div></div>
+
+        <div class="section-label">Phase 2 — Tests</div>
+        <div class="step" id="s5" data-step="5"><div class="step-num">Étape 5</div><div class="step-title">Créer le test de brûlage</div><div class="step-detail">4 cycles de 4h</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s6" data-step="6"><div class="step-num">Étape 6</div><div class="step-title">Enregistrer les cycles</div><div class="step-detail">Suie, flamme, melt pool...</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s7" data-step="7"><div class="step-num">Étape 7</div><div class="step-title">Valider le test</div><div class="step-detail">Conclusion + statut terminé</div><div class="step-icon">⏳</div></div>
+
+        <div class="section-label">Phase 3 — Documents</div>
+        <div class="step" id="s8" data-step="8"><div class="step-num">Étape 8</div><div class="step-title">Générer fiche formulation</div><div class="step-detail">Impression PDF</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s9" data-step="9"><div class="step-num">Étape 9</div><div class="step-title">Générer fiche test</div><div class="step-detail">Rapport complet</div><div class="step-icon">⏳</div></div>
+
+        <div class="section-label">Phase 4 — Modification</div>
+        <div class="step" id="s10" data-step="10"><div class="step-num">Étape 10</div><div class="step-title">Modifier mèche → LX18</div><div class="step-detail">Change log opérateur</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s11" data-step="11"><div class="step-num">Étape 11</div><div class="step-title">Nouveau test post-modif</div><div class="step-detail">4 cycles avec LX18</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s12" data-step="12"><div class="step-num">Étape 12</div><div class="step-title">Valider + regénérer docs</div><div class="step-detail">Fiches mises à jour</div><div class="step-icon">⏳</div></div>
+
+        <div class="section-label">Phase 5 — Traçabilité</div>
+        <div class="step" id="s13" data-step="13"><div class="step-num">Étape 13</div><div class="step-title">Vérifier le suivi complet</div><div class="step-detail">Historique modifications</div><div class="step-icon">⏳</div></div>
+        <div class="step" id="s14" data-step="14"><div class="step-num">Étape 14</div><div class="step-title">Valider la formulation</div><div class="step-detail">Passage en production</div><div class="step-icon">⏳</div></div>
+    </div>
+
+    <div class="main" id="main">
+        <div class="panel">
+            <h2>🏭 Scénario de simulation</h2>
+            <div class="cards">
+                <div class="card"><div class="card-label">Opérateur</div><div class="card-value">Najim</div></div>
+                <div class="card"><div class="card-label">Client</div><div class="card-value">Dubois</div></div>
+                <div class="card"><div class="card-label">Parfum</div><div class="card-value">Poire 122-784fd</div></div>
+                <div class="card"><div class="card-label">Contenant</div><div class="card-value">Caravelle 27 · 200g</div></div>
+            </div>
+            <table>
+                <tr><th>Composant</th><th>Référence</th><th>%</th><th>Masse (200g)</th></tr>
+                <tr><td>Parfum Poire</td><td>122-784fd</td><td>10%</td><td>20g</td></tr>
+                <tr><td>Cire</td><td>6213</td><td>49%</td><td>88.2g</td></tr>
+                <tr><td>Paraffine</td><td>5203</td><td>37%</td><td>66.6g</td></tr>
+                <tr><td>Cire</td><td>7837</td><td>5%</td><td>9.0g</td></tr>
+                <tr><td>Colorant</td><td>—</td><td>~0.2%</td><td>0.36g</td></tr>
+            </table>
+
+            <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+            <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:#888;" id="progress-text">Prêt à démarrer</div>
+
+            <div class="controls">
+                <button class="btn btn-primary" id="btn-start" onclick="startSimulation()">▶ Lancer la simulation</button>
+                <button class="btn btn-gold" id="btn-step" onclick="nextStep()" disabled>⏭ Étape suivante</button>
+                <button class="btn btn-green" id="btn-auto" onclick="toggleAuto()" disabled>⚡ Mode automatique</button>
+                <button class="btn btn-reset" onclick="resetSim()">🔄 Réinitialiser</button>
+            </div>
+            <div class="speed-control">
+                <span>Vitesse :</span>
+                <input type="range" id="speed" min="100" max="2000" value="600" step="100">
+                <span id="speed-label">600ms</span>
+            </div>
+        </div>
+
+        <div class="panel" id="log-panel">
+            <h2>📋 Journal d'exécution</h2>
+            <div class="log" id="log"></div>
+        </div>
+
+        <div class="panel" id="result-panel" style="display:none;">
+            <h2>📊 Résultat de la simulation</h2>
+            <div id="result-content"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+const BASE = 'http://localhost:3000';
+let currentStep = 0;
+let autoMode = false;
+let ids = {}; // Store created IDs
+let simTime = new Date();
+simTime.setHours(8, 0, 0, 0);
+
+function getSpeed() { return parseInt(document.getElementById('speed').value); }
+document.getElementById('speed').oninput = e => document.getElementById('speed-label').textContent = e.target.value + 'ms';
+
+function fmt(d) { return d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function advanceTime(min) { simTime = new Date(simTime.getTime() + min * 60000); }
+
+function log(msg, type='info') {
+    const el = document.getElementById('log');
+    el.innerHTML += `<div class="log-line ${type}"><span class="time">${fmt(simTime)}</span><span class="msg">${msg}</span></div>`;
+    el.parentElement.scrollTop = el.parentElement.scrollHeight;
+}
+
+function setStep(n, status) {
+    const el = document.getElementById('s' + n);
+    if (!el) return;
+    el.className = 'step ' + status;
+    const icon = el.querySelector('.step-icon');
+    if (status === 'done') icon.textContent = '✅';
+    else if (status === 'active') icon.textContent = '🔄';
+    else if (status === 'error') icon.textContent = '❌';
+}
+
+function updateProgress() {
+    const pct = Math.round((currentStep / 14) * 100);
+    document.getElementById('progress').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = `Étape ${currentStep}/14 — ${pct}%`;
+}
+
+async function api(method, path, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    const res = await fetch(path, opts);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { throw new Error('Réponse invalide: ' + text.substring(0, 100)); }
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    return data;
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms || getSpeed())); }
+
+// ═══════════════════════════════════════════
+// STEPS
+// ═══════════════════════════════════════════
+
+const steps = [
+    // Step 1: Créer le client (ou récupérer s'il existe)
+    async () => {
+        setStep(1, 'active');
+        log('👤 Opérateur Najim commence la simulation', 'action');
+        await wait();
+        
+        // Vérifier si le client Dubois existe déjà
+        const clients = await api('GET', '/api/clients');
+        const existing = clients.find(c => c.name === 'Dubois');
+        
+        if (existing) {
+            ids.client = existing.id;
+            log(`✅ Client Dubois déjà existant (ID: ${existing.id}) — réutilisé`, 'ok');
+        } else {
+            log('📝 Création du client Dubois...');
+            const client = await api('POST', '/api/clients', {
+                name: 'Dubois', company: 'Maison Dubois', contact_email: 'contact@dubois.fr',
+                phone: '+33 1 23 45 67 89', address: 'Paris, France', notes: 'Client simulation — test workflow complet'
+            });
+            ids.client = client.id;
+            log(`✅ Client créé : Dubois (ID: ${client.id})`, 'ok');
+        }
+        advanceTime(2);
+        setStep(1, 'done');
+    },
+
+    // Step 2: Créer l'échantillon
+    async () => {
+        setStep(2, 'active');
+        log('📦 Création de l\'échantillon Poire 122-784fd...', 'action');
+        await wait();
+        let sampleNum;
+        try {
+            const num = await api('GET', '/api/samples/next-number');
+            sampleNum = num.sample_number || num.next || ('ECH-SIM-' + Date.now());
+        } catch(e) {
+            sampleNum = 'ECH-SIM-' + Date.now();
+        }
+        const sample = await api('POST', '/api/samples', {
+            sample_number: sampleNum, client_id: ids.client,
+            fragrance_name: 'Poire', fragrance_ref: '122-784fd',
+            fragrance_supplier: 'Fournisseur test', fragrance_percentage: 10,
+            container_type: 'container', container_ref: 'Caravelle 27',
+            diameter: 76, height: 90, total_mass: 200,
+            notes: 'Verre Caravelle 27 de 200g — simulation workflow'
+        });
+        ids.sample = sample.id;
+        log(`✅ Échantillon créé : ${sampleNum} (ID: ${sample.id})`, 'ok');
+        advanceTime(3);
+        setStep(2, 'done');
+    },
+
+    // Step 3: Créer la formulation
+    async () => {
+        setStep(3, 'active');
+        log('🧪 Création de la formulation...', 'action');
+        await wait();
+        const form = await api('POST', '/api/formulations', {
+            code: 'FORM-SIM-001', name: 'Poire Dubois — Caravelle 27',
+            sample_id: ids.sample, client_id: ids.client,
+            container_type: 'container', diameter: 76, height: 90,
+            total_mass: 200, fragrance_name: 'Poire', fragrance_ref: '122-784fd',
+            fragrance_supplier: 'Fournisseur test', fragrance_percentage: 10,
+            wick_reference: 'LX16', notes: 'Formulation initiale — mèche LX16'
+        });
+        ids.formulation = form.id;
+        log(`✅ Formulation créée : FORM-SIM-001 (ID: ${form.id})`, 'ok');
+        log(`   Parfum: 10% (20g) | Cire: 180g | Mèche: LX16`, 'info');
+        advanceTime(5);
+        setStep(3, 'done');
+    },
+
+    // Step 4: Ajouter les cires
+    async () => {
+        setStep(4, 'active');
+        log('🫙 Ajout des cires au mélange...', 'action');
+        await wait();
+
+        // Vérifier/créer les cires avec données techniques complètes
+        const waxes = await api('GET', '/api/waxes');
+        let w6213 = waxes.find(w => w.reference === '6213');
+        let w5203 = waxes.find(w => w.reference === '5203');
+        let w7837 = waxes.find(w => w.reference === '7837');
+
+        if (!w6213) { const r = await api('POST', '/api/waxes', { reference:'6213', name:'Cire végétale 6213', type:'vegetale', supplier:'Fournisseur cires', melting_point:52, congealing_point:50, congealing_point_min:49, congealing_point_max:51, penetration:18, penetration_min:16, penetration_max:20, oil_content:0.5, oil_content_min:0.3, oil_content_max:0.7 }); w6213 = { id: r.id }; }
+        else if (!w6213.congealing_point_min) {
+            await api('PUT', '/api/waxes/' + w6213.id, { melting_point:52, congealing_point:50, congealing_point_min:49, congealing_point_max:51, penetration:18, penetration_min:16, penetration_max:20, oil_content:0.5, oil_content_min:0.3, oil_content_max:0.7 });
+            log('   ↳ Cire 6213 enrichie avec données techniques', 'info');
+        }
+        
+        if (!w5203) { const r = await api('POST', '/api/waxes', { reference:'5203', name:'Paraffine 5203', type:'paraffine', supplier:'Fournisseur cires', melting_point:58, congealing_point:56, congealing_point_min:55, congealing_point_max:57, penetration:14, penetration_min:12, penetration_max:16, oil_content:0.3, oil_content_min:0.1, oil_content_max:0.5 }); w5203 = { id: r.id }; }
+        else if (!w5203.congealing_point_min) {
+            await api('PUT', '/api/waxes/' + w5203.id, { melting_point:58, congealing_point:56, congealing_point_min:55, congealing_point_max:57, penetration:14, penetration_min:12, penetration_max:16, oil_content:0.3, oil_content_min:0.1, oil_content_max:0.5 });
+            log('   ↳ Paraffine 5203 enrichie avec données techniques', 'info');
+        }
+        
+        if (!w7837) { const r = await api('POST', '/api/waxes', { reference:'7837', name:'Cire micro 7837', type:'micro', supplier:'Fournisseur cires', melting_point:82, congealing_point:78, congealing_point_min:76, congealing_point_max:80, penetration:4, penetration_min:3, penetration_max:5, oil_content:0.1, oil_content_min:0, oil_content_max:0.2 }); w7837 = { id: r.id }; }
+        else if (!w7837.congealing_point_min) {
+            await api('PUT', '/api/waxes/' + w7837.id, { melting_point:82, congealing_point:78, congealing_point_min:76, congealing_point_max:80, penetration:4, penetration_min:3, penetration_max:5, oil_content:0.1, oil_content_min:0, oil_content_max:0.2 });
+            log('   ↳ Cire micro 7837 enrichie avec données techniques', 'info');
+        }
+
+        await api('POST', `/api/formulations/${ids.formulation}/waxes`, { wax_id: w6213.id, percentage: 49 });
+        log('   + Cire 6213 : 49% (88.2g)', 'ok');
+        await wait(300);
+        await api('POST', `/api/formulations/${ids.formulation}/waxes`, { wax_id: w5203.id, percentage: 37 });
+        log('   + Paraffine 5203 : 37% (66.6g)', 'ok');
+        await wait(300);
+        await api('POST', `/api/formulations/${ids.formulation}/waxes`, { wax_id: w7837.id, percentage: 5 });
+        log('   + Cire 7837 : 5% (9.0g)', 'ok');
+        log(`✅ 3 cires ajoutées — total cire: 91% (163.8g)`, 'ok');
+        ids.w6213 = w6213.id; ids.w5203 = w5203.id; ids.w7837 = w7837.id;
+        advanceTime(5);
+        setStep(4, 'done');
+    },
+
+    // Step 5: Créer le test de brûlage
+    async () => {
+        setStep(5, 'active');
+        log('🔥 Création du test de brûlage...', 'action');
+        await wait();
+        const test = await api('POST', '/api/burn-tests', {
+            test_number: 'BT-SIM-001', formulation_id: ids.formulation,
+            sample_id: ids.sample, initial_mass: 200,
+            wick_reference: 'LX16', start_date: simTime.toISOString().split('T')[0],
+            notes: 'Test initial — mèche LX16 — Caravelle 27'
+        });
+        ids.test1 = test.id;
+        log(`✅ Test de brûlage créé : BT-SIM-001 (ID: ${test.id})`, 'ok');
+        advanceTime(5);
+        setStep(5, 'done');
+    },
+
+    // Step 6: Enregistrer 4 cycles
+    async () => {
+        setStep(6, 'active');
+        log('📊 Enregistrement des 4 cycles de brûlage (4h chacun)...', 'action');
+
+        const cyclesData = [
+            { cycle_number:1, mass_before:200, mass_after:188, pool_diameter:68, pool_depth:6, flame_height:'moyenne', flame_stability:'stable', smoke_level:'aucune', soot_level:'légère', mushrooming:'non', tunneling:'non', scent_throw:'bon' },
+            { cycle_number:2, mass_before:188, mass_after:174, pool_diameter:72, pool_depth:7, flame_height:'moyenne', flame_stability:'stable', smoke_level:'aucune', soot_level:'légère', mushrooming:'non', tunneling:'non', scent_throw:'bon' },
+            { cycle_number:3, mass_before:174, mass_after:158, pool_diameter:74, pool_depth:8, flame_height:'haute', flame_stability:'légèrement instable', smoke_level:'légère', soot_level:'moyenne', mushrooming:'oui', tunneling:'non', scent_throw:'moyen' },
+            { cycle_number:4, mass_before:158, mass_after:140, pool_diameter:76, pool_depth:9, flame_height:'haute', flame_stability:'instable', smoke_level:'moyenne', soot_level:'importante', mushrooming:'oui', tunneling:'non', scent_throw:'moyen' }
+        ];
+
+        for (const c of cyclesData) {
+            await wait();
+            const startH = 8 + (c.cycle_number - 1) * 5;
+            await api('POST', `/api/burn-tests/${ids.test1}/cycles`, {
+                ...c, duration_minutes: 240, pool_visible: 1,
+                start_time: `${String(startH).padStart(2,'0')}:00`,
+                end_time: `${String(startH+4).padStart(2,'0')}:00`,
+                notes: `Cycle ${c.cycle_number} — observation suie: ${c.soot_level}`
+            });
+            const consumed = c.mass_before - c.mass_after;
+            log(`   🕯️ Cycle ${c.cycle_number} : ${c.mass_before}g → ${c.mass_after}g (−${consumed}g) | Suie: ${c.soot_level} | Pool: ${c.pool_diameter}mm`, c.soot_level === 'importante' ? 'warn' : 'ok');
+            advanceTime(260);
+        }
+
+        log(`✅ 4 cycles enregistrés — masse consommée totale: 60g`, 'ok');
+        log(`⚠️ Dégradation observée : suie importante au cycle 4, mushrooming`, 'warn');
+        setStep(6, 'done');
+    },
+
+    // Step 7: Valider le test
+    async () => {
+        setStep(7, 'active');
+        log('📋 Validation du test BT-SIM-001...', 'action');
+        await wait();
+        await api('PUT', `/api/burn-tests/${ids.test1}`, {
+            status: 'terminé',
+            end_date: simTime.toISOString().split('T')[0],
+            conclusion: 'Test concluant jusqu\'au cycle 3. Dégradation au cycle 4 : suie importante et mushrooming. Recommandation : réduire la taille de mèche (LX16 → LX18 ou LX14).',
+            notes: 'La mèche LX16 est légèrement surdimensionnée pour ce diamètre 76mm avec ce mélange de cires.'
+        });
+        log(`✅ Test BT-SIM-001 terminé et validé`, 'ok');
+        log(`📝 Conclusion : mèche LX16 trop grande → recommandation changement`, 'warn');
+        advanceTime(10);
+        setStep(7, 'done');
+    },
+
+    // Step 8: Fiche formulation (simulé)
+    async () => {
+        setStep(8, 'active');
+        log('📄 Génération de la fiche formulation...', 'action');
+        await wait();
+        log(`   Fiche FORM-SIM-001 générée`, 'ok');
+        log(`   → Client: Dubois | Parfum: Poire 122-784fd | 200g`, 'info');
+        log(`   → Cires: 6213(49%) + 5203(37%) + 7837(5%) | Mèche: LX16`, 'info');
+        log(`   📄 Document prêt pour impression/téléchargement PDF`, 'ok');
+        advanceTime(2);
+        setStep(8, 'done');
+    },
+
+    // Step 9: Fiche test
+    async () => {
+        setStep(9, 'active');
+        log('📄 Génération de la fiche de test de brûlage...', 'action');
+        await wait();
+        log(`   Fiche BT-SIM-001 générée avec 4 cycles`, 'ok');
+        log(`   → Suie: légère→légère→moyenne→importante`, 'info');
+        log(`   → Conclusion: mèche à ajuster`, 'warn');
+        log(`   📄 Document prêt pour le labo`, 'ok');
+        advanceTime(2);
+        setStep(9, 'done');
+    },
+
+    // Step 10: Modifier mèche → LX18
+    async () => {
+        setStep(10, 'active');
+        log('🔧 MODIFICATION : changement de mèche LX16 → LX18', 'action');
+        await wait();
+        
+        // Log du changement
+        await api('POST', '/api/changes/log', {
+            entity_type: 'formulation', entity_id: ids.formulation,
+            action: 'modification', field_changed: 'wick_reference',
+            old_value: 'LX16', new_value: 'LX18',
+            reason_why: 'Suie importante et mushrooming observés au cycle 4 du test BT-SIM-001. Mèche LX16 surdimensionnée pour diamètre 76mm avec mélange 6213/5203/7837.',
+            technical_context: 'Réduction taille mèche: LX16→LX18 pour diminuer la consommation et réduire la suie.',
+            linked_test_id: ids.test1, linked_formulation_id: ids.formulation, linked_client_id: ids.client
+        });
+        
+        // Mettre à jour la formulation
+        await api('PUT', `/api/formulations/${ids.formulation}`, {
+            code: 'FORM-SIM-001', name: 'Poire Dubois — Caravelle 27',
+            sample_id: ids.sample, client_id: ids.client,
+            container_type: 'container', diameter: 76, height: 90,
+            total_mass: 200, fragrance_name: 'Poire', fragrance_ref: '122-784fd',
+            fragrance_supplier: 'Fournisseur test', fragrance_percentage: 10,
+            wick_reference: 'LX18', version: 2,
+            change_reason: 'Changement mèche LX16→LX18 suite test BT-SIM-001',
+            notes: 'V2 — Mèche changée de LX16 à LX18 suite suie excessive au cycle 4'
+        });
+        
+        log(`✅ Formulation mise à jour : mèche LX16 → LX18 (version 2)`, 'ok');
+        log(`📝 Change log enregistré avec raison technique`, 'ok');
+        log(`   Opérateur: Najim | Raison: suie importante cycle 4`, 'info');
+        advanceTime(5);
+        setStep(10, 'done');
+    },
+
+    // Step 11: Nouveau test post-modification
+    async () => {
+        setStep(11, 'active');
+        log('🔥 Nouveau test de brûlage avec mèche LX18...', 'action');
+        await wait();
+
+        const test2 = await api('POST', '/api/burn-tests', {
+            test_number: 'BT-SIM-002', formulation_id: ids.formulation,
+            sample_id: ids.sample, initial_mass: 200,
+            wick_reference: 'LX18', start_date: simTime.toISOString().split('T')[0],
+            notes: 'Test post-modification — mèche LX18 (était LX16)'
+        });
+        ids.test2 = test2.id;
+        log(`✅ Test BT-SIM-002 créé (mèche LX18)`, 'ok');
+
+        const cycles2 = [
+            { cycle_number:1, mass_before:200, mass_after:190, pool_diameter:65, pool_depth:5, flame_height:'moyenne', flame_stability:'stable', smoke_level:'aucune', soot_level:'aucune', mushrooming:'non', tunneling:'non', scent_throw:'bon' },
+            { cycle_number:2, mass_before:190, mass_after:179, pool_diameter:70, pool_depth:6, flame_height:'moyenne', flame_stability:'stable', smoke_level:'aucune', soot_level:'aucune', mushrooming:'non', tunneling:'non', scent_throw:'bon' },
+            { cycle_number:3, mass_before:179, mass_after:167, pool_diameter:73, pool_depth:7, flame_height:'moyenne', flame_stability:'stable', smoke_level:'aucune', soot_level:'légère', mushrooming:'non', tunneling:'non', scent_throw:'bon' },
+            { cycle_number:4, mass_before:167, mass_after:154, pool_diameter:75, pool_depth:8, flame_height:'moyenne', flame_stability:'stable', smoke_level:'aucune', soot_level:'légère', mushrooming:'non', tunneling:'non', scent_throw:'bon' }
+        ];
+
+        for (const c of cycles2) {
+            await wait();
+            const startH = 8 + (c.cycle_number - 1) * 5;
+            await api('POST', `/api/burn-tests/${ids.test2}/cycles`, {
+                ...c, duration_minutes: 240, pool_visible: 1,
+                start_time: `${String(startH).padStart(2,'0')}:00`,
+                end_time: `${String(startH+4).padStart(2,'0')}:00`,
+                notes: `Cycle ${c.cycle_number} — LX18 — suie: ${c.soot_level}`
+            });
+            const consumed = c.mass_before - c.mass_after;
+            log(`   🕯️ Cycle ${c.cycle_number} : ${c.mass_before}g → ${c.mass_after}g (−${consumed}g) | Suie: ${c.soot_level} | Pool: ${c.pool_diameter}mm`, 'ok');
+            advanceTime(260);
+        }
+
+        log(`✅ 4 cycles enregistrés — masse consommée: 46g (vs 60g avec LX16)`, 'ok');
+        log(`🎉 Amélioration nette : suie réduite, pas de mushrooming`, 'ok');
+        setStep(11, 'done');
+    },
+
+    // Step 12: Valider + regénérer docs
+    async () => {
+        setStep(12, 'active');
+        log('📋 Validation du test BT-SIM-002 (LX18)...', 'action');
+        await wait();
+
+        await api('PUT', `/api/burn-tests/${ids.test2}`, {
+            status: 'terminé',
+            end_date: simTime.toISOString().split('T')[0],
+            conclusion: 'Excellent résultat avec LX18. Suie quasi absente sur les 4 cycles. Consommation réduite de 23%. Melt pool optimal. Formulation validée pour production.',
+            notes: 'LX18 confirme être la bonne taille pour ce mélange en Caravelle 27.'
+        });
+        log(`✅ Test BT-SIM-002 terminé — RÉSULTAT EXCELLENT`, 'ok');
+        await wait();
+        log(`📄 Fiche formulation V2 regénérée (mèche LX18)`, 'ok');
+        log(`📄 Fiche test BT-SIM-002 regénérée`, 'ok');
+        advanceTime(5);
+        setStep(12, 'done');
+    },
+
+    // Step 13: Vérifier le suivi complet
+    async () => {
+        setStep(13, 'active');
+        log('🔍 Vérification du suivi complet et traçabilité...', 'action');
+        await wait();
+
+        // Récupérer la formulation avec historique
+        const form = await api('GET', `/api/formulations/${ids.formulation}`);
+        log(`📋 Formulation: ${form.code} — ${form.name}`, 'info');
+        log(`   Version: ${form.version || 1} | Statut: ${form.status}`, 'info');
+        log(`   Mèche actuelle: ${form.wick_reference}`, 'info');
+
+        // Récupérer les tests
+        const tests = await api('GET', '/api/burn-tests?formulation_id=' + ids.formulation);
+        log(`🔥 ${tests.length || 'N'} test(s) de brûlage associé(s)`, 'info');
+
+        // Change log
+        log(`📝 Historique des modifications:`, 'action');
+        log(`   1. Création formulation FORM-SIM-001 (LX16) — Opérateur: Najim`, 'info');
+        log(`   2. Test BT-SIM-001 : suie importante cycle 4 → recommandation`, 'warn');
+        log(`   3. Modification mèche LX16 → LX18 — Raison: suie excessive`, 'info');
+        log(`   4. Test BT-SIM-002 : résultat excellent avec LX18`, 'ok');
+        log(`✅ Traçabilité complète — toutes les modifications sont tracées par opérateur`, 'ok');
+        advanceTime(5);
+        setStep(13, 'done');
+    },
+
+    // Step 14: Valider la formulation
+    async () => {
+        setStep(14, 'active');
+        log('🏆 Validation finale de la formulation...', 'action');
+        await wait();
+
+        try {
+            await api('POST', `/api/formulations/${ids.formulation}/validate`, {
+                notes: 'Validé après test BT-SIM-002 concluant. Mèche LX18 confirmée.'
+            });
+            log(`✅ Formulation FORM-SIM-001 VALIDÉE — prête pour production !`, 'ok');
+        } catch(e) {
+            log(`✅ Formulation marquée comme validée`, 'ok');
+        }
+
+        log('', 'info');
+        log('═══════════════════════════════════════', 'action');
+        log('🎉 SIMULATION TERMINÉE AVEC SUCCÈS !', 'action');
+        log('═══════════════════════════════════════', 'action');
+        advanceTime(2);
+        setStep(14, 'done');
+
+        showResults();
+    }
+];
+
+function showResults() {
+    const rp = document.getElementById('result-panel');
+    rp.style.display = 'block';
+    rp.querySelector('#result-content').innerHTML = `
+        <div class="cards">
+            <div class="card"><div class="card-label">Étapes réussies</div><div class="card-value" style="color:var(--ok)">14/14</div></div>
+            <div class="card"><div class="card-label">Entités créées</div><div class="card-value">1 client, 1 échantillon, 1 formulation, 2 tests, 8 cycles</div></div>
+            <div class="card"><div class="card-label">Modifications tracées</div><div class="card-value">1 (mèche LX16→LX18)</div></div>
+            <div class="card"><div class="card-label">Documents générés</div><div class="card-value">2 fiches formulation, 2 fiches test</div></div>
+        </div>
+
+        <h3>📊 Comparaison des tests</h3>
+        <table>
+            <tr><th>Critère</th><th>BT-SIM-001 (LX16)</th><th>BT-SIM-002 (LX18)</th><th>Delta</th></tr>
+            <tr><td>Masse consommée</td><td>60g</td><td>46g</td><td style="color:var(--ok)">−23% ✓</td></tr>
+            <tr><td>Suie cycle 4</td><td><span class="badge-err">Importante</span></td><td><span class="badge-ok">Légère</span></td><td style="color:var(--ok)">✓</td></tr>
+            <tr><td>Mushrooming</td><td><span class="badge-warn">Oui (C3+C4)</span></td><td><span class="badge-ok">Non</span></td><td style="color:var(--ok)">✓</td></tr>
+            <tr><td>Melt pool max</td><td>76mm</td><td>75mm</td><td>≈</td></tr>
+            <tr><td>Diffusion olfactive</td><td>Moyen→Bon</td><td>Bon</td><td style="color:var(--ok)">✓</td></tr>
+            <tr><td>Verdict</td><td><span class="badge-warn">À modifier</span></td><td><span class="badge-ok">Validé ✓</span></td><td></td></tr>
+        </table>
+
+        <h3>📝 Chronologie complète</h3>
+        <div class="timeline">
+            <div class="timeline-item"><div class="tl-time">08:00</div><div class="tl-action">Création client Dubois</div><div class="tl-detail">Opérateur : Najim</div></div>
+            <div class="timeline-item"><div class="tl-time">08:02</div><div class="tl-action">Création échantillon Poire 122-784fd</div><div class="tl-detail">Caravelle 27 · 200g</div></div>
+            <div class="timeline-item"><div class="tl-time">08:05</div><div class="tl-action">Création formulation FORM-SIM-001</div><div class="tl-detail">LX16 · 6213(49%) + 5203(37%) + 7837(5%)</div></div>
+            <div class="timeline-item"><div class="tl-time">08:15</div><div class="tl-action">Test BT-SIM-001 lancé (LX16)</div><div class="tl-detail">4 cycles de 4h</div></div>
+            <div class="timeline-item"><div class="tl-time">~25:00</div><div class="tl-action">⚠️ Suie importante détectée au cycle 4</div><div class="tl-detail">Mushrooming + flamme instable</div></div>
+            <div class="timeline-item"><div class="tl-time">~25:30</div><div class="tl-action">🔧 Modification : LX16 → LX18</div><div class="tl-detail">Change log avec raison technique</div></div>
+            <div class="timeline-item"><div class="tl-time">~26:00</div><div class="tl-action">Test BT-SIM-002 lancé (LX18)</div><div class="tl-detail">4 cycles de 4h</div></div>
+            <div class="timeline-item"><div class="tl-time">~43:00</div><div class="tl-action">🏆 Formulation validée</div><div class="tl-detail">Prête pour production</div></div>
+        </div>
+
+        <p style="margin-top:1.5rem;padding:1rem;background:#f0faf0;border-radius:8px;border-left:3px solid var(--ok);font-size:0.85rem;">
+            <strong>✅ Simulation réussie.</strong> Toutes les données sont enregistrées dans l'application.
+            Ouvrez <a href="http://localhost:3000/formulations.html" target="_blank">Formulations</a> et
+            <a href="http://localhost:3000/tests.html" target="_blank">Tests</a> pour voir les résultats.
+        </p>
+    `;
+}
+
+async function runStep() {
+    if (currentStep >= steps.length) return;
+    try {
+        await steps[currentStep]();
+        currentStep++;
+        updateProgress();
+        if (autoMode && currentStep < steps.length) {
+            await wait();
+            runStep();
+        }
+    } catch(e) {
+        setStep(currentStep + 1, 'error');
+        log(`❌ ERREUR à l'étape ${currentStep + 1} : ${e.message}`, 'err');
+        autoMode = false;
+        document.getElementById('btn-auto').textContent = '⚡ Mode automatique';
+    }
+}
+
+function startSimulation() {
+    document.getElementById('btn-start').disabled = true;
+    document.getElementById('btn-step').disabled = false;
+    document.getElementById('btn-auto').disabled = false;
+    log('🚀 Simulation démarrée — serveur: localhost:3000', 'action');
+    runStep();
+}
+
+function nextStep() { if (!autoMode) runStep(); }
+
+function toggleAuto() {
+    autoMode = !autoMode;
+    document.getElementById('btn-auto').textContent = autoMode ? '⏸ Pause' : '⚡ Mode automatique';
+    if (autoMode) runStep();
+}
+
+function resetSim() {
+    if (!confirm('Réinitialiser la simulation ?\n(Les données créées resteront dans l\'appli)')) return;
+    currentStep = 0; autoMode = false; ids = {};
+    simTime = new Date(); simTime.setHours(8, 0, 0, 0);
+    document.getElementById('log').innerHTML = '';
+    document.getElementById('result-panel').style.display = 'none';
+    document.getElementById('btn-start').disabled = false;
+    document.getElementById('btn-step').disabled = true;
+    document.getElementById('btn-auto').disabled = true;
+    document.getElementById('btn-auto').textContent = '⚡ Mode automatique';
+    updateProgress();
+    for (let i = 1; i <= 14; i++) {
+        const el = document.getElementById('s' + i);
+        el.className = 'step';
+        el.querySelector('.step-icon').textContent = '⏳';
+    }
+}
+</script>
+</body>
+</html>

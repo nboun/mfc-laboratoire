@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<style id="mfc-auth-wall">body{visibility:hidden!important;}</style>
+<script>try{if(localStorage.getItem("mfc_operator"))document.getElementById("mfc-auth-wall").remove();}catch(e){}</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a32d03">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Matières premières - MFC Laboratoire</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" rel="stylesheet">
+    <script src="js/theme-toggle.js"></script>
+</head>
+<body>
+    <nav class="navbar"><div class="navbar-brand"><img src="img/logo-mfc-carre.jpg" alt="MFC"><div class="brand-text"><h1>LABORATOIRE</h1><span>Maître Cirier depuis 1904</span><span id="mfc-v" style="background:#a32d03;color:#fff;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.55rem;font-weight:700;margin-left:0.4rem;letter-spacing:0.5px;"></span></div></div>
+    <div class="navbar-menu"><a href="index.html">Accueil</a><a href="echantillons.html">Échantillons</a><a href="formulations.html">Formulations</a><a href="tests.html">Tests</a><a href="matieres.html" class="active">Matières</a><a href="recettes.html">Recettes</a>
+            <a href="connaissances.html">Connaissances</a>
+            <a href="fds.html">FDS Parfums</a><a href="formulateur.html">Formulateur</a>
+            <a href="recherche.html">Recherche</a>
+                <a href="analytics.html">📊 Analytics</a>
+            <a href="molecules.html">🧬 Molécules</a>
+            <a href="predictif.html">🔮 Prédictif</a>
+            <a href="clients.html">Clients</a>
+            <a href="operateurs.html">Opérateurs</a></div></nav>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="cires">🕯️ Cires</button>
+            <button class="tab" data-tab="meches">🧵 Mèches</button>
+            <button class="tab" data-tab="colorants">🎨 Colorants</button>
+            <button class="tab" data-tab="parfums">🌸 Parfums</button>
+            <button class="tab" data-tab="fournisseurs">🏭 Fournisseurs</button>
+        </div>
+        <div id="tab-cires" class="tab-content"><div class="card"><div class="card-header"><h3 class="card-title">Cires disponibles</h3><div class="filters" style="display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;"><select id="f-wax-cat" class="form-control"><option value="">Toutes catégories</option></select><select id="f-wax-sup" class="form-control"><option value="">Tous fournisseurs</option></select><select id="f-wax-av" class="form-control"><option value="">Tous</option><option value="1">✓ Disponible</option><option value="0">✗ Indisponible</option></select><input type="text" id="f-wax-q" class="form-control" placeholder="Rechercher..." style="max-width:160px;"></div></div><div class="table-container"><table><thead><tr><th>Référence</th><th>Fournisseur</th><th>Catégorie</th><th>Congél. °C</th><th>Pénétr.</th><th>Huile %</th><th>Saybolt</th><th>Dispo</th><th>Usage</th><th>Actions</th></tr></thead><tbody id="wax-tb"><tr><td colspan="9" class="loading"><div class="spinner"></div></td></tr></tbody></table></div></div></div>
+        <div id="tab-meches" class="tab-content" style="display:none;"><div class="card"><div class="card-header"><h3 class="card-title">Mèches</h3><div class="filters" style="display:flex;gap:0.5rem;"><select id="f-wick-s" class="form-control"><option value="">Toutes séries</option><option>LX</option><option>ECO</option><option>CD</option><option>HTP</option><option>TCR</option></select><input type="number" id="f-wick-d" class="form-control" placeholder="Ø mm" style="width:90px;"></div></div><div class="table-container"><table><thead><tr><th>Référence</th><th>Série</th><th>Type</th><th>Âme</th><th>Ø Min</th><th>Ø Max</th><th>Type cire</th><th>Dispo</th><th>Notes</th><th>Act.</th></tr></thead><tbody id="wick-tb"></tbody></table></div></div></div>
+        <div id="tab-colorants" class="tab-content" style="display:none;"><div class="card"><div class="card-header"><h3 class="card-title">Colorants</h3><div class="filters" style="display:flex;gap:0.5rem;"><select id="f-col-f" class="form-control"><option value="">Toutes formes</option><option>Liquide</option><option>Granulé</option></select></div></div><div class="table-container"><table><thead><tr><th>Couleur</th><th>Réf.</th><th>Nom</th><th>Forme</th><th>Densité</th><th>Pt éclair</th><th>Dispo</th><th>Sécurité</th><th>Act.</th></tr></thead><tbody id="col-tb"></tbody></table></div><p style="padding:0.75rem;font-size:0.82rem;"><strong>Dosage :</strong> 0.20% recommandé — 0.25% max</p></div></div>
+        <div id="tab-parfums" class="tab-content" style="display:none;"><div class="card"><div class="card-header"><h3 class="card-title">Parfums</h3></div><div class="table-container"><table><thead><tr><th>Nom</th><th>Réf.</th><th>Fournisseur</th><th>Famille</th><th>IFRA</th><th>Pt éclair</th><th>Dispo</th><th>% rec.</th><th>Act.</th></tr></thead><tbody id="frag-tb"></tbody></table></div></div></div>
+        <div id="tab-fournisseurs" class="tab-content" style="display:none;"><div class="card"><div class="card-header"><h3 class="card-title">Fournisseurs</h3><button class="btn btn-primary btn-sm" onclick="openSupM()">+ Ajouter</button></div><div class="table-container"><table><thead><tr><th>Nom</th><th>Pays</th><th>Spécialité</th><th>Site web</th><th>Actions</th></tr></thead><tbody id="sup-tb"></tbody></table></div></div></div>
+    </div>
+    <div class="modal-overlay" id="wax-detail"><div class="modal" style="max-width:700px;"><div class="modal-header"><h2 id="wd-t">Cire</h2><button class="modal-close" onclick="cm('wax-detail')">&times;</button></div><div class="modal-body" id="wd-b"></div><div class="modal-footer"><button class="btn btn-secondary" onclick="cm('wax-detail')">Fermer</button><button class="btn btn-danger" id="wd-del">Supprimer</button><button class="btn btn-primary" id="wd-edit">✎ Modifier</button></div></div></div>
+    <div class="modal-overlay" id="wax-edit"><div class="modal" style="max-width:720px;"><div class="modal-header"><h2 id="we-t">Modifier</h2><button class="modal-close" onclick="cm('wax-edit')">&times;</button></div><div class="modal-body"><form id="wax-form" onsubmit="return false;"><input type="hidden" id="we_id"><div class="grid grid-2"><div class="form-group"><label>Référence *</label><input class="form-control" id="we_ref" required></div><div class="form-group"><label>Nom</label><input class="form-control" id="we_name"></div></div><div class="grid grid-3"><div class="form-group"><label>Type</label><input class="form-control" id="we_type"></div><div class="form-group"><label>Sous-type</label><input class="form-control" id="we_sub"></div><div class="form-group"><label>Catégorie</label><input class="form-control" id="we_cat"></div></div><div class="form-section">Spécifications techniques</div><div class="grid grid-3"><div class="form-group"><label>Congél. min °C</label><input type="number" step="0.1" class="form-control" id="we_cpmin"></div><div class="form-group"><label>Congél. max °C</label><input type="number" step="0.1" class="form-control" id="we_cpmax"></div><div class="form-group"><label>Packaging</label><input class="form-control" id="we_pkg"></div></div><div class="grid grid-2"><div class="form-group"><label>Huile min %</label><input type="number" step="0.01" class="form-control" id="we_omin"></div><div class="form-group"><label>Huile max %</label><input type="number" step="0.01" class="form-control" id="we_omax"></div></div><div class="grid grid-2"><div class="form-group"><label>Pénétr. min (0.1mm)</label><input type="number" step="0.1" class="form-control" id="we_pmin"></div><div class="form-group"><label>Pénétr. max (0.1mm)</label><input type="number" step="0.1" class="form-control" id="we_pmax"></div></div><div class="grid grid-2"><div class="form-group"><label>Saybolt min</label><input type="number" class="form-control" id="we_smin"></div><div class="form-group"><label>Saybolt max</label><input type="number" class="form-control" id="we_smax"></div></div><div class="form-group"><label>Application</label><input class="form-control" id="we_app"></div><div class="form-group"><label>Usage recommandé</label><input class="form-control" id="we_use"></div><div class="form-group"><label>Commentaires</label><textarea class="form-control" id="we_com" rows="2"></textarea></div></form></div><div class="modal-footer"><button class="btn btn-secondary" onclick="cm('wax-edit')">Annuler</button><button class="btn btn-primary" onclick="saveWax()">Enregistrer</button></div></div></div>
+    <div class="modal-overlay" id="sup-modal"><div class="modal" style="max-width:500px;"><div class="modal-header"><h2 id="sm-t">Fournisseur</h2><button class="modal-close" onclick="cm('sup-modal')">&times;</button></div><div class="modal-body"><form id="sup-form" onsubmit="return false;"><input type="hidden" id="sm_id"><div class="form-group"><label>Nom *</label><input class="form-control" id="sm_name" required></div><div class="grid grid-2"><div class="form-group"><label>Pays</label><input class="form-control" id="sm_country"></div><div class="form-group"><label>Spécialité</label><input class="form-control" id="sm_spec"></div></div><div class="form-group"><label>Site web</label><input class="form-control" id="sm_web"></div><div class="form-group"><label>Notes</label><textarea class="form-control" id="sm_notes" rows="2"></textarea></div></form></div><div class="modal-footer"><button class="btn btn-secondary" onclick="cm('sup-modal')">Annuler</button><button class="btn btn-primary" onclick="saveSup()">Enregistrer</button></div></div></div>
+    <div class="toast-container" id="toast-container"></div>
+    <script>
+        let suppliers=[],waxes=[],wicks=[],colorants=[],fragrances=[];
+        function toast(m,t='success'){const c=document.getElementById('toast-container'),e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;c.appendChild(e);setTimeout(()=>e.remove(),3000);}
+        function cm(id){document.getElementById(id).classList.remove('active');}
+        function om(id){document.getElementById(id).classList.add('active');}
+
+        // ═══════ TOGGLE DISPONIBILITÉ (toutes matières) ═══════
+        async function toggleAvail(type, id, current){
+            const newVal = current ? 0 : 1;
+            await fetch('/api/'+type+'/'+id+'/available', {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({available:newVal})});
+            if(type==='waxes')loadWaxes();else if(type==='wicks')loadWicks();else if(type==='colorants')loadCol();else if(type==='fragrances')loadFrag();
+            toast(newVal ? 'Marqué disponible' : 'Marqué indisponible');
+        }
+        function availBadge(a){ return a===0 ? '<span style="background:#fee;color:#c62828;padding:2px 8px;border-radius:10px;font-size:0.68rem;font-weight:600;white-space:nowrap;">✗ Indispo</span>' : '<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;font-size:0.68rem;font-weight:600;white-space:nowrap;">✓ Dispo</span>'; }
+        function availBtn(type, id, a){ return '<button class="btn btn-sm" style="padding:0.2rem 0.5rem;font-size:0.72rem;background:'+(a===0?'#e8f5e9':'#fee')+';color:'+(a===0?'#2e7d32':'#c62828')+';border:1px solid '+(a===0?'#a5d6a7':'#ef9a9a')+';" onclick="event.stopPropagation();toggleAvail(\''+type+'\','+id+','+(a||0)+')">'+(a===0?'✓ Rendre dispo':'✗ Indispo')+'</button>'; }
+
+        // ═══════ FOURNISSEURS ═══════
+        async function loadSup(){const r=await fetch('/api/suppliers');suppliers=await r.json();const s=document.getElementById('f-wax-sup');s.innerHTML='<option value="">Tous fournisseurs</option>';suppliers.forEach(x=>{s.innerHTML+='<option value="'+x.id+'">'+x.name+'</option>';});renderSup();}
+        function renderSup(){const tb=document.getElementById('sup-tb');if(!suppliers.length){tb.innerHTML='<tr><td colspan="5" class="text-muted text-center">Aucun</td></tr>';return;}tb.innerHTML=suppliers.map(s=>'<tr><td><strong>'+s.name+'</strong></td><td>'+(s.country||'—')+'</td><td>'+(s.specialty||'—')+'</td><td>'+(s.website?'<a href="'+s.website+'" target="_blank" style="color:var(--mfc-cire);">↗</a>':'—')+'</td><td class="actions"><button class="btn btn-secondary btn-sm" onclick="editSup('+s.id+')">✎</button><button class="btn btn-danger btn-sm" onclick="delSup('+s.id+')">✕</button></td></tr>').join('');}
+        function openSupM(s){document.getElementById('sup-form').reset();document.getElementById('sm_id').value='';document.getElementById('sm-t').textContent='Nouveau fournisseur';if(s){document.getElementById('sm_id').value=s.id;document.getElementById('sm_name').value=s.name||'';document.getElementById('sm_country').value=s.country||'';document.getElementById('sm_spec').value=s.specialty||'';document.getElementById('sm_web').value=s.website||'';document.getElementById('sm_notes').value=s.notes||'';document.getElementById('sm-t').textContent='Modifier '+s.name;}om('sup-modal');}
+        function editSup(id){const s=suppliers.find(x=>x.id===id);if(s)openSupM(s);}
+        async function saveSup(){const id=document.getElementById('sm_id').value;const d={name:document.getElementById('sm_name').value,country:document.getElementById('sm_country').value,specialty:document.getElementById('sm_spec').value,website:document.getElementById('sm_web').value,notes:document.getElementById('sm_notes').value};if(!d.name){toast('Nom requis','error');return;}await fetch(id?'/api/suppliers/'+id:'/api/suppliers',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});cm('sup-modal');await loadSup();toast(id?'Modifié':'Créé');}
+        async function delSup(id){if(!confirm('Supprimer ce fournisseur ?'))return;await fetch('/api/suppliers/'+id,{method:'DELETE'});await loadSup();toast('Supprimé');}
+
+        // ═══════ CIRES ═══════
+        async function loadWaxes(){let url='/api/waxes?';const sup=document.getElementById('f-wax-sup').value;if(sup)url+='supplier_id='+sup+'&';const r=await fetch(url);waxes=await r.json();const cats=[...new Set(waxes.map(w=>w.category).filter(Boolean))].sort();const cs=document.getElementById('f-wax-cat');const cv=cs.value;cs.innerHTML='<option value="">Toutes catégories</option>'+cats.map(c=>'<option>'+c+'</option>').join('');cs.value=cv;renderWaxes();}
+        function renderWaxes(){const cat=document.getElementById('f-wax-cat').value;const q=document.getElementById('f-wax-q').value.toLowerCase();const av=document.getElementById('f-wax-av').value;let f=waxes;if(cat)f=f.filter(w=>w.category===cat);if(q)f=f.filter(w=>(w.reference+' '+w.name+' '+(w.supplier_name||'')+' '+(w.recommended_use||'')).toLowerCase().includes(q));if(av!=='')f=f.filter(w=>(w.available===null?1:w.available)==parseInt(av));const tb=document.getElementById('wax-tb');if(!f.length){tb.innerHTML='<tr><td colspan="10" class="text-muted text-center">Aucune cire</td></tr>';return;}
+        tb.innerHTML=f.map(w=>{const cp=w.congealing_point_min?w.congealing_point_min+'-'+w.congealing_point_max:'—';const pen=w.penetration_min?w.penetration_min+'-'+w.penetration_max:'—';const oil=w.oil_content_min!=null?w.oil_content_min+'-'+w.oil_content_max:'<span class="text-muted">N/S</span>';const say=w.saybolt_color_min?w.saybolt_color_min+'-'+w.saybolt_color_max:'—';const av=w.available===null?1:w.available;return '<tr onclick="viewWax('+w.id+')" style="cursor:pointer;'+(av===0?'opacity:0.5;':'')+'"><td><strong style="color:var(--mfc-cire);">'+w.reference+'</strong></td><td>'+(w.supplier_name||'—')+'</td><td><span class="badge badge-en_cours" style="font-size:0.65rem;">'+(w.category||'—')+'</span></td><td><strong>'+cp+'</strong></td><td>'+pen+'</td><td>'+oil+'</td><td>'+say+'</td><td>'+availBadge(av)+'</td><td style="font-size:0.72rem;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(w.recommended_use||'—')+'</td><td class="actions" onclick="event.stopPropagation();">'+availBtn('waxes',w.id,av)+'<button class="btn btn-secondary btn-sm" onclick="editWax('+w.id+')">✎</button><button class="btn btn-danger btn-sm" onclick="delWax('+w.id+')">✕</button></td></tr>';}).join('');}
+
+        function viewWax(id){const w=waxes.find(x=>x.id===id);if(!w)return;const av=w.available===null?1:w.available;document.getElementById('wd-t').textContent=w.reference+' — '+(w.name||'');const rng=(a,b,u)=>(a!=null&&b!=null)?'<strong>'+a+' – '+b+'</strong> '+(u||''):'<span class="text-muted">Non spécifié</span>';document.getElementById('wd-b').innerHTML='<div style="margin-bottom:0.8rem;text-align:center;">'+availBadge(av)+' '+availBtn('waxes',w.id,av)+'</div><div class="grid grid-2" style="gap:1rem;"><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Fournisseur</p><p>'+(w.supplier_name||'—')+'</p></div><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Catégorie</p><p>'+(w.category||'—')+'</p></div><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Type</p><p>'+(w.type||'—')+(w.sub_type?' / '+w.sub_type:'')+'</p></div><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Packaging</p><p>'+(w.packaging||'—')+'</p></div></div><div class="form-section" style="margin-top:1rem;">Spécifications techniques</div><div class="grid grid-2" style="gap:1rem;background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:1rem;"><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Point de congélation</p><p style="font-size:1.1rem;">'+rng(w.congealing_point_min,w.congealing_point_max,'°C')+'</p></div><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Pénétration 25°C</p><p style="font-size:1.1rem;">'+rng(w.penetration_min,w.penetration_max,'(0.1mm)')+'</p></div><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Teneur en huile</p><p style="font-size:1.1rem;">'+rng(w.oil_content_min,w.oil_content_max,'%')+'</p></div><div><p class="text-muted" style="font-size:0.6rem;text-transform:uppercase;">Couleur Saybolt</p><p style="font-size:1.1rem;">'+rng(w.saybolt_color_min,w.saybolt_color_max,'')+'</p></div></div>'+(w.recommended_use?'<p style="margin-top:0.75rem;"><strong>Usage :</strong> '+w.recommended_use+'</p>':'')+(w.comments?'<div style="background:var(--fond-surface);border:1px solid var(--bordure-legere);border-radius:var(--radius);padding:0.75rem;margin-top:0.5rem;font-size:0.85rem;">📝 '+w.comments+'</div>':'');document.getElementById('wd-del').onclick=()=>delWax(w.id);document.getElementById('wd-edit').onclick=()=>{cm('wax-detail');editWax(w.id);};om('wax-detail');}
+
+        function editWax(id){const w=waxes.find(x=>x.id===id);if(!w)return;document.getElementById('wax-form').reset();document.getElementById('we_id').value=w.id;document.getElementById('we_ref').value=w.reference||'';document.getElementById('we_name').value=w.name||'';document.getElementById('we_type').value=w.type||'';document.getElementById('we_sub').value=w.sub_type||'';document.getElementById('we_cat').value=w.category||'';document.getElementById('we_cpmin').value=w.congealing_point_min||'';document.getElementById('we_cpmax').value=w.congealing_point_max||'';document.getElementById('we_omin').value=w.oil_content_min!=null?w.oil_content_min:'';document.getElementById('we_omax').value=w.oil_content_max!=null?w.oil_content_max:'';document.getElementById('we_pmin').value=w.penetration_min||'';document.getElementById('we_pmax').value=w.penetration_max||'';document.getElementById('we_smin').value=w.saybolt_color_min||'';document.getElementById('we_smax').value=w.saybolt_color_max||'';document.getElementById('we_pkg').value=w.packaging||'';document.getElementById('we_app').value=w.application||'';document.getElementById('we_use').value=w.recommended_use||'';document.getElementById('we_com').value=w.comments||'';document.getElementById('we-t').textContent='Modifier '+w.reference;om('wax-edit');}
+
+        async function saveWax(){const id=document.getElementById('we_id').value;const d={reference:document.getElementById('we_ref').value,name:document.getElementById('we_name').value,type:document.getElementById('we_type').value,sub_type:document.getElementById('we_sub').value,category:document.getElementById('we_cat').value,congealing_point_min:parseFloat(document.getElementById('we_cpmin').value)||null,congealing_point_max:parseFloat(document.getElementById('we_cpmax').value)||null,oil_content_min:document.getElementById('we_omin').value!==''?parseFloat(document.getElementById('we_omin').value):null,oil_content_max:document.getElementById('we_omax').value!==''?parseFloat(document.getElementById('we_omax').value):null,penetration_min:parseFloat(document.getElementById('we_pmin').value)||null,penetration_max:parseFloat(document.getElementById('we_pmax').value)||null,saybolt_color_min:parseInt(document.getElementById('we_smin').value)||null,saybolt_color_max:parseInt(document.getElementById('we_smax').value)||null,packaging:document.getElementById('we_pkg').value,application:document.getElementById('we_app').value,recommended_use:document.getElementById('we_use').value,comments:document.getElementById('we_com').value};if(!d.reference){toast('Référence requise','error');return;}await fetch('/api/waxes/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});cm('wax-edit');await loadWaxes();toast('Cire modifiée');}
+        async function delWax(id){if(!confirm('Supprimer cette cire ?'))return;await fetch('/api/waxes/'+id,{method:'DELETE'});cm('wax-detail');await loadWaxes();toast('Supprimée');}
+
+        // ═══════ MÈCHES ═══════
+        async function loadWicks(){const s=document.getElementById('f-wick-s').value;const d=document.getElementById('f-wick-d').value;let url='/api/wicks?';if(s)url+='series='+s+'&';if(d)url+='diameter='+d+'&';const r=await fetch(url);wicks=await r.json();const tb=document.getElementById('wick-tb');if(!wicks.length){tb.innerHTML='<tr><td colspan="10" class="text-muted text-center">Aucune mèche</td></tr>';return;}tb.innerHTML=wicks.map(w=>{const av=w.available===null?1:w.available;return '<tr style="'+(av===0?'opacity:0.5;':'')+'"><td><strong>'+w.reference+'</strong></td><td><span class="badge badge-validé">'+w.series+'</span></td><td>'+(w.type||'—')+'</td><td>'+(w.core||'Sans')+'</td><td>'+(w.diameter_min||'—')+'</td><td>'+(w.diameter_max||'—')+'</td><td>'+(w.wax_type||'—')+'</td><td>'+availBadge(av)+'</td><td class="text-muted" style="font-size:0.75rem;">'+(w.manufacturer_notes||'—')+'</td><td class="actions">'+availBtn('wicks',w.id,av)+'<button class="btn btn-danger btn-sm" onclick="delI(\'wicks\','+w.id+')">✕</button></td></tr>';}).join('');}
+
+        // ═══════ COLORANTS ═══════
+        async function loadCol(){const f=document.getElementById('f-col-f').value;let url='/api/colorants?';if(f)url+='form='+f+'&';const r=await fetch(url);colorants=await r.json();const tb=document.getElementById('col-tb');if(!colorants.length){tb.innerHTML='<tr><td colspan="9" class="text-muted text-center">Aucun</td></tr>';return;}tb.innerHTML=colorants.map(c=>{const hz=[];if(c.hazard_h315)hz.push('H315');if(c.hazard_h317)hz.push('H317');if(c.hazard_h319)hz.push('H319');const av=c.available===null?1:c.available;return '<tr style="'+(av===0?'opacity:0.5;':'')+'"><td><span class="color-preview" style="background:'+(c.color_hex||'#ccc')+';"></span>'+(c.short_name||'—')+'</td><td><strong>'+c.reference+'</strong></td><td style="font-size:0.78rem;">'+c.name+'</td><td><span class="badge '+(c.form==='Liquide'?'badge-en_cours':'badge-demande')+'">'+c.form+'</span></td><td>'+(c.density?c.density+' g/cm³':'—')+'</td><td>'+(c.flash_point?c.flash_point+'°C':'—')+'</td><td>'+availBadge(av)+'</td><td>'+(hz.length?'⚠️ '+hz.join(' '):'✅')+'</td><td class="actions">'+availBtn('colorants',c.id,av)+'<button class="btn btn-danger btn-sm" onclick="delI(\'colorants\','+c.id+')">✕</button></td></tr>';}).join('');}
+
+        // ═══════ PARFUMS ═══════
+        async function loadFrag(){const r=await fetch('/api/fragrances');fragrances=await r.json();const tb=document.getElementById('frag-tb');if(!fragrances.length){tb.innerHTML='<tr><td colspan="9" class="text-muted text-center">Aucun parfum</td></tr>';return;}tb.innerHTML=fragrances.map(f=>{const av=f.available===null?1:f.available;return '<tr style="'+(av===0?'opacity:0.5;':'')+'"><td><strong>'+f.name+'</strong></td><td>'+(f.reference||'—')+'</td><td>'+(f.supplier_name||'—')+'</td><td>'+(f.family||'—')+'</td><td>'+(f.ifra_max?f.ifra_max+'%':'—')+'</td><td>'+(f.flash_point?f.flash_point+'°C':'—')+'</td><td>'+availBadge(av)+'</td><td>'+(f.recommended_percentage?f.recommended_percentage+'%':'—')+'</td><td class="actions"><button class="btn btn-sm" onclick="openFDS('+f.id+')" style="background:#6a1b9a;color:#fff;font-size:0.65rem;" title="Composants FDS">📋 FDS</button>'+availBtn('fragrances',f.id,av)+'<button class="btn btn-danger btn-sm" onclick="delI(\'fragrances\','+f.id+')">✕</button></td></tr>';}).join('');}
+
+        async function delI(type,id){if(!confirm('Supprimer ?'))return;await fetch('/api/'+type+'/'+id,{method:'DELETE'});if(type==='waxes')loadWaxes();else if(type==='wicks')loadWicks();else if(type==='colorants')loadCol();else if(type==='fragrances')loadFrag();toast('Supprimé');}
+
+        function setupTabs(){document.querySelectorAll('.tab').forEach(tab=>{tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active');document.querySelectorAll('.tab-content').forEach(c=>c.style.display='none');document.getElementById('tab-'+tab.dataset.tab).style.display='block';if(tab.dataset.tab==='cires')loadWaxes();if(tab.dataset.tab==='meches')loadWicks();if(tab.dataset.tab==='colorants')loadCol();if(tab.dataset.tab==='parfums')loadFrag();if(tab.dataset.tab==='fournisseurs')renderSup();});});const p=new URLSearchParams(location.search);if(p.get('tab')){const b=document.querySelector('[data-tab="'+p.get('tab')+'"]');if(b)b.click();}}
+        document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));});
+        document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active');}));
+        document.addEventListener('DOMContentLoaded',async()=>{try{await loadSup();setupTabs();loadWaxes();}catch(e){console.warn('Init matieres:',e.message);}document.getElementById('f-wax-sup').addEventListener('change',loadWaxes);document.getElementById('f-wax-cat').addEventListener('change',renderWaxes);document.getElementById('f-wax-q').addEventListener('input',renderWaxes);document.getElementById('f-wax-av').addEventListener('change',renderWaxes);document.getElementById('f-wick-s').addEventListener('change',loadWicks);document.getElementById('f-wick-d').addEventListener('input',loadWicks);document.getElementById('f-col-f').addEventListener('change',loadCol);});
+
+        // ═══ MODULE FDS ═══
+        let fdsFragranceId = null;
+        let fdsComponents = [];
+
+        async function openFDS(id) {
+            fdsFragranceId = id;
+            const f = fragrances.find(x => x.id === id);
+            document.getElementById('fds-title').textContent = '📋 FDS — ' + (f ? f.name : 'Parfum #' + id);
+            await loadFDSComponents();
+            document.getElementById('fds-modal').classList.add('active');
+        }
+
+        async function loadFDSComponents() {
+            const r = await fetch('/api/fragrances/' + fdsFragranceId + '/components');
+            fdsComponents = await r.json();
+            renderFDSTable();
+        }
+
+        function renderFDSTable() {
+            const tb = document.getElementById('fds-tbody');
+            if (!fdsComponents.length) {
+                tb.innerHTML = '<tr><td colspan="7" class="text-muted text-center" style="padding:1rem;">Aucun composant saisi — Ajoutez les données de la FDS</td></tr>';
+                document.getElementById('fds-analysis').innerHTML = '';
+                return;
+            }
+            tb.innerHTML = fdsComponents.map(c => {
+                const solColor = c.solubility_wax === 'insoluble' ? '#c62828' : c.solubility_wax === 'soluble' ? '#2e7d32' : c.solubility_wax === 'partial' ? '#e65100' : '#999';
+                const solLabel = c.solubility_wax === 'insoluble' ? '❌ Insoluble' : c.solubility_wax === 'soluble' ? '✅ Soluble' : c.solubility_wax === 'partial' ? '⚠️ Partiel' : '? Inconnu';
+                return '<tr>' +
+                    '<td><strong>' + c.name + '</strong></td>' +
+                    '<td style="font-size:0.72rem;font-family:monospace;">' + (c.cas_number || '—') + '</td>' +
+                    '<td>' + (c.percentage_min ? c.percentage_min + '-' : '') + (c.percentage_max || '?') + '%</td>' +
+                    '<td>' + (c.flash_point ? c.flash_point + '°C' : '—') + '</td>' +
+                    '<td><span style="color:' + solColor + ';font-weight:600;font-size:0.75rem;">' + solLabel + '</span></td>' +
+                    '<td style="font-size:0.72rem;">' + (c.notes || '') + '</td>' +
+                    '<td class="actions"><button class="btn btn-danger btn-sm" onclick="delFDSComp(' + c.id + ')">✕</button></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        async function addFDSComponent() {
+            const name = document.getElementById('fds-c-name').value.trim();
+            if (!name) { toast('Nom du composant requis', 'error'); return; }
+            const data = {
+                name,
+                cas_number: document.getElementById('fds-c-cas').value.trim() || null,
+                percentage_min: parseFloat(document.getElementById('fds-c-pmin').value) || null,
+                percentage_max: parseFloat(document.getElementById('fds-c-pmax').value) || null,
+                flash_point: parseFloat(document.getElementById('fds-c-fp').value) || null,
+                component_type: document.getElementById('fds-c-type').value,
+                volatility: document.getElementById('fds-c-vol').value || null,
+                notes: document.getElementById('fds-c-notes').value || null
+            };
+            const r = await fetch('/api/fragrances/' + fdsFragranceId + '/components', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+            });
+            const res = await r.json();
+            if (res.error) { toast(res.error, 'error'); return; }
+            // Show auto-detected solubility
+            if (res.solubility_wax === 'insoluble') toast('⚠️ ' + name + ' — INSOLUBLE dans la cire !', 'error');
+            else if (res.solubility_wax === 'soluble') toast('✅ ' + name + ' — Soluble', 'success');
+            else toast('Composant ajouté');
+            // Clear form
+            document.getElementById('fds-c-name').value = '';
+            document.getElementById('fds-c-cas').value = '';
+            document.getElementById('fds-c-pmin').value = '';
+            document.getElementById('fds-c-pmax').value = '';
+            document.getElementById('fds-c-fp').value = '';
+            document.getElementById('fds-c-notes').value = '';
+            await loadFDSComponents();
+        }
+
+        async function delFDSComp(cid) {
+            if (!confirm('Supprimer ce composant ?')) return;
+            await fetch('/api/fragrances/' + fdsFragranceId + '/components/' + cid, { method: 'DELETE' });
+            await loadFDSComponents();
+            toast('Supprimé');
+        }
+
+        async function analyzeFDS() {
+            if (!fdsComponents.length) { toast('Ajoutez des composants d\'abord', 'error'); return; }
+            document.getElementById('fds-analysis').innerHTML = '<div class="loading"><div class="spinner"></div><p class="text-muted">Analyse en cours...</p></div>';
+            const r = await fetch('/api/fragrances/' + fdsFragranceId + '/analyze', { method: 'POST' });
+            const a = await r.json();
+            if (a.warning) { document.getElementById('fds-analysis').innerHTML = '<p class="text-muted">' + a.warning + '</p>'; return; }
+
+            const compColor = a.wax_compatibility === 'bonne' ? '#2e7d32' : a.wax_compatibility === 'moyenne' ? '#e65100' : '#c62828';
+            const riskColor = a.combustion_risk === 'faible' ? '#2e7d32' : a.combustion_risk === 'moyen' ? '#e65100' : '#c62828';
+
+            let html = '<div style="border-top:2px solid #a32d03;padding-top:0.75rem;margin-top:0.75rem;">';
+            html += '<h4 style="font-size:0.85rem;margin:0 0 0.5rem;">🔬 Résultat de l\'analyse</h4>';
+
+            // Metrics
+            html += '<div class="grid grid-4" style="gap:0.5rem;margin-bottom:0.75rem;">';
+            html += '<div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;"><div style="font-weight:700;color:' + compColor + ';">' + a.wax_compatibility.toUpperCase() + '</div><div style="font-size:0.65rem;color:#888;">Compat. cire</div></div>';
+            html += '<div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;"><div style="font-weight:700;color:' + riskColor + ';">' + a.combustion_risk.toUpperCase() + '</div><div style="font-size:0.65rem;color:#888;">Risque combust.</div></div>';
+            html += '<div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;"><div style="font-weight:700;">' + (a.recommended_temp_max || '—') + '°C</div><div style="font-size:0.65rem;color:#888;">Temp max ajout</div></div>';
+            html += '<div style="text-align:center;background:#faf8f5;padding:0.5rem;border-radius:8px;"><div style="font-weight:700;">' + (a.solvent_carrier || 'N/A') + '</div><div style="font-size:0.65rem;color:#888;">Solvant (' + (a.solvent_percentage || 0) + '%)</div></div>';
+            html += '</div>';
+
+            // Diffusion
+            html += '<p style="font-size:0.8rem;margin:0.3rem 0;">📡 Profil diffusion : <strong>' + a.diffusion_profile + '</strong></p>';
+
+            // Warnings
+            if (a.warnings && a.warnings.length) {
+                html += '<div style="background:#fff3e0;border-left:3px solid #e65100;padding:0.5rem 0.75rem;border-radius:6px;margin:0.5rem 0;">';
+                a.warnings.forEach(w => { html += '<p style="font-size:0.78rem;margin:0.15rem 0;">' + w + '</p>'; });
+                html += '</div>';
+            }
+
+            // Recommendations
+            if (a.recommendations && a.recommendations.length) {
+                html += '<div style="background:#e8f5e9;border-left:3px solid #2e7d32;padding:0.5rem 0.75rem;border-radius:6px;margin:0.5rem 0;">';
+                html += '<p style="font-size:0.72rem;font-weight:600;color:#2e7d32;margin:0 0 0.3rem;">💡 Recommandations</p>';
+                a.recommendations.forEach(r => { html += '<p style="font-size:0.78rem;margin:0.15rem 0;">→ ' + r + '</p>'; });
+                html += '</div>';
+            }
+
+            // Allergens
+            if (a.component_breakdown.allergens.length) {
+                html += '<p style="font-size:0.75rem;margin:0.5rem 0 0.2rem;color:#e65100;">⚠️ Allergènes IFRA détectés :</p>';
+                a.component_breakdown.allergens.forEach(al => { html += '<span style="display:inline-block;background:#fff3e0;padding:1px 6px;border-radius:4px;font-size:0.72rem;margin:2px;">' + al.name + ' (' + al.pct + '%)</span> '; });
+            }
+
+            html += '</div>';
+            document.getElementById('fds-analysis').innerHTML = html;
+        }
+    </script>
+
+    <!-- ══════════ MODAL FDS ══════════ -->
+    <div class="modal-overlay" id="fds-modal">
+        <div class="modal" style="max-width:900px;">
+            <div class="modal-header"><h2 id="fds-title">📋 FDS</h2><button class="modal-close" onclick="document.getElementById('fds-modal').classList.remove('active')">&times;</button></div>
+            <div class="modal-body">
+                <!-- Saisie composant -->
+                <div style="background:#f5f0eb;padding:0.75rem;border-radius:8px;margin-bottom:0.75rem;">
+                    <p style="font-size:0.75rem;font-weight:600;margin:0 0 0.5rem;">➕ Ajouter un composant (depuis la FDS)</p>
+                    <div class="grid grid-4" style="gap:0.4rem;">
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">Nom *</label><input type="text" class="form-control" id="fds-c-name" placeholder="Ex: Dipropylene Glycol" style="font-size:0.8rem;"></div>
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">N° CAS</label><input type="text" class="form-control" id="fds-c-cas" placeholder="25265-71-8" style="font-size:0.8rem;"></div>
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">% min</label><input type="number" class="form-control" id="fds-c-pmin" step="0.1" style="font-size:0.8rem;"></div>
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">% max</label><input type="number" class="form-control" id="fds-c-pmax" step="0.1" style="font-size:0.8rem;"></div>
+                    </div>
+                    <div class="grid grid-4" style="gap:0.4rem;margin-top:0.4rem;">
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">Point éclair (°C)</label><input type="number" class="form-control" id="fds-c-fp" style="font-size:0.8rem;"></div>
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">Type</label><select class="form-control" id="fds-c-type" style="font-size:0.8rem;"><option value="ingredient">Ingrédient actif</option><option value="solvent">Solvant porteur</option><option value="allergen">Allergène</option><option value="fixateur">Fixateur</option></select></div>
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">Volatilité</label><select class="form-control" id="fds-c-vol" style="font-size:0.8rem;"><option value="">—</option><option value="haute">Haute (note de tête)</option><option value="moyenne">Moyenne (cœur)</option><option value="basse">Basse (fond)</option></select></div>
+                        <div class="form-group" style="margin:0;"><label style="font-size:0.65rem;">Notes</label><input type="text" class="form-control" id="fds-c-notes" style="font-size:0.8rem;"></div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="addFDSComponent()" style="margin-top:0.5rem;">💾 Ajouter</button>
+                </div>
+
+                <!-- Table composants -->
+                <table style="font-size:0.78rem;">
+                    <thead><tr><th>Composant</th><th>CAS</th><th>%</th><th>Pt éclair</th><th>Solubilité cire</th><th>Notes</th><th></th></tr></thead>
+                    <tbody id="fds-tbody"></tbody>
+                </table>
+
+                <!-- Analyse -->
+                <div id="fds-analysis"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('fds-modal').classList.remove('active')">Fermer</button>
+                <button class="btn btn-primary" onclick="analyzeFDS()" style="background:#6a1b9a;color:#fff;">🔬 Analyser la compatibilité</button>
+            </div>
+        </div>
+    </div>
+<script src="/js/operator-selector.js"></script>
+<script src="/js/cache-buster.js"></script>
+<script>fetch("/api/version").then(r=>r.json()).then(d=>{var v="v"+d.version;if(document.getElementById("mfc-v"))document.getElementById("mfc-v").textContent=v;if(document.getElementById("mfc-vf"))document.getElementById("mfc-vf").textContent=v;document.title=document.title.replace(/MFC Laboratoire/,"MFC Laboratoire "+v)}).catch(()=>{})</script>
+</body>
+</html>
