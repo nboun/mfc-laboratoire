@@ -2,6 +2,15 @@
 chcp 65001 >nul
 cd /d "%~dp0"
 
+:: Détecter runtime portable (DD)
+set "MFC_PARENT=%~dp0.."
+if exist "%MFC_PARENT%\runtime\node\node.exe" (
+    set "PATH=%MFC_PARENT%\runtime\node;%PATH%"
+)
+if exist "%MFC_PARENT%\runtime\python\python.exe" (
+    set "PATH=%MFC_PARENT%\runtime\python;%MFC_PARENT%\runtime\python\Scripts;%PATH%"
+)
+
 :: Lire la version
 set "APP_VERSION=?"
 for /f "tokens=2 delims=:," %%a in ('findstr /c:"\"version\"" package.json 2^>nul') do (
