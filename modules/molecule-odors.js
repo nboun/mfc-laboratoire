@@ -170,7 +170,7 @@ const ODOR_DB = {
     '9000-72-0':  { odor: 'baumier, vanille, résine, doux', odor_hot: 'résine vanillée chaude', threshold: null, odor_family: 'baumier', odor_note: 'fond' },
     '8014-09-3':  { odor: 'rose, géranium, citronnelle', odor_hot: 'rose géranium chaude', threshold: null, odor_family: 'floral', odor_note: 'cœur' },
     '84775-71-3': { odor: 'agrume, mandarine, zeste, frais', odor_hot: 'mandarine intense, zeste chaud', threshold: null, odor_family: 'agrume', odor_note: 'tête' },
-    '90028-67-4': { odor: 'fumé, boisé, cuir, goudron', odor_hot: 'fumé cuir intense, goudron chaud', threshold: null, odor_family: 'fumé', odor_note: 'fond' },
+    '90028-67-4': { odor: 'fumé, boisé, cuir, goudron', odor_hot: 'fumé cuir intense, goudron chaud', threshold: null, odor_family: 'fumé', odor_note: 'tête/cœur' },
     '68956-56-9': { odor: 'boisé, herbacé, frais, terpénique', odor_hot: 'herbacé terpénique chaud', threshold: null, odor_family: 'herbacé', odor_note: 'tête/cœur' },
 
     // ══════════ MOLÉCULES SPÉCIFIQUES GREEN FIG ══════════
@@ -439,7 +439,7 @@ const ODOR_DB = {
     '19870-74-7': { odor: 'cèdre, boisé, ambré, doux', odor_hot: 'cèdre ambré intense', threshold: null, odor_family: 'boisé', odor_note: 'fond' },
     '65442-31-1': { odor: 'cèdre, boisé, ambré, sec', odor_hot: 'cèdre ambré sec chaud', threshold: null, odor_family: 'boisé', odor_note: 'fond' },
     '93-18-5':    { odor: 'floral, oranger, poudré, doux', odor_hot: 'oranger poudré chaud', threshold: null, odor_family: 'floral', odor_note: 'cœur/fond' },
-    '67634-00-8': { odor: 'vert, frais, ozonic, agrume', odor_hot: 'vert ozonic intense', threshold: null, odor_family: 'vert', odor_note: 'tête' },
+    '67634-00-8': { odor: 'vert, frais, ozonic, agrume', odor_hot: 'vert ozonic intense', threshold: null, odor_family: 'vert', odor_note: 'cœur' },
 
     // ── ACÉTALS & AMBRÉS ──
     '58567-11-6': { odor: 'ambré, boisé, chaud, musqué', odor_hot: 'ambré boisé intense', threshold: null, odor_family: 'ambré', odor_note: 'fond' },
@@ -466,7 +466,7 @@ const ODOR_DB = {
     '103-82-2':   { odor: 'miel, floral, cireux, doux', odor_hot: 'miel floral chaud', threshold: null, odor_family: 'floral', odor_note: 'cœur/fond' },
 
     // ── GLYCOLS & SOLVANTS ──
-    '25265-71-8': { odor: 'inodore (solvant)', odor_hot: 'très léger, éthéré', threshold: null, odor_family: 'solvant', odor_note: 'tête' },
+    '25265-71-8': { odor: 'inodore (solvant)', odor_hot: 'très léger, éthéré', threshold: null, odor_family: 'solvant', odor_note: null },
     '84-66-2':    { odor: 'inodore (plastifiant)', odor_hot: 'inodore', threshold: null, odor_family: 'neutre', odor_note: 'fond' },
     '109-94-4':   { odor: 'éthéré, fruité, rhum', odor_hot: 'éthéré fruité fort', threshold: null, odor_family: 'solvant', odor_note: 'tête' },
 

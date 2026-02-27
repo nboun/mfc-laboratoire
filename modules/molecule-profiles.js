@@ -77,6 +77,7 @@ const MEASURED_DATA = {
     '110-41-8':  { bp: 238, logp: 5.13, density: 0.833, vp: 2.0, ot: 1 },        // 2-Méthylundécanal
     '104-55-2':  { bp: 248, logp: 1.90, density: 1.050, vp: 2.9, ot: 60 },       // Cinnamaldéhyde
     '122-78-1':  { bp: 195, logp: 1.50, density: 1.045, vp: 19, ot: 4 },         // Phénylacétaldéhyde
+    '107-75-5':  { bp: 241, logp: 0.76, density: 0.953, vp: 0.6, ot: 5 },       // Hydroxycitronellal
     '121-33-5':  { bp: 285, logp: 1.05, density: 1.056, vp: 0.02, ot: 25 },      // Vanilline
     '120-57-0':  { bp: 263, logp: 1.15, density: 1.095, vp: 0.1, ot: 36 },       // Héliotropine (pipéronal)
     '4460-86-0': { bp: 229, logp: 3.16, density: 0.855, vp: 3.0, ot: 13 },       // Citronellal
@@ -147,7 +148,7 @@ const MEASURED_DATA = {
     '57-55-6':   { bp: 188, logp: -0.92, density: 1.036, vp: 20, ot: null },      // Propylène glycol
     '110-27-0':  { bp: 315, logp: 7.02, density: 0.853, vp: 0.004, ot: null },    // IPM
     '84-66-2':   { bp: 298, logp: 2.42, density: 1.118, vp: 0.02, ot: null },     // DEP
-    '120-51-4':  { bp: 323, logp: 1.96, density: 1.118, vp: 0.004, ot: null },    // Benzyl benzoate
+    '120-51-4':  { bp: 323, logp: 3.97, density: 1.118, vp: 0.004, ot: null },    // Benzyl benzoate
 
     // ── COUMARINES & AUTRES ───────────────────────────
     '91-64-5':   { bp: 302, logp: 1.39, density: 0.935, vp: 0.013, ot: 60 },     // Coumarine
@@ -385,11 +386,11 @@ function enrichMolecule(cas, mol) {
     // Odor descriptors (facettes olfactives)
     // Sources : The Good Scents Company, Arctander 1969, Leffingwell 2002, PubChem
     if (ODOR_DATA[cas]) {
-        enriched.odor_descriptors = ODOR_DATA[cas].odor || [];
-        enriched.is_sweet = ODOR_DATA[cas].sweet || false;
-        enriched.odor_note = ODOR_DATA[cas].note || null;
-        enriched.pubchem_raw = ODOR_DATA[cas].pubchem_raw || null;
-        enriched.pubchem_cid = ODOR_DATA[cas].pubchem_cid || null;
+        if (ODOR_DATA[cas].odor && ODOR_DATA[cas].odor.length) enriched.odor_descriptors = ODOR_DATA[cas].odor;
+        if (ODOR_DATA[cas].sweet) enriched.is_sweet = true;
+        if (ODOR_DATA[cas].note && !enriched.odor_note) enriched.odor_note = ODOR_DATA[cas].note;
+        if (ODOR_DATA[cas].pubchem_raw) enriched.pubchem_raw = ODOR_DATA[cas].pubchem_raw;
+        if (ODOR_DATA[cas].pubchem_cid) enriched.pubchem_cid = ODOR_DATA[cas].pubchem_cid;
     }
     
     return enriched;
