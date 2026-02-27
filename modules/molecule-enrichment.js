@@ -792,19 +792,20 @@ async function enrichUnknownMolecules(db, options = {}) {
     const onProgress = options.onProgress || null;
     const skipTGSC = options.skipTGSC || false;
     const forceRefresh = options.forceRefresh || false;
+    const offset = options.offset || 0;
 
     // Trouver les CAS à enrichir
     let unknownCAS;
     
     if (forceRefresh) {
-        // Ré-enrichir tout
+        // Ré-enrichir tout (avec pagination via offset)
         unknownCAS = await db.all(`
             SELECT DISTINCT pc.cas_number as cas, pc.name as name 
             FROM fragrance_components pc 
             WHERE pc.cas_number IS NOT NULL AND pc.cas_number != ''
             ORDER BY pc.cas_number
-            LIMIT ?
-        `, [batchSize]);
+            LIMIT ? OFFSET ?
+        `, [batchSize, offset]);
     } else {
         // Seulement les CAS sans fiche KB molecule_db OU les fiches marquées incomplètes
         unknownCAS = await db.all(`
@@ -914,6 +915,17 @@ async function enrichUnknownMolecules(db, options = {}) {
             report.failed.push({ cas, name, reason: e.message });
         }
     }
+
+    // Résumé compteurs (pour scripts batch)
+    report.summary = {
+        processed: report.enriched.length + report.updated.length + report.failed.length,
+        updated: report.enriched.length + report.updated.length,
+        errors: report.failed.length,
+        needs_claude: report.needs_claude.length,
+        offset: offset,
+        next_offset: offset + unknownCAS.length,
+        has_more: unknownCAS.length === batchSize
+    };
 
     return report;
 }

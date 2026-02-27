@@ -6332,9 +6332,11 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                 
                 // Tests actifs
                 d.active_tests = await db.all(`
-                    SELECT t.test_number, t.formulation_code, t.formulation_name, t.fragrance_name,
-                           t.total_burn_time, t.status
-                    FROM burn_tests t WHERE t.status IN ('en_cours','planifié')
+                    SELECT t.test_number, f.code as formulation_code, f.name as formulation_name, 
+                           f.fragrance_name, t.total_burn_time, t.status
+                    FROM burn_tests t 
+                    LEFT JOIN formulations f ON t.formulation_id = f.id
+                    WHERE t.status IN ('en_cours','planifié')
                     ORDER BY t.id DESC LIMIT 10
                 `);
                 
@@ -7821,7 +7823,8 @@ app.post('/api/enrichment/batch', express.json(), async (req, res) => {
         const batchSize = parseInt(req.body.batch_size) || 999;
         const skipTGSC = req.body.skipTGSC || false;
         const forceRefresh = req.body.forceRefresh || false;
-        const report = await enrichment.enrichUnknownMolecules(db, { batchSize, skipTGSC, forceRefresh });
+        const offset = parseInt(req.body.offset) || 0;
+        const report = await enrichment.enrichUnknownMolecules(db, { batchSize, skipTGSC, forceRefresh, offset });
         res.json(report);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
