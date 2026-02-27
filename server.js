@@ -8861,6 +8861,7 @@ function computePredictifProfile(components, fragrance) {
         distribution: { tete: countTete, coeur: countCoeur, fond: countFond, inconnu: countInconnu },
         concentration: { tete: Math.round(concTete * 100) / 100, coeur: Math.round(concCoeur * 100) / 100, fond: Math.round(concFond * 100) / 100 },
         fp: fpMin,
+        fp_min_composants: fpMin,
         risks: risksCount,
         molecules: moleculeDetails,
         total_concentration: Math.round(totalConc * 100) / 100
@@ -8869,14 +8870,16 @@ function computePredictifProfile(components, fragrance) {
 
 function generatePredictifAlerts(pred, fragrance) {
     const alerts = [];
+    // Le FP autoritaire = FDS du parfum, sinon MIN composants en fallback
+    const fpRef = (fragrance && fragrance.flash_point) ? fragrance.flash_point : pred.fp;
     
     if (pred.risks.dpg) {
         alerts.push({ level: 'securite', icon: '⛔', title: 'DPG détecté', detail: 'Dipropylène glycol présent — reformulation sans DPG obligatoire chez MFC. Base IPM ou ester uniquement.' });
     }
-    if (pred.fp !== null && pred.fp < 55) {
-        alerts.push({ level: 'securite', icon: '🔥', title: 'Point éclair très bas (' + pred.fp + '°C)', detail: 'Flash < 55°C — terpènes très volatils présents. Risque inflammabilité accru, transport ADR. Dosage max 6%.' });
-    } else if (pred.fp !== null && pred.fp < 70) {
-        alerts.push({ level: 'important', icon: '⚠️', title: 'Point éclair bas (' + pred.fp + '°C)', detail: 'Flash 55-70°C — surveiller le dosage et la ventilation en production.' });
+    if (fpRef !== null && fpRef < 55) {
+        alerts.push({ level: 'securite', icon: '🔥', title: 'Point éclair très bas (' + fpRef + '°C)', detail: 'Flash < 55°C — terpènes très volatils présents. Risque inflammabilité accru, transport ADR. Dosage max 6%.' });
+    } else if (fpRef !== null && fpRef < 70) {
+        alerts.push({ level: 'important', icon: '⚠️', title: 'Point éclair bas (' + fpRef + '°C)', detail: 'Flash 55-70°C — surveiller le dosage et la ventilation en production.' });
     }
     if (pred.risks.solid > 0) {
         alerts.push({ level: 'warning', icon: '❄️', title: pred.risks.solid + ' molécule(s) à solubilité limitée', detail: 'Risque de cristallisation dans la cire froide. Tester en surface après 48h.' });
@@ -8904,7 +8907,7 @@ function generatePredictifAlerts(pred, fragrance) {
         else if (pred.avg_logp >= 2) { dosageMin = 6; dosageMax = 8; dosageNote = 'Polarité moyenne — respecter les dosages pour éviter le suintement.'; }
         else { dosageMin = 5; dosageMax = 7; dosageNote = 'Parfum polaire — dosage prudent recommandé, surtout en paraffine pure.'; }
     }
-    if (pred.fp !== null && pred.fp < 55) { dosageMax = Math.min(dosageMax, 6); dosageNote += ' Flash bas → limiter à 6%.'; }
+    if (fpRef !== null && fpRef < 55) { dosageMax = Math.min(dosageMax, 6); dosageNote += ' Flash bas → limiter à 6%.'; }
     
     return { alerts, dosage: { min: dosageMin, max: dosageMax, note: dosageNote } };
 }
@@ -8944,7 +8947,8 @@ app.get('/api/predictif/rankings', async (req, res) => {
                 tete: pred.distribution.tete,
                 coeur: pred.distribution.coeur,
                 fond: pred.distribution.fond,
-                fp: pred.fp || frag.flash_point || null,
+                fp: frag.flash_point || pred.fp || null,
+                fp_min_composants: pred.fp_min_composants || null,
                 total_concentration: pred.total_concentration
             });
         }
@@ -9084,13 +9088,13 @@ app.get('/api/predictif/compare/:id1/:id2', async (req, res) => {
                 id: frag1.id, name: frag1.name, n_comps: pred1.n_components,
                 avg_logp: pred1.avg_logp, cold_score: pred1.cold_score, hot_score: pred1.hot_score,
                 distribution: pred1.distribution, concentration: pred1.concentration,
-                fp: pred1.fp || frag1.flash_point, risks: pred1.risks
+                fp: frag1.flash_point || pred1.fp, risks: pred1.risks
             },
             fragrance_2: {
                 id: frag2.id, name: frag2.name, n_comps: pred2.n_components,
                 avg_logp: pred2.avg_logp, cold_score: pred2.cold_score, hot_score: pred2.hot_score,
                 distribution: pred2.distribution, concentration: pred2.concentration,
-                fp: pred2.fp || frag2.flash_point, risks: pred2.risks
+                fp: frag2.flash_point || pred2.fp, risks: pred2.risks
             },
             shared_molecules: shared.length,
             unique_to_1: unique1.length,
