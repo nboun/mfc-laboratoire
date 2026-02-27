@@ -5247,9 +5247,9 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                                 console.log(`  [${i+1}] ✨ Créé: "${insertName}" (ID:${fragId}) depuis ${pdf.name}`);
                             } else {
                                 fragId = frag.id;
-                        // Mettre à jour flash_point + supplier si absent
+                        // Mettre à jour flash_point (FDS prime) + supplier si absent
                                 if (!isNaN(fpVal) && fpVal > 0) {
-                                    await db.run('UPDATE fragrances SET flash_point = COALESCE(flash_point, ?), supplier_id = COALESCE(supplier_id, ?) WHERE id = ?', 
+                                    await db.run('UPDATE fragrances SET flash_point = ?, supplier_id = COALESCE(supplier_id, ?) WHERE id = ?', 
                                         [fpVal, supplierId, fragId]);
                                 }
                             }
