@@ -23,6 +23,10 @@ echo       :     Maitre Cirier depuis 1904              :
 echo       ╚═══════════════════════════════════════════╝
 echo.
 
+:: ═══════ OUVRIR CLAUDE ═══════
+start https://claude.ai
+echo  ✓ Claude ouvert dans le navigateur
+
 :: ═══════ GIT PULL ═══════
 git pull origin main 2>nul && echo  ✓ Code à jour || echo  ⚠ Pull échoué — version locale
 
@@ -47,10 +51,22 @@ if exist "..\mfc-data\database.sqlite" (
     echo  ⚠ Aucune base — création automatique au démarrage
 )
 
-:: ═══════ LANCEMENT ═══════
+:: ═══════ INFO CHEMIN POUR CLAUDE ═══════
 echo.
 echo  ─────────────────────────────────────────
+echo  Chemin de l'application : %~dp0
+echo  Base de données         : %~dp0mfc-data\database.sqlite
+echo  Repo GitHub             : https://github.com/nboun/mfc-laboratoire.git
+echo  ─────────────────────────────────────────
 echo.
+echo  Donne ces infos à Claude si besoin.
+echo.
+
+:: ═══════ OUVRIR L'APP DANS LE NAVIGATEUR ═══════
+timeout /t 3 /nobreak >nul
+start http://localhost:3000
+
+:: ═══════ LANCEMENT ═══════
 node server.js
 
 :: ═══════ SYNCHRO AUTO APRÈS ARRÊT ═══════
