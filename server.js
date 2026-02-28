@@ -4,8 +4,8 @@
  * Version 5.28.0 — Clients · Graphiques · IA · Patrimoine · PubChem · Enrichissement Cires · Diagnostic Throw
  */
 
-const APP_VERSION = '5.44.15';
-const APP_BUILD = '2026-02-28T14:30';
+const APP_VERSION = '5.44.16';
+const APP_BUILD = '2026-02-28T17:15';
 const APP_FEATURES = 'Clients · Graphiques · IA · Patrimoine · Photos · PDF · Backup · Recherche';
 
 const express = require('express');
@@ -3149,7 +3149,7 @@ app.post('/api/recipes/recommend', async (req, res) => {
 // ============================================
 app.get('/api/knowledge', async (req, res) => {
     try {
-        const { category, subcategory } = req.query;
+        const { category, subcategory, search } = req.query;
         let sql = 'SELECT * FROM knowledge_base WHERE 1=1';
         const params = [];
         if (category) {
@@ -3159,6 +3159,11 @@ app.get('/api/knowledge', async (req, res) => {
         if (subcategory) {
             sql += ' AND subcategory = ?';
             params.push(subcategory);
+        }
+        if (search) {
+            sql += ' AND (title LIKE ? OR content LIKE ? OR tags LIKE ?)';
+            const s = '%' + search + '%';
+            params.push(s, s, s);
         }
         sql += ' ORDER BY priority, title';
         const rows = await db.all(sql, params);
@@ -5565,7 +5570,7 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                     FROM formulations f
                     LEFT JOIN clients c ON f.client_id = c.id
                     LEFT JOIN recipes r ON f.recipe_id = r.id
-                    WHERE f.status = 'validée'
+                    WHERE f.status = 'validé'
                 `);
                 const dbRules = await db.all(`SELECT * FROM learned_rules WHERE confidence > 0.3 ORDER BY confidence DESC`);
                 
@@ -5687,7 +5692,7 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                 const { crossFDSWithFormulations } = require('./modules/formulation-crossref');
                 
                 const fdsAnalysis = fdsData ? formulationEngine.analyzeFDS(fdsData) : null;
-                const dbFormulations2 = await db.all(`SELECT f.name as parfum, f.fragrance_name, f.fragrance_percentage as pct_parfum, f.wick_reference as meche, f.container_type as contenant, f.code as recette, c.name as client, r.code as recipe_code FROM formulations f LEFT JOIN clients c ON f.client_id = c.id LEFT JOIN recipes r ON f.recipe_id = r.id WHERE f.status = 'validée'`);
+                const dbFormulations2 = await db.all(`SELECT f.name as parfum, f.fragrance_name, f.fragrance_percentage as pct_parfum, f.wick_reference as meche, f.container_type as contenant, f.code as recette, c.name as client, r.code as recipe_code FROM formulations f LEFT JOIN clients c ON f.client_id = c.id LEFT JOIN recipes r ON f.recipe_id = r.id WHERE f.status = 'validé'`);
                 const dbRules2 = await db.all(`SELECT * FROM learned_rules WHERE confidence > 0.3 ORDER BY confidence DESC`);
                 const crossref = crossFDSWithFormulations(fdsData, params, dbFormulations2, dbRules2);
                 
@@ -6203,7 +6208,7 @@ app.post('/api/fds/rescan-all', express.json(), async (req, res) => {
                     const fdsAnalysis = formulationEngine.analyzeFDS(fdsData);
                     
                     // Crossref FDS × formulations
-                    const dbFormulations3 = await db.all(`SELECT f.name as parfum, f.fragrance_name, f.fragrance_percentage as pct_parfum, f.wick_reference as meche, f.container_type as contenant, f.code as recette, c.name as client, r.code as recipe_code FROM formulations f LEFT JOIN clients c ON f.client_id = c.id LEFT JOIN recipes r ON f.recipe_id = r.id WHERE f.status = 'validée'`);
+                    const dbFormulations3 = await db.all(`SELECT f.name as parfum, f.fragrance_name, f.fragrance_percentage as pct_parfum, f.wick_reference as meche, f.container_type as contenant, f.code as recette, c.name as client, r.code as recipe_code FROM formulations f LEFT JOIN clients c ON f.client_id = c.id LEFT JOIN recipes r ON f.recipe_id = r.id WHERE f.status = 'validé'`);
                     const dbRules3 = await db.all(`SELECT * FROM learned_rules WHERE confidence > 0.3 ORDER BY confidence DESC`);
                     const crossref = crossFDSWithFormulations(fdsData, {
                         fragrance_name: req.body.fragrance_name || '',

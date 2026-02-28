@@ -617,7 +617,7 @@
 
         async function loadFormulations(){
             const st=document.getElementById('filter-status').value;
-            let url='/api/formulations';if(st)url+='?status='+st;
+            let url='/api/formulations';if(st)url+='?status='+encodeURIComponent(st);
             try {
                 const controller = new AbortController();
                 const timeout = setTimeout(() => controller.abort(), 15000);

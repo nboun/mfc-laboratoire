@@ -357,7 +357,7 @@ module.exports.seedMateriauxVerifies = seedMateriauxVerifies;
 
 // Session 17 — Pillar, Vegetable base, new materials
 async function seedSession17(db) {
-    const exists = await db.get("SELECT id FROM knowledge_base WHERE title LIKE '%Cire Végétale S — Apiculture Remuaux%'");
+    const exists = await db.get("SELECT id FROM knowledge_base WHERE title LIKE '%Fiche technique vérifiée%Cire Végétale S%Apiculture Remuaux%'");
     if (exists) return;
 
     const entries = [
@@ -444,7 +444,9 @@ module.exports.seedSession17 = seedSession17;
 // ═══════════════════════════════════════════════════
 
 async function seedSession18(db) {
-    // Ajouter les fournisseurs manquants
+    const kbExists = await db.get("SELECT id FROM knowledge_base WHERE title LIKE '%Stéarinerie Dubois Fils%Fournisseur stratégique%'");
+
+    // Ajouter les fournisseurs manquants (toujours vérifier même si KB existe)
     const newSuppliers = [
         ['SER SpA', 'Italie', 'Paraffines pilier, blends sur mesure (Groupe AWAX)', 'https://www.serwax.com'],
         ['Apiculture Remuaux', 'France', 'Cires végétales (soja)', 'https://www.apiculture-remuaux.fr'],
@@ -460,6 +462,8 @@ async function seedSession18(db) {
 
     // Corriger Hywax : pays = Allemagne (pas Pays-Bas), ajouter note groupe AWAX
     await db.run("UPDATE suppliers SET country = 'Allemagne', specialty = 'Paraffines container, microcristallines, Fischer-Tropsch (Groupe AWAX)' WHERE name = 'Hywax'");
+
+    if (kbExists) { console.log('  ✓ Session 18 : 10 fiches (Dubois + SER/AWAX + corrections)'); return; }
 
     const entries = [
         // === FOURNISSEUR : STÉARINERIE DUBOIS ===
