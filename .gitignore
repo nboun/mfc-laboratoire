@@ -2,3 +2,5 @@ node_modules/
 __pycache__/
 *.pyc
 mfc-data/
+'!mfc-data/database.sqlite' 
+!mfc-data/database.sqlite 
