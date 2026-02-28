@@ -3878,6 +3878,9 @@ app.post('/api/formulations/:id/validate', async (req, res) => {
             await db.run('UPDATE recipes SET success_count = success_count + 1 WHERE id = ?', [recipeId]);
         }
 
+// 4b. Lier la recette à la formulation
+        await db.run('UPDATE formulations SET recipe_id = ? WHERE id = ?', [recipeId, id]);
+
 // 5. Créer fiche savoir dans knowledge_base
         const waxDetail = waxes.map(w => '  • ' + w.wax_name + ' (' + w.reference + ') — ' + w.percentage + '%').join('\n');
         const kbContent = [

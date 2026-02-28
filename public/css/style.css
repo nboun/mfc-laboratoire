@@ -264,6 +264,7 @@ table tbody tr:hover { background: var(--mfc-cire-glow); }
 .badge-validé, .badge-valide { background: var(--vert-badge); color: var(--vert-texte); border: 1px solid rgba(26,122,26,0.15); }
 .badge-terminé, .badge-termine { background: var(--vert-badge); color: var(--vert-texte); border: 1px solid rgba(26,122,26,0.15); }
 .badge-en_attente { background: var(--violet-badge); color: var(--violet-texte); border: 1px solid rgba(124,58,237,0.15); }
+.badge-importé { background: #e0f2fe; color: #0369a1; border: 1px solid rgba(3,105,161,0.15); }
 .badge-rejeté { background: var(--rouge-badge); color: var(--rouge-texte); border: 1px solid rgba(220,38,38,0.15); }
 
 /* ═══════════════════════════════════════════

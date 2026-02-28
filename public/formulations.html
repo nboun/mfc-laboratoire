@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div class="filters">
-                <select id="filter-status" class="form-control"><option value="">Tous les statuts</option><option value="en_cours">En cours</option><option value="en_attente">En attente</option><option value="validé">Validé</option></select>
+                <select id="filter-status" class="form-control"><option value="">Tous les statuts</option><option value="en_cours">En cours</option><option value="en_attente">En attente</option><option value="importé">Importé</option><option value="validé">Validé</option></select>
                 <input type="text" class="form-control" id="search-input" placeholder="Rechercher..." style="min-width:220px;">
             </div>
             <div class="table-container">
@@ -1461,7 +1461,16 @@
             const f = window._currentFormDetail;
             if (!f) return;
             const id = document.getElementById('btn-detail-validate').dataset.id;
-            if (!confirm('Valider cette formulation ?\n\nCela va :\n• Passer la formulation en statut "validé"\n• Créer une recette dans la base\n• Ajouter une fiche au patrimoine numérique')) return;
+            const warnings = [];
+            if (!f.fragrance_id) warnings.push('• Parfum non lié à la base (fragrance_id manquant)');
+            if (!f.sample_id) warnings.push('• Pas d\'échantillon source lié');
+            if (!f.client_name && !f.client_id) warnings.push('• Pas de client attribué');
+            if (!f.waxes || !f.waxes.length) warnings.push('• Pas de composition cires');
+            let msg = 'Valider cette formulation ?\n\nCela va :\n• Passer la formulation en statut "validé"\n• Créer une recette dans la base\n• Ajouter une fiche au patrimoine numérique';
+            if (warnings.length) {
+                msg += '\n\n⚠️ ATTENTION — Données incomplètes :\n' + warnings.join('\n') + '\n\nLa recette sera créée avec ces données manquantes.';
+            }
+            if (!confirm(msg)) return;
             try {
                 const r = await fetch('/api/formulations/' + id + '/validate', {
                     method: 'POST',

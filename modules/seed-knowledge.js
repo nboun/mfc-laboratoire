@@ -534,6 +534,9 @@ module.exports.seedSession18 = seedSession18;
 
 // === SESSION 19 : Températures process et corrections ===
 async function seedSession19(db) {
+    const exists = await db.get("SELECT id FROM knowledge_base WHERE title LIKE '%Températures de coulage%Choc thermique%'");
+    if (exists) { console.log('  ✓ Session 19 : 16 fiches (températures process)'); return; }
+
     const entries = [
         ['technique', 'process', 'Températures de coulage — Choc thermique et défauts',
          "TEMPÉRATURE DE COULAGE — RÈGLE MFC\n\n" +
