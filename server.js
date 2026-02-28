@@ -3808,9 +3808,12 @@ app.post('/api/formulations/:id/validate', async (req, res) => {
         if (!f) return res.status(404).json({ error: 'Formulation non trouvée' });
 
         const waxes = await db.all(
-            `SELECT fw.*, w.reference, w.name as wax_name, w.type as wax_type
+            `SELECT fw.*,
+                    COALESCE(w.reference, fw.raw_reference) as reference,
+                    COALESCE(w.name, fw.raw_type) as wax_name,
+                    COALESCE(w.type, fw.raw_type) as wax_type
              FROM formulation_waxes fw
-             JOIN waxes w ON fw.wax_id = w.id
+             LEFT JOIN waxes w ON fw.wax_id = w.id AND fw.wax_id > 0
              WHERE fw.formulation_id = ?`, [id]
         );
 
@@ -3861,7 +3864,7 @@ app.post('/api/formulations/:id/validate', async (req, res) => {
                  f.client_name ? 'Client ' + f.client_name : null,
                  1]
             );
-            recipeId = result.lastID;
+            recipeId = result.lastInsertRowid;
 
     // Ajouter les cires à la recette
             for (const w of waxes) {
@@ -3959,7 +3962,7 @@ app.post('/api/operators', async (req, res) => {
             'INSERT INTO operators (name, initials, role, email) VALUES (?,?,?,?)',
             [name, initials.toUpperCase(), role || 'opérateur', email || null]
         );
-        res.json({ id: r.lastID, success: true });
+        res.json({ id: r.lastInsertRowid, success: true });
     } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
